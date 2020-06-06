@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform } from 'react-native'
+import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Dialog from './elements/dialog'
@@ -98,13 +98,34 @@ class Dialogs extends Component {
             </View>
             ) :
             (
-              <FlatList
-                data={this.dialogs}
-                keyExtractor={this.keyExtractor}
-                renderItem={(item) => this._renderDialog(item)}
-              />
+              <View>
+                <FlatList
+                  data={this.dialogs}
+                  keyExtractor={this.keyExtractor}
+                  renderItem={(item) => this._renderDialog(item)}
+                />
+              </View>
             )
         }
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => console.log('Pressed')}>
+            <View style={styles.footerElement}>
+              <Text style={styles.footerText}> Chats </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => console.log('Pressed')}>
+            <View style={styles.footerElement}>
+              <Text style={styles.footerText}> People </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => console.log('Pressed')}>
+            <View style={styles.footerElement}>
+              <Text style={styles.footerText}> Events </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
         <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
       </View>
     )
@@ -114,6 +135,25 @@ class Dialogs extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  footer: {
+    flexDirection: 'row',
+    width: '100%',
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    bottom: 40,
+    borderTopWidth: 1,
+    borderTopColor: '#D1D1D1',
+  },
+  footerElement:{
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingTop: 25,
+  },
+  footerText:{
+    color: 'black',
+    fontSize: 19,
   }
 })
 
