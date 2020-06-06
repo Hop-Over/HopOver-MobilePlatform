@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createSwitchNavigator, createAppContainer, StackActions } from 'react-navigation'
 import Auth from '../screens/auth'
 import Dialogs from '../screens/main/dialogs'
+import People from '../screens/main/people/index'
 import AppWrap from '../screens/appWrap'
 import Settings from '../screens/main/settings/index'
 import Chat from '../screens/main/chat/index'
@@ -34,6 +35,9 @@ export default createAppContainer(createSwitchNavigator(
       },
       Chat: {
         screen: Chat,
+      },
+      People: {
+        screen: People,
       },
       Contacts: {
         screen: Contacts,

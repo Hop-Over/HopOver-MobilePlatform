@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
-import Dialog from './elements/dialog'
+import Dialog from '../dialogs/elements/dialog'
 import ChatService from '../../../services/chat-service'
 import Indicator from '../../components/indicator'
 import CreateBtn from '../../components/createBtn'
@@ -11,7 +11,7 @@ import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 
-class Dialogs extends Component {
+class People extends Component {
   static currentUserInfo = ''
   dialogs = []
 
@@ -21,8 +21,9 @@ class Dialogs extends Component {
       isLoader: props.dialogs.length === 0 && true,
     }
   }
+
   static navigationOptions = ({ navigation }) => {
-    Dialogs.currentUserInfo = { ...store.getState().currentUser.user }
+    People.currentUserInfo = { ...store.getState().currentUser.user }
     return {
       headerTitle: (
         <Text style={[
@@ -30,14 +31,14 @@ class Dialogs extends Component {
           Platform.OS === 'android' ?
             { paddingLeft: 13 } :
             { paddingLeft: 0 }]}>
-          {Dialogs.currentUserInfo.full_name}
+          {People.currentUserInfo.full_name}
         </Text>
       ),
       headerRight: (
         <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
           <Avatar
-            photo={Dialogs.currentUserInfo.avatar}
-            name={Dialogs.currentUserInfo.full_name}
+            photo={People.currentUserInfo.avatar}
+            name={People.currentUserInfo.full_name}
             iconSize="small"
           />
         </TouchableOpacity>
@@ -53,14 +54,14 @@ class Dialogs extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.currentUser.user.full_name !== Dialogs.currentUserInfo.full_name) {
-      Dialogs.currentUserInfo = { ...props.currentUser.user }
+    if (props.currentUser.user.full_name !== People.currentUserInfo.full_name) {
+      People.currentUserInfo = { ...props.currentUser.user }
       return true
     } return null
   }
 
   static goToSettingsScreen = (props) => {
-    props.push('Settings', { user: Dialogs.currentUserInfo })
+    props.push('Settings', { user: People.currentUserInfo })
   }
 
   componentDidUpdate(prevProps) {
@@ -86,6 +87,7 @@ class Dialogs extends Component {
 
   goToChatScreen = () => {
     const navigation = this.props.navigation
+
     const resetAction = StackActions.reset({
         index: 0,
         actions: [NavigationActions.navigate({ routeName: 'Dialogs' })],
@@ -95,6 +97,7 @@ class Dialogs extends Component {
 
   goToPeopleScreen = () => {
     const navigation = this.props.navigation
+
     const resetAction = StackActions.reset({
         index: 0,
         actions: [NavigationActions.navigate({ routeName: 'People' })],
@@ -107,24 +110,7 @@ class Dialogs extends Component {
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
-        {isLoader ?
-          (
-            <Indicator color={'red'} size={40} />
-          ) : this.dialogs.length === 0 ?
-            (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 19 }}>No chats yet</Text>
-            </View>
-            ) :
-            (
-              <View>
-                <FlatList
-                  data={this.dialogs}
-                  keyExtractor={this.keyExtractor}
-                  renderItem={(item) => this._renderDialog(item)}
-                />
-              </View>
-            )
-        }
+
         <View style={styles.footer}>
           <TouchableOpacity onPress={() => this.goToChatScreen()}>
             <View style={styles.footerElement}>
@@ -181,4 +167,4 @@ const mapStateToProps = ({ dialogs, currentUser }) => ({
   currentUser
 })
 
-export default connect(mapStateToProps)(Dialogs)
+export default connect(mapStateToProps)(People)
