@@ -714,3 +714,4 @@ hs_err_pid*
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.gitignore.io/api/osx,node,buck,react,xcode,swift,android,intellij,fastlane,cocoapods,reactnative,androidstudio
+ios/Podfile.lock
