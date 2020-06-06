@@ -147,20 +147,19 @@ export default class GroupDetails extends Component {
         this.setState({ isLoader: false })
       })
   }
-// TODO: MAKE PARTICIPANTS A PARAMETER ONCE I ADD A "REMOVE BUTTON"
-  removeParticipant = () => {
-    const participants = [{"avatar": null, "created_at": "2020-05-05T17:54:20Z", "custom_data": "asdfghjk", "full_name": "bilal", "id": 1338358, "last_request_at": null, "login": "dofypp", "phone": "", "updated_at": "2020-05-31T18:27:05Z"}]
-    { console.log('participants: ' + participants) }
+  removeParticipant = (participants) => {
+    { console.log('participants: ') }
+    { console.log(participants) }
     const dialog = this.props.navigation.getParam('dialog', false)
     this.setState({ isLoader: true })
     ChatService.removeOccupantsFromDialog(dialog.id, participants)
       .then(dialog => {
         const updateArrUsers = UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
-        showAlert('Participants added')
+        showAlert('Participant Removed')
         this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
       })
       .catch(error => {
-        console.warn('addParticipant', error)
+        console.warn('removeParticipant', error)
         this.setState({ isLoader: false })
       })
   }
@@ -171,7 +170,7 @@ export default class GroupDetails extends Component {
 
   _renderUser = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.renderContainer} onPress={() => this.goToContactDeteailsScreen(item)}>
+      <View style={styles.renderContainer}>
         <View style={styles.renderAvatar}>
           <Avatar
             photo={item.avatar}
@@ -180,10 +179,13 @@ export default class GroupDetails extends Component {
           />
           <Text style={styles.nameTitle}>{item.full_name}</Text>
         </View>
-        <View>
+        <TouchableOpacity onPress={() => this.removeParticipant([item])}>
+            <Text style={styles.removeTitle}>Remove</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
           <Icon name="keyboard-arrow-right" size={30} color='#48A6E3' />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     )
   }
 
@@ -248,7 +250,7 @@ export default class GroupDetails extends Component {
           />
         </SafeAreaView>
         {this.isGroupCreator() &&
-          <CreateBtn goToScreen={this.removeParticipant} type={BTN_TYPE.CREATE_GROUP} />
+          <CreateBtn goToScreen={this.updateDialog} type={BTN_TYPE.CREATE_GROUP} />
         }
       </KeyboardAvoidingView>
     )
@@ -329,6 +331,10 @@ const styles = StyleSheet.create({
   },
   nameTitle: {
     fontSize: 17
+  },
+  removeTitle: {
+    fontSize: 14,
+    color: '#949494'
   },
   dialogName: {
     fontSize: 17,

@@ -25,6 +25,7 @@ export default class Settings extends Component {
 
 
   onSaveProfile = () => {
+    const { navigation } = this.props
     const user = this.props.navigation.getParam('user')
     const { login, name } = this.state
     this.refs.input.blur()
@@ -46,6 +47,7 @@ export default class Settings extends Component {
       .then(() => {
         this.setState({ isLoader: false })
         showAlert('User profile is updated successfully')
+        // navigation.navigate('Chat')
       })
       .catch((error) => {
         this.setState({ isLoader: false })
