@@ -111,6 +111,21 @@ class People extends Component {
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
 
+        <View style={styles.topMenu}>
+          <TouchableOpacity onPress={() => console.log('Friends')}>
+            <View style={styles.topMenuElement}>
+              <Text style={styles.topMenuText}> Friends </Text>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.space}>
+          </View>
+          <TouchableOpacity onPress={() => console.log('Requests')}>
+            <View style={styles.topMenuElement}>
+              <Text style={styles.topMenuText}> Requests </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.footer}>
           <TouchableOpacity onPress={() => this.goToChatScreen()}>
             <View style={styles.footerElement}>
@@ -139,6 +154,30 @@ class People extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  space: {
+    paddingRight: 50,
+  },
+
+  topMenu: {
+    flexDirection: 'row',
+    width: '100%',
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 30,
+  },
+  topMenuElement:{
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 20,
+    backgroundColor: '#D1D1D1',
+  },
+  topMenuText:{
+    color: 'black',
+    fontSize: 14,
   },
   footer: {
     flexDirection: 'row',
