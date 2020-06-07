@@ -145,7 +145,6 @@ class People extends Component {
             </View>
           </TouchableOpacity>
         </View>
-        <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
       </View>
     )
   }
