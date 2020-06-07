@@ -4,6 +4,7 @@ import { createSwitchNavigator, createAppContainer, StackActions } from 'react-n
 import Auth from '../screens/auth'
 import Dialogs from '../screens/main/dialogs'
 import People from '../screens/main/people/index'
+import Requests from '../screens/main/people/requests'
 import AppWrap from '../screens/appWrap'
 import Settings from '../screens/main/settings/index'
 import Chat from '../screens/main/chat/index'
@@ -38,6 +39,9 @@ export default createAppContainer(createSwitchNavigator(
       },
       People: {
         screen: People,
+      },
+      Requests: {
+        screen: Requests,
       },
       Contacts: {
         screen: Contacts,

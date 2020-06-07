@@ -6,6 +6,7 @@ import Dialog from './elements/dialog'
 import ChatService from '../../../services/chat-service'
 import Indicator from '../../components/indicator'
 import CreateBtn from '../../components/createBtn'
+import BottomNavBar from '../../components/bottomNavBar'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
@@ -125,25 +126,7 @@ class Dialogs extends Component {
               </View>
             )
         }
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => this.goToChatScreen()}>
-            <View style={styles.footerElement}>
-              <Text style={styles.footerText}> Chats </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
-            <View style={styles.footerElement}>
-              <Text style={styles.footerText}> People </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => console.log('Pressed')}>
-            <View style={styles.footerElement}>
-              <Text style={styles.footerText}> Events </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <BottomNavBar navigation={this.props.navigation}/>
         <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
       </View>
     )
@@ -154,25 +137,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  footer: {
-    flexDirection: 'row',
-    width: '100%',
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: 40,
-    borderTopWidth: 1,
-    borderTopColor: '#D1D1D1',
-  },
-  footerElement:{
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingTop: 25,
-  },
-  footerText:{
-    color: 'black',
-    fontSize: 19,
-  }
 })
 
 

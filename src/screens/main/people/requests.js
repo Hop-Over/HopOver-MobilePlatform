@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
-import Requests from './requests'
 import Dialog from '../dialogs/elements/dialog'
 import Nav from './elements/nav'
 import ChatService from '../../../services/chat-service'
@@ -15,7 +14,7 @@ import BottomNavBar from '../../components/bottomNavBar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 
-class People extends Component {
+class Requests extends Component {
   static currentUserInfo = ''
   dialogs = []
 
@@ -27,7 +26,7 @@ class People extends Component {
   }
 
   static navigationOptions = ({ navigation }) => {
-    People.currentUserInfo = { ...store.getState().currentUser.user }
+    Requests.currentUserInfo = { ...store.getState().currentUser.user }
     return {
       headerTitle: (
         <Text style={[
@@ -35,14 +34,14 @@ class People extends Component {
           Platform.OS === 'android' ?
             { paddingLeft: 13 } :
             { paddingLeft: 0 }]}>
-          {People.currentUserInfo.full_name}
+          {Requests.currentUserInfo.full_name}
         </Text>
       ),
       headerRight: (
         <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
           <Avatar
-            photo={People.currentUserInfo.avatar}
-            name={People.currentUserInfo.full_name}
+            photo={Requests.currentUserInfo.avatar}
+            name={Requests.currentUserInfo.full_name}
             iconSize="small"
           />
         </TouchableOpacity>
@@ -58,14 +57,14 @@ class People extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.currentUser.user.full_name !== People.currentUserInfo.full_name) {
-      People.currentUserInfo = { ...props.currentUser.user }
+    if (props.currentUser.user.full_name !== Requests.currentUserInfo.full_name) {
+      Requests.currentUserInfo = { ...props.currentUser.user }
       return true
     } return null
   }
 
   static goToSettingsScreen = (props) => {
-    props.push('Settings', { user: People.currentUserInfo })
+    props.push('Settings', { user: Requests.currentUserInfo })
   }
 
   componentDidUpdate(prevProps) {
@@ -89,6 +88,13 @@ class People extends Component {
     navigation.push('Contacts')
   }
 
+  onRequestsPress = () => {
+    ConnectyCube.chat.contactList
+      .get()
+      .then(contactlist => {console.log("Successful: " + Object.keys(contactlist))})
+      .catch(error => {console.log(error)});
+  }
+
   render() {
     const { isLoader } = this.state
     return (
@@ -96,7 +102,6 @@ class People extends Component {
         <StatusBar barStyle={'dark-content'} />
 
         <Nav navigation={this.props.navigation}/>
-
         <BottomNavBar navigation={this.props.navigation}/>
 
       </View>
@@ -140,4 +145,4 @@ const mapStateToProps = ({ dialogs, currentUser }) => ({
   currentUser
 })
 
-export default connect(mapStateToProps)(People)
+export default connect(mapStateToProps)(Requests)
