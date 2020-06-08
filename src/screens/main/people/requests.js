@@ -24,6 +24,8 @@ class Requests extends Component {
     super(props)
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
+      requestId: [],
+      newRequest: true
     }
   }
 
@@ -64,15 +66,26 @@ class Requests extends Component {
 
   keyExtractor = (item, index) => index.toString()
 
+  getRequests = async () => {
+    if (this.state.newRequest){
+      await ContactService.fetchRequests()
+        .then((response) => {
+          this.setState({requestId: Object.keys(response)})
+      })
+      this.setState({newRequest: false})
+    }
+  }
   render() {
-    const { isLoader } = this.state
+    const { isLoader, requestId, newRequest } = this.state
+    this.getRequests()
+    console.log(requestId)
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
         <Nav navigation={this.props.navigation}/>
 
         <View>
-          <Text> IDK </Text>
+          <Text> {this.state.requestId} </Text>
         </View>
 
         <BottomNavBar navigation={this.props.navigation}/>

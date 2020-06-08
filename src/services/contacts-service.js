@@ -1,5 +1,6 @@
 import ConnectyCube from 'react-native-connectycube'
 import { AppState } from 'react-native'
+import UserModel from '../models/user'
 
 class ContactService {
   setUpListeners() {
@@ -9,11 +10,28 @@ class ContactService {
     ConnectyCube.chat.onSubscribeListener = this.onSubscribeListener.bind(this)
   }
 
-  fetchRequests() {
+  async fetchRequests(){
+    const response = await ConnectyCube.chat.contactList.get();
+    return response
+  }
+
+  fetchFriends() {
     ConnectyCube.chat.contactList
       .get()
-      .then(contactlist => {console.log(Object.keys(contactlist))})
+      .then(contactlist => {console.log("IDS: " + Object.keys(contactlist))})
       .catch(error => {});
+  }
+
+  sendRequest(userId) {
+    ConnectyCube.chat.contactList.add(userId);
+  }
+
+  acceptRequest(requestId) {
+    ConnectyCube.chat.contactList.confirm(requestId);
+  }
+
+  rejectRequest(requestId) {
+    ConnectyCube.chat.contactList.reject(requestId);
   }
 }
 
