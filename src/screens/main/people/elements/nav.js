@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   space: {
-    paddingRight: 50,
+    paddingRight: 40,
   },
 
   topMenu: {
@@ -76,5 +76,7 @@ const styles = StyleSheet.create({
   topMenuText:{
     color: 'black',
     fontSize: 14,
+    paddingLeft: 30,
+    paddingRight: 30,
   }
 })

@@ -50,13 +50,6 @@ class People extends Component {
     }
   }
 
-  componentDidMount() {
-    ChatService.fetchDialogsFromServer()
-      .then(() => {
-        PushNotificationService.init(this.props.navigation)
-      })
-  }
-
   static getDerivedStateFromProps(props, state) {
     if (props.currentUser.user.full_name !== People.currentUserInfo.full_name) {
       People.currentUserInfo = { ...props.currentUser.user }
@@ -66,14 +59,6 @@ class People extends Component {
 
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: People.currentUserInfo })
-  }
-
-  componentDidUpdate(prevProps) {
-    const { dialogs } = this.props
-    if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = dialogs
-      this.setState({ isLoader: false })
-    }
   }
 
   keyExtractor = (item, index) => index.toString()

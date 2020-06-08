@@ -4,8 +4,10 @@ import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Dialog from '../dialogs/elements/dialog'
+import User from './elements/renderUser'
 import Nav from './elements/nav'
 import ChatService from '../../../services/chat-service'
+import ContactService from '../../../services/contacts-service'
 import Indicator from '../../components/indicator'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
@@ -49,13 +51,6 @@ class Requests extends Component {
     }
   }
 
-  componentDidMount() {
-    ChatService.fetchDialogsFromServer()
-      .then(() => {
-        PushNotificationService.init(this.props.navigation)
-      })
-  }
-
   static getDerivedStateFromProps(props, state) {
     if (props.currentUser.user.full_name !== Requests.currentUserInfo.full_name) {
       Requests.currentUserInfo = { ...props.currentUser.user }
@@ -67,43 +62,20 @@ class Requests extends Component {
     props.push('Settings', { user: Requests.currentUserInfo })
   }
 
-  componentDidUpdate(prevProps) {
-    const { dialogs } = this.props
-    if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = dialogs
-      this.setState({ isLoader: false })
-    }
-  }
-
   keyExtractor = (item, index) => index.toString()
-
-  _renderDialog = ({ item }) => {
-    return (
-      <Dialog dialog={item} navigation={this.props.navigation} />
-    )
-  }
-
-  goToContactsScreen = () => {
-    const { navigation } = this.props
-    navigation.push('Contacts')
-  }
-
-  onRequestsPress = () => {
-    ConnectyCube.chat.contactList
-      .get()
-      .then(contactlist => {console.log("Successful: " + Object.keys(contactlist))})
-      .catch(error => {console.log(error)});
-  }
 
   render() {
     const { isLoader } = this.state
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
-
         <Nav navigation={this.props.navigation}/>
-        <BottomNavBar navigation={this.props.navigation}/>
 
+        <View>
+          <Text> IDK </Text>
+        </View>
+
+        <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
   }
