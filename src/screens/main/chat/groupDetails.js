@@ -216,6 +216,8 @@ export default class GroupDetails extends Component {
 
   render() {
     const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
+    const dialog = this.props.navigation.getParam('dialog', false)
+    console.log(dialog.occupants_ids)
     return (
       <KeyboardAvoidingView style={styles.container}>
         {isLoader &&

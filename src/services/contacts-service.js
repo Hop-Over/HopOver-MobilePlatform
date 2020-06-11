@@ -28,6 +28,7 @@ class ContactService {
 
   acceptRequest(requestId) {
     ConnectyCube.chat.contactList.confirm(requestId);
+    console.log("ACCEPTED:")
   }
 
   rejectRequest(requestId) {
