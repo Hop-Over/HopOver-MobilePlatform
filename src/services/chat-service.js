@@ -119,6 +119,8 @@ class ChatService {
     this.setSelectedDialog(dialog.id)
     const user = this.currentUser
     const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
+    { console.log('messages') }
+    { console.log(isAlredyUpdate) }
     let amountMessages = null
 
     // If the first entry into the chat
@@ -158,6 +160,27 @@ class ChatService {
 
   // Message loading if more than 100
   getMoreMessages = async (dialog) => {
+    const currentMessages = this.getMessagesByDialogId(dialog.id)
+    const lastMessageDate = currentMessages[currentMessages.length - 1]
+    { console.log('LMD') }
+    { console.log(lastMessageDate) }
+    const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
+
+    const filter = {
+      chat_dialog_id: dialog.id,
+      date_sent: { lt: lastMessageDate.date_sent },
+      sort_desc: 'date_sent'
+    }
+
+    const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
+    const messages = moreHistoryFromServer.items.map(elem => new Message(elem))
+    store.dispatch(updateDialog(updateObj))
+    const amountMessages = store.dispatch(lazyFetchMessages(dialog.id, messages))
+    return amountMessages.history.length
+  }
+
+
+  getSearchMessages = async (dialog, date) => {
     const currentMessages = this.getMessagesByDialogId(dialog.id)
     const lastMessageDate = currentMessages[currentMessages.length - 1]
     const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
@@ -319,6 +342,18 @@ class ChatService {
     store.dispatch(fetchUsers(occupants))
     store.dispatch(updateDialog(updateData))
     return updateData
+  }
+
+  async search(dialog_id, phrase) {
+    const params = {
+        search_text: phrase,
+        chat_dialog_ids: dialog_id,
+    }
+    const response = await ConnectyCube.chat.search(params)
+    { console.log('search chat') }
+    { console.log(response) }
+    const updateData = new Dialog(response)
+    return response
   }
 
   handleAppStateChange = (AppState) => {

@@ -11,6 +11,8 @@ import {
   Alert
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+// import Dialog from "react-native-dialog";
+import DialogInput from 'react-native-dialog-input';
 import ImgPicker from '../../components/imgPicker'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
@@ -33,7 +35,8 @@ export default class GroupDetails extends Component {
       dialogName: dialog.name,
       dialogPhoto: dialog.photo,
       isLoader: false,
-      occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
+      occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids),
+      isDialogVisible: false
     }
   }
 
@@ -163,6 +166,60 @@ export default class GroupDetails extends Component {
         this.setState({ isLoader: false })
       })
   }
+  getUserName = async (id) => {
+    await UsersService.getUserById(id)
+    const users = UsersService.getUsersInfoFromRedux([id])
+    return users
+  }
+  search = (phrase) => {
+    this.handleCancel()
+    { console.log('SEARCH') }
+    const dialog = this.props.navigation.getParam('dialog', false)
+    var result = []
+    ChatService.search(dialog.id, phrase)
+        .then(response => {
+            for(var i = 0; i < response.messages.length; i++){
+                    result.push(response.messages[i])
+                   { console.log(response.messages[i].message) }                    
+                }
+            {console.log(result)}
+        })
+  }
+  
+//   state = {
+//     isDialogVisible: false
+//   };
+//   showDialog = () => {
+//     this.setState({ dialogVisible: true });
+//   };
+  handleCancel = () => {
+    this.setState({ dialogVisible: false });
+  };
+  showDialog(isShow){
+    this.setState({isDialogVisible: isShow});
+  }
+  sendInput(inputText){
+    this.showDialog(false)
+    console.log("sendInput (DialogInput#1): "+inputText);
+    this.search(inputText)
+  }
+  
+
+//   _renderSearch = () => {
+//     return (
+//         <View style={styles.renderContainer}>
+//             <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.search("fuck")}>
+//                 <View style={styles.renderAvatar}>
+//                     <Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+//                 </View>
+//                 <View>
+//                     <Text style={styles.nameTitle}>Search</Text>
+//                 </View>
+//             </TouchableOpacity>
+//         </View>
+//     )
+//   }
+
 
   updateName = dialogName => this.setState({ dialogName })
 
@@ -170,36 +227,48 @@ export default class GroupDetails extends Component {
 
   _renderUser = ({ item }) => {
     return (
-      <View style={styles.renderContainer}>
-        <View style={styles.renderAvatar}>
-          <Avatar
-            photo={item.avatar}
-            name={item.full_name}
-            iconSize="medium"
-          />
-          <Text style={styles.nameTitle}>{item.full_name}</Text>
+        <View>
+            <View style={styles.renderContainer}>
+                <View style={styles.renderAvatar}>
+                    <Avatar
+                    photo={item.avatar}
+                    name={item.full_name}
+                    iconSize="medium"
+                    />
+                    <Text style={styles.nameTitle}>{item.full_name}</Text>
+                </View>
+                <TouchableOpacity onPress={() => this.removeParticipant([item])}>
+                    <Text style={styles.removeTitle}>Remove</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
+                    <Icon name="keyboard-arrow-right" size={30} color='#48A6E3' />
+                </TouchableOpacity>
+            </View>
         </View>
-        <TouchableOpacity onPress={() => this.removeParticipant([item])}>
-            <Text style={styles.removeTitle}>Remove</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
-          <Icon name="keyboard-arrow-right" size={30} color='#48A6E3' />
-        </TouchableOpacity>
-      </View>
     )
   }
 
   _renderFlatListHeader = () => {
     return this.isGroupCreator() ?
       (
-        <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
-          <View style={styles.renderAvatar}>
-            <Icon name="person-add" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-          </View>
-          <View>
-            <Text style={styles.nameTitle}>Add member</Text>
-          </View>
-        </TouchableOpacity>
+        <View>
+            <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
+                <View style={styles.renderAvatar}>
+                    <Icon name="person-add" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+                </View>
+                <View>
+                    <Text style={styles.nameTitle}>Add member</Text>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
+                <View style={styles.renderAvatar}>
+                    <Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+                </View>
+                <View>
+                    <Text style={styles.nameTitle}>Search</Text>
+                </View>
+            </TouchableOpacity>
+        </View>
       ) : false
   }
 
@@ -224,6 +293,13 @@ export default class GroupDetails extends Component {
         <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled={!this.isGroupCreator()} />
         {this.isGroupCreator() ?
           (<View>
+            <DialogInput isDialogVisible={this.state.isDialogVisible}
+                title={"Search"}
+                message={"Enter a keyword to search"}
+                hintInput ={"Search"}
+                submitInput={ (inputText) => {this.sendInput(inputText)} }
+                closeDialog={ () => {this.showDialog(false)}}>
+            </DialogInput>
             <TextInput
               style={styles.input}
               ref="input"

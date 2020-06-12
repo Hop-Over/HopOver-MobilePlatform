@@ -72,7 +72,8 @@ export class Chat extends PureComponent {
     ChatService.getMessages(dialog)
       .catch(e => alert(`Error.\n\n${JSON.stringify(e)}`))
       .then(amountMessages => {
-        amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
+        // amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
+        amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
         this.setState({ activIndicator: false })
       })
   }
@@ -88,7 +89,7 @@ export class Chat extends PureComponent {
       this.setState({ activIndicator: true })
       ChatService.getMoreMessages(dialog)
         .then(amountMessages => {
-          amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
+          amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
           this.setState({ activIndicator: false })
         })
     }
@@ -139,11 +140,11 @@ export class Chat extends PureComponent {
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 100}
       >
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
         {activIndicator &&
           (
             <View style={styles.indicator}>
-              <ActivityIndicator size="large" color="#0000ff" />
+              <ActivityIndicator size="small" color="#0000ff" />
             </View>
           )
         }

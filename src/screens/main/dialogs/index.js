@@ -88,7 +88,7 @@ class Dialogs extends Component {
     const { isLoader } = this.state
     return (
       <View style={styles.container}>
-        <StatusBar barStyle={'dark-content'} />
+        <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
         {isLoader ?
           (
             <Indicator color={'red'} size={40} />
