@@ -1,6 +1,6 @@
 import ConnectyCube from 'react-native-connectycube'
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { SectionList,SafeAreaView, StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Dialog from '../dialogs/elements/dialog'
@@ -27,7 +27,8 @@ class Requests extends Component {
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
       requestId: [],
-      newRequest: true,
+      pendingId: [],
+      updateContacts: true,
       isLoader: true
     }
   }
@@ -69,27 +70,32 @@ class Requests extends Component {
 
   keyExtractor = (item, index) => index.toString()
 
-  getRequests = async () => {
-    if (this.state.newRequest){
+  getContacts = async () => {
+    if (this.state.updateContacts){
       await ContactService.fetchContactList()
         .then((response) => {
           let requests = []
+          let pending = []
           keys = Object.keys(response)
           keys.forEach(elem => {
             // Make sure that they are requesting and not friends
-            if(response[elem]["subscription"] === "none"){
+            let contact = response[elem]
+            if (contact["subscription"] === "none" && contact["ask"] === null){
               requests.push(elem)
+            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe") {
+              pending.push(elem)
             }
           })
           this.setState({requestId: requests})
+          this.setState({pendingId: pending})
       })
-      this.setState({newRequest: false})
+      this.setState({updateContacts: false})
       await UserService.getOccupants(this.state.requestId)
       this.setState({isLoader: false})
     }
   }
 
-  _renderUser = ({ item }) => {
+  _renderRequest= ({ item }) => {
     return (
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :
@@ -107,17 +113,18 @@ class Requests extends Component {
             <View style={styles.iconContainer}>
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
-                  ContactService.acceptRequest(item.id)
-                  this.setState({newRequest: true})
+                  ContactService.rejectRequest(item.id)
+                  this.setState({updateContacts: true})
                 }}>
                 <Icon name="check" size={30} color="white"/>
               </TouchableOpacity>
             </View>
+
             <View style={styles.iconContainer}>
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
                   ContactService.rejectRequest(item.id)
-                  this.setState({newRequest: true})
+                  this.setState({updateContacts: true})
                 }}>
                 <Icon name="clear" size={30} color="white"/>
               </TouchableOpacity>
@@ -130,21 +137,61 @@ class Requests extends Component {
     )
   }
 
+  _renderPending= ({ item }) => {
+    return (
+      this.state.isLoader ?
+      <Indicator color={'blue'} size={40} /> :
+      // Why is this happening
+      item !== undefined ?
+      <View style={styles.renderContainer}>
+        <View style={styles.renderAvatar}>
+          <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+          />
+          <Text style={styles.nameTitle}>{item.full_name}</Text>
+          <View style={styles.buttonContainer}>
+            <View style={styles.iconContainer}>
+              <Text style={styles.pendingLabel}> Pending </Text>
+            </View>
+          </View>
+        </View>
+      </View> :
+      <View>
+      </View>
+    )
+  }
+
   render() {
-    const { isLoader, requestId, newRequest } = this.state
-    this.getRequests()
-    data = UserService.getUsersInfoFromRedux(this.state.requestId)
+    const { isLoader, requestId, pendingId, updateContacts } = this.state
+    this.getContacts()
+    data = []
+    request = UserService.getUsersInfoFromRedux(this.state.requestId)
+    pending = UserService.getUsersInfoFromRedux(this.state.pendingId)
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
         <Nav navigation={this.props.navigation}/>
-        <SafeAreaView style={styles.listUsers}>
+        <SafeAreaView style={styles.listRequest}>
+          <Text style={styles.nameLabel}> Requests </Text>
           <FlatList
-            data={data}
-            renderItem={this._renderUser}
+            data={request}
+            renderItem={this._renderRequest}
             keyExtractor={this.keyExtractor}
           />
         </SafeAreaView>
+
+        <SafeAreaView style={styles.listPending}>
+        <Text style={styles.nameLabel}> Awaiting Confirmation </Text>
+          <FlatList
+            data={pending}
+            renderItem={this._renderPending}
+            keyExtractor={this.keyExtractor}
+          />
+        </SafeAreaView>
+
+
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
@@ -155,10 +202,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  space: {
-    paddingRight: 50,
-  },
-
   topMenu: {
     flexDirection: 'row',
     width: '100%',
@@ -178,13 +221,24 @@ const styles = StyleSheet.create({
   topMenuText:{
     color: 'black',
     fontSize: 14,
+    borderBottomWidth: 5,
   },
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   nameTitle: {
-    fontSize: 17
+    fontSize: 17,
+  },
+
+  nameLabel: {
+    fontSize: 17,
+    fontWeight: "bold",
+
+  },
+  pendingLabel: {
+    backgroundColor: '#D1D1D1',
+    padding: 10,
   },
   renderContainer: {
     width: SIZE_SCREEN.width - 30,
@@ -195,8 +249,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 7,
   },
-  listUsers: {
-    marginVertical: 80,
+  listRequest: {
+    marginTop: 80,
+    marginLeft: 20,
+    flex: 1,
+    flexGrow: 1,
+  },
+  listPending: {
     marginLeft: 20,
     flex: 1
   },
@@ -215,7 +274,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    paddingLeft: 85,
+    marginLeft: 85,
   }
 })
 

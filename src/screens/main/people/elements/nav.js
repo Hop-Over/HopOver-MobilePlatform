@@ -30,18 +30,19 @@ export default class Nav extends Component {
   }
 
   render(){
+    navigation = this.props.navigation
     return (
       <View style={styles.topMenu}>
         <TouchableOpacity onPress={() => this.goToFriends()}>
           <View style={styles.topMenuElement}>
-            <Text style={styles.topMenuText}> Friends </Text>
+            <Text style={navigation.state.routeName === "People" ? styles.topMenuCurrentText : styles.topMenuText}> Friends </Text>
           </View>
         </TouchableOpacity>
         <View style={styles.space}>
         </View>
         <TouchableOpacity onPress={() => this.goToRequests()}>
           <View style={styles.topMenuElement}>
-            <Text style={styles.topMenuText}> Requests </Text>
+            <Text style={navigation.state.routeName === "Requests" ? styles.topMenuCurrentText : styles.topMenuText}> Requests </Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -56,7 +57,6 @@ const styles = StyleSheet.create({
   space: {
     paddingRight: 40,
   },
-
   topMenu: {
     flexDirection: 'row',
     width: '100%',
@@ -72,6 +72,13 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderRadius: 10,
     backgroundColor: '#D1D1D1',
+  },
+  topMenuCurrentText:{
+    color: 'black',
+    fontSize: 14,
+    paddingLeft: 30,
+    paddingRight: 30,
+    fontWeight: "bold",
   },
   topMenuText:{
     color: 'black',

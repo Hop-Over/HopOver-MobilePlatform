@@ -30,23 +30,24 @@ export default class BottomNavBar extends Component {
   }
 
   render(){
+    navigation = this.props.navigation
     return (
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => this.goToChatScreen()}>
           <View style={styles.footerElement}>
-            <Text style={styles.footerText}> Chats </Text>
+            <Text style={navigation.state.routeName === "Dialogs" ? styles.footerTextCurrent : styles.footerText}> Chats </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
           <View style={styles.footerElement}>
-            <Text style={styles.footerText}> People </Text>
+            <Text style={navigation.state.routeName === "People" ? styles.footerTextCurrent : styles.footerText}> People </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => console.log('Pressed')}>
           <View style={styles.footerElement}>
-            <Text style={styles.footerText}> Events </Text>
+            <Text style={navigation.state.routeName === "Events" ? styles.footerTextCurrent : styles.footerText}> Events </Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -76,5 +77,10 @@ const styles = StyleSheet.create({
   footerText:{
     color: 'black',
     fontSize: 19,
+  },
+  footerTextCurrent:{
+    color: 'black',
+    fontSize: 19,
+    fontWeight: "bold"
   }
 })
