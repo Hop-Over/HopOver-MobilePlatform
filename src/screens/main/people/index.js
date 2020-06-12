@@ -1,13 +1,14 @@
-import ConnectyCube from 'react-native-connectycube'
 import React, { Component } from 'react'
-import { StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { SafeAreaView, StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Requests from './requests'
 import Dialog from '../dialogs/elements/dialog'
 import Nav from './elements/nav'
+import User from '../contacts/renderUser'
 import ChatService from '../../../services/chat-service'
-import UsersService from '../../../services/users-service'
+import ContactService from '../../../services/contacts-service'
+import UserService from '../../../services/users-service'
 import Indicator from '../../components/indicator'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
@@ -15,6 +16,9 @@ import Avatar from '../../components/avatar'
 import BottomNavBar from '../../components/bottomNavBar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons'
+import { showAlert } from '../../../helpers/alert'
+import { SIZE_SCREEN } from '../../../helpers/constants'
 
 class People extends Component {
   static currentUserInfo = ''
@@ -24,10 +28,31 @@ class People extends Component {
     super(props)
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
+      keyword: '',
+      isUpdate: false,
+      friendId: [],
+      newFriend: true,
     }
   }
 
-  updateSearch = keyword => this.setState({ keyword })
+  listUsers = null
+
+  selectedUsers = []
+
+  userNotFound = false
+
+  updateSearch = keyword => this.setState({keyword })
+
+  toggleUserSelect = (user) => {
+    let newArr = []
+    this.selectedUsers.forEach(elem => {
+      if (elem.id !== user.id) {
+        newArr.push(elem)
+      }
+    })
+    this.selectedUsers = newArr
+    this.setState({ isUpdate: !this.state.isUpdate })
+  }
 
   static navigationOptions = ({ navigation }) => {
     People.currentUserInfo = { ...store.getState().currentUser.user }
@@ -64,13 +89,45 @@ class People extends Component {
     props.push('Settings', { user: People.currentUserInfo })
   }
 
+  getFriends = async () => {
+    if (this.state.newFriend){
+      await ContactService.fetchContactList()
+        .then((response) => {
+          let friends = []
+          keys = Object.keys(response)
+          keys.forEach(elem => {
+            // Make sure that they are friends and not just a request
+            console.log(response[elem])
+            if(response[elem]["subscription"] === "to"){
+              friends.push(elem)
+            }
+          })
+          this.setState({friendId: friends})
+      })
+      this.setState({newFriend: false})
+      await UserService.getOccupants(this.state.friendId)
+      this.setState({isLoader: false})
+    }
+  }
+
+  _renderUser = ({ item }) => {
+    const isSelected = this.selectedUsers.find(elem => elem.id === item.id)
+    return (
+      <User
+        user={item}
+        selectUsers={this.selectUsers}
+        dialogType={this.state.dialogType}
+        selectedUsers={isSelected ? true : false}
+      />
+    )
+  }
+
   searchUsers = () => {
-    const dialog = this.props.navigation.getParam('dialog', false)
     const { keyword } = this.state
     let str = keyword.trim()
     if (str.length > 2) {
       this.setState({ isLoader: true })
-      UsersService.listUsersByFullName(str, dialog?.occupants_ids)
+      UserService.listUsersByFullName(str, [People.currentUserInfo.id])
         .then(users => {
           this.listUsers = users
           this.userNotFound = false
@@ -85,10 +142,64 @@ class People extends Component {
     }
   }
 
+
+  selectUsers = (user) => {
+    // True - Publick dialog
+    const userSelect = this.selectedUsers.find(elem => elem.id === user.id)
+    if (userSelect) {
+      let newArr = []
+      this.selectedUsers.forEach(elem => {
+        if (elem.id !== user.id) {
+          newArr.push(elem)
+        }
+      })
+      this.selectedUsers = newArr
+    } else {
+      this.selectedUsers.push(user)
+    }
+    this.setState({ isUpdate: !this.state.isUpdate })
+  }
+
+  _renderFriend = ({ item }) => {
+    return (
+      this.state.isLoader ?
+      <Indicator color={'blue'} size={40} /> :
+      // Why is this happening
+      item !== undefined ?
+      <View style={styles.renderContainer}>
+        <View style={styles.renderAvatar}>
+          <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+          />
+          <Text style={styles.nameTitle}>{item.full_name}</Text>
+          <View style={styles.buttonContainer}>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity style={styles.iconButtons}
+                onPress={() => {
+                  ContactService.rejectRequest(item.id)
+                  this.setState({newFriend: true})
+                }}>
+                <Icon name="clear" size={30} color="white"/>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View> :
+      <View>
+      </View>
+    )
+  }
+
+
   keyExtractor = (item, index) => index.toString()
 
   render() {
-    const { isLoader } = this.state
+    const { isLoader, friendId } = this.state
+    this.getFriends()
+    data = UserService.getUsersInfoFromRedux(this.state.friendId)
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
@@ -105,8 +216,31 @@ class People extends Component {
             value={this.state.search}
           />
         </View>
+        {friendId.length > 0 ?
+          (<SafeAreaView style={styles.listUsers}>
+            <FlatList
+              data={data}
+              renderItem={this._renderFriend}
+              keyExtractor={this.keyExtractor}
+            />
+          </SafeAreaView>) :
+          (<Text> No Friends </Text>)
+        }
+        {this.userNotFound ?
+          (<Text style={styles.userNotFound}>Couldn't find user</Text>) :
+          (
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={this.listUsers}
+                keyExtractor={this.keyExtractor}
+                renderItem={(item) => this._renderUser(item)}
+              />
+            </View>
+          )
+        }
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
+
     )
   }
 }
@@ -118,7 +252,6 @@ const styles = StyleSheet.create({
   space: {
     paddingRight: 50,
   },
-
   topMenu: {
     flexDirection: 'row',
     width: '100%',
@@ -151,6 +284,54 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     color: 'black',
     padding: 10,
+  },
+  containerCeletedUsers: {
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
+    margin: 10
+  },
+  userNotFound: {
+    fontSize: 17,
+    marginTop: 20,
+    textAlign: 'center'
+  },
+
+  listUsers: {
+    marginLeft: 20,
+    flex: 1
+  },
+  renderAvatar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  renderContainer: {
+    width: SIZE_SCREEN.width - 30,
+    borderBottomWidth: 0.5,
+    borderColor: 'grey',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 7,
+  },
+  nameTitle: {
+    fontSize: 17
+  },
+  iconContainer: {
+    paddingLeft: 5,
+    paddingRight: 5,
+  },
+  iconButtons: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    backgroundColor: '#303030',
+    alignSelf: 'flex-end'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    paddingLeft: 150,
   },
 })
 

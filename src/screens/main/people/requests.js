@@ -71,13 +71,17 @@ class Requests extends Component {
 
   getRequests = async () => {
     if (this.state.newRequest){
-      await ContactService.fetchRequests()
+      await ContactService.fetchContactList()
         .then((response) => {
-          this.setState({requestId: Object.keys(response)})
-          // Ashpan: 1486768
-          // Corben: 1486770
-          console.log('[Contact] RESPONSE: ',response[1486768])
-          console.log('[Contact] RESPONSE: ',response[1486770])
+          let requests = []
+          keys = Object.keys(response)
+          keys.forEach(elem => {
+            // Make sure that they are requesting and not friends
+            if(response[elem]["subscription"] === "none"){
+              requests.push(elem)
+            }
+          })
+          this.setState({requestId: requests})
       })
       this.setState({newRequest: false})
       await UserService.getOccupants(this.state.requestId)
@@ -200,7 +204,6 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
   },
-
   iconButtons: {
     width: 40,
     height: 40,

@@ -10,18 +10,11 @@ class ContactService {
     ConnectyCube.chat.onSubscribeListener = this.onSubscribeListener.bind(this)
   }
 
-  async fetchRequests(){
+  async fetchContactList(){
     const response = await ConnectyCube.chat.contactList.get();
     return response
   }
-
-  fetchFriends() {
-    ConnectyCube.chat.contactList
-      .get()
-      .then(contactlist => {console.log("IDS: " + Object.keys(contactlist))})
-      .catch(error => {});
-  }
-
+  
   sendRequest(userId) {
     ConnectyCube.chat.contactList.add(userId);
   }
