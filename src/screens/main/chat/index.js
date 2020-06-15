@@ -25,7 +25,7 @@ export class Chat extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      activIndicator: true,
+      activeIndicator: true,
       messageText: ''
     }
   }
@@ -72,9 +72,9 @@ export class Chat extends PureComponent {
     ChatService.getMessages(dialog)
       .catch(e => alert(`Error.\n\n${JSON.stringify(e)}`))
       .then(amountMessages => {
-        // amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
-        amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
-        this.setState({ activIndicator: false })
+        amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
+        // amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
+        this.setState({ activeIndicator: false })
       })
   }
 
@@ -86,11 +86,11 @@ export class Chat extends PureComponent {
   getMoreMessages = () => {
     const { dialog } = this.props.navigation.state.params
     if (this.needToGetMoreMessage) {
-      this.setState({ activIndicator: true })
+      this.setState({ activeIndicator: true })
       ChatService.getMoreMessages(dialog)
         .then(amountMessages => {
           amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
-          this.setState({ activIndicator: false })
+          this.setState({ activeIndicator: false })
         })
     }
   }
@@ -133,7 +133,7 @@ export class Chat extends PureComponent {
 
   render() {
     const { history } = this.props
-    const { messageText, activIndicator } = this.state
+    const { messageText, activeIndicator } = this.state
     return (
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: 'white' }}
@@ -141,7 +141,7 @@ export class Chat extends PureComponent {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 100}
       >
         <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
-        {activIndicator &&
+        {activeIndicator &&
           (
             <View style={styles.indicator}>
               <ActivityIndicator size="small" color="#0000ff" />
