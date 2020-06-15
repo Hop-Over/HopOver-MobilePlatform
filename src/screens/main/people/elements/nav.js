@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 10,
     paddingBottom: 10,
-    borderRadius: 10,
-    backgroundColor: '#D1D1D1',
+    borderRadius: 70,
+    backgroundColor: '#EAEAEA',
   },
   topMenuCurrentText:{
     color: 'black',

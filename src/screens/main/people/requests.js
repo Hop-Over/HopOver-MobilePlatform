@@ -27,7 +27,6 @@ class Requests extends Component {
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
       requestId: [],
-      pendingId: [],
       updateContacts: true,
       isLoader: true
     }
@@ -75,19 +74,17 @@ class Requests extends Component {
       await ContactService.fetchContactList()
         .then((response) => {
           let requests = []
-          let pending = []
           keys = Object.keys(response)
           keys.forEach(elem => {
             // Make sure that they are requesting and not friends
             let contact = response[elem]
-            if (contact["subscription"] === "none" && contact["ask"] === null){
+            console.log(elem)
+            console.log(response[elem])
+            if (contact["subscription"] === "none" && contact["ask"] === null && elem !== "NaN"){
               requests.push(elem)
-            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe") {
-              pending.push(elem)
             }
           })
           this.setState({requestId: requests})
-          this.setState({pendingId: pending})
       })
       this.setState({updateContacts: false})
       await UserService.getOccupants(this.state.requestId)
@@ -113,10 +110,10 @@ class Requests extends Component {
             <View style={styles.iconContainer}>
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
-                  ContactService.rejectRequest(item.id)
+                  ContactService.acceptRequest(item.id)
                   this.setState({updateContacts: true})
                 }}>
-                <Icon name="check" size={30} color="white"/>
+                <Icon name="check" size={30} color="black"/>
               </TouchableOpacity>
             </View>
 
@@ -124,36 +121,11 @@ class Requests extends Component {
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
                   ContactService.rejectRequest(item.id)
+                  ContactService.deleteContact(item.id)
                   this.setState({updateContacts: true})
                 }}>
-                <Icon name="clear" size={30} color="white"/>
+                <Icon name="close" size={30} color="black"/>
               </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </View> :
-      <View>
-      </View>
-    )
-  }
-
-  _renderPending= ({ item }) => {
-    return (
-      this.state.isLoader ?
-      <Indicator color={'blue'} size={40} /> :
-      // Why is this happening
-      item !== undefined ?
-      <View style={styles.renderContainer}>
-        <View style={styles.renderAvatar}>
-          <Avatar
-            photo={item.avatar}
-            name={item.full_name}
-            iconSize="medium"
-          />
-          <Text style={styles.nameTitle}>{item.full_name}</Text>
-          <View style={styles.buttonContainer}>
-            <View style={styles.iconContainer}>
-              <Text style={styles.pendingLabel}> Pending </Text>
             </View>
           </View>
         </View>
@@ -166,32 +138,20 @@ class Requests extends Component {
   render() {
     const { isLoader, requestId, pendingId, updateContacts } = this.state
     this.getContacts()
-    data = []
     request = UserService.getUsersInfoFromRedux(this.state.requestId)
-    pending = UserService.getUsersInfoFromRedux(this.state.pendingId)
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
         <Nav navigation={this.props.navigation}/>
-        <SafeAreaView style={styles.listRequest}>
-          <Text style={styles.nameLabel}> Requests </Text>
+        {requestId.length > 0 ?
+        (<SafeAreaView style={styles.listRequest}>
           <FlatList
             data={request}
             renderItem={this._renderRequest}
             keyExtractor={this.keyExtractor}
           />
-        </SafeAreaView>
-
-        <SafeAreaView style={styles.listPending}>
-        <Text style={styles.nameLabel}> Awaiting Confirmation </Text>
-          <FlatList
-            data={pending}
-            renderItem={this._renderPending}
-            keyExtractor={this.keyExtractor}
-          />
-        </SafeAreaView>
-
-
+        </SafeAreaView>):
+        (<Text style={styles.userNotFound}> No requests </Text>)}
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
@@ -228,13 +188,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameTitle: {
-    fontSize: 17,
-  },
-
-  nameLabel: {
-    fontSize: 17,
-    fontWeight: "bold",
-
+    width: SIZE_SCREEN.width/1.8,
+    fontSize: 17
   },
   pendingLabel: {
     backgroundColor: '#D1D1D1',
@@ -260,22 +215,28 @@ const styles = StyleSheet.create({
     flex: 1
   },
   iconContainer: {
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingLeft: 6,
+    paddingRight: 6,
   },
   iconButtons: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
-    backgroundColor: '#303030',
+    backgroundColor: '#EAEAEA',
     alignSelf: 'flex-end'
   },
   buttonContainer: {
-    flexDirection: 'row',
-    marginLeft: 85,
-  }
+    flexDirection: "row",
+    alignItems: "flex-end"
+  },
+  userNotFound: {
+    color: "grey",
+    fontSize: 35,
+    marginTop: SIZE_SCREEN.height/3,
+    textAlign: 'center'
+  },
 })
 
 

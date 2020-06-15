@@ -41,7 +41,7 @@ export default class BottomNavBar extends Component {
 
         <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
           <View style={styles.footerElement}>
-            <Text style={navigation.state.routeName === "People" ? styles.footerTextCurrent : styles.footerText}> People </Text>
+            <Text style={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? styles.footerTextCurrent : styles.footerText}> People </Text>
           </View>
         </TouchableOpacity>
 

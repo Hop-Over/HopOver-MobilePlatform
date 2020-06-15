@@ -14,21 +14,27 @@ class ContactService {
     const response = await ConnectyCube.chat.contactList.get();
     return response
   }
-  
+
   sendRequest(userId) {
     ConnectyCube.chat.contactList.add(userId);
   }
 
   acceptRequest(requestId) {
     ConnectyCube.chat.contactList.confirm(requestId);
-    console.log("ACCEPTED:")
   }
 
   rejectRequest(requestId) {
     ConnectyCube.chat.contactList.reject(requestId);
   }
+
+  deleteContact(userId){
+    ConnectyCube.chat.contactList.remove(userId);
+  }
+
+  onRejectSubscribeListener(userId){
+    this.deleteContact(userId)
+  }
 }
 
 const contactService = new ContactService()
-Object.freeze(contactService)
 export default contactService
