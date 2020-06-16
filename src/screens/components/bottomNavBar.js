@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { StackActions, NavigationActions } from 'react-navigation';
+import { SIZE_SCREEN } from '../../helpers/constants'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default class BottomNavBar extends Component {
 
@@ -35,18 +37,21 @@ export default class BottomNavBar extends Component {
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => this.goToChatScreen()}>
           <View style={styles.footerElement}>
+            <Icon name="chat-bubble" size={35} color={navigation.state.routeName === "Dialogs" ? "black": "grey"}/>
             <Text style={navigation.state.routeName === "Dialogs" ? styles.footerTextCurrent : styles.footerText}> Chats </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
           <View style={styles.footerElement}>
+            <Icon name="group" size={35} color={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? "black" : "grey"}/>
             <Text style={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? styles.footerTextCurrent : styles.footerText}> People </Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => console.log('Pressed')}>
           <View style={styles.footerElement}>
+            <Icon name="event-note" size={35} color={navigation.state.routeName === "Events" ? "black": "grey"}/>
             <Text style={navigation.state.routeName === "Events" ? styles.footerTextCurrent : styles.footerText}> Events </Text>
           </View>
         </TouchableOpacity>
@@ -64,23 +69,24 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     alignItems: 'center',
-    justifyContent: 'center',
-    bottom: 40,
+    justifyContent: 'space-between',
+    bottom: SIZE_SCREEN.height/40,
     borderTopWidth: 1,
     borderTopColor: '#D1D1D1',
   },
   footerElement:{
     paddingLeft: 30,
     paddingRight: 30,
-    paddingTop: 25,
+    paddingTop: 10,
+    justifyContent: "center",
+    alignItems: 'center',
   },
   footerText:{
-    color: 'black',
-    fontSize: 19,
+    color: 'grey',
+    fontSize: 16,
   },
   footerTextCurrent:{
     color: 'black',
-    fontSize: 19,
-    fontWeight: "bold"
+    fontSize: 16,
   }
 })
