@@ -31,8 +31,17 @@ class ContactService {
     ConnectyCube.chat.contactList.remove(userId);
   }
 
+  onConfirmSubscribeListener(userId){
+    console.log(userId + " ACCEPTED REQUEST")
+  }
   onRejectSubscribeListener(userId){
-    this.deleteContact(userId)
+    console.log(userId + " REJECTED REQUEST")
+  }
+  onContactListListener(userId, type){
+    console.log("CONTACT LIST UPDATED")
+  }
+  onSubscribeListener(userId){
+    console.log(userId + " SENT YOU A REQUEST")
   }
 }
 

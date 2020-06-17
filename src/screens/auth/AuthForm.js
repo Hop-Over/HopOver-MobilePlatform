@@ -4,6 +4,7 @@ import { showAlert } from '../../helpers/alert'
 import AuthService from '../../services/auth-service'
 import Indicator from '../components/indicator'
 import ChatService from '../../services/chat-service'
+import ContactService from '../../services/contacts-service'
 
 export default class AuthForm extends Component {
 	state = {
@@ -38,6 +39,7 @@ export default class AuthForm extends Component {
 			AuthService.signIn(dataUser)
 				.then(() => {
 					ChatService.setUpListeners()
+					ContactService.setUpListeners()
 					this.setState({ isLoader: false })
 					navigation.navigate('Dialogs')
 				})
@@ -50,6 +52,7 @@ export default class AuthForm extends Component {
 				.then(() => {
 					this.setState({ isLoader: false })
 					ChatService.setUpListeners()
+					ContactService.setUpListeners()
 					showAlert('Account successfully registered')
 					navigation.navigate('Dialogs')
 				})
