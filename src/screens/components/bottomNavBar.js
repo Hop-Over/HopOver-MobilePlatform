@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
     borderTopColor: '#D1D1D1',
   },
   footerElement:{
-    paddingLeft: 30,
-    paddingRight: 30,
+    paddingLeft: 40,
+    paddingRight: 40,
     paddingTop: 10,
     justifyContent: "center",
     alignItems: 'center',

@@ -232,8 +232,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end"
   },
   userNotFound: {
-    color: "grey",
-    fontSize: 35,
+    color: "black",
+    fontSize: 19,
     marginTop: SIZE_SCREEN.height/3,
     textAlign: 'center'
   },

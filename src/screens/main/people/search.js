@@ -173,7 +173,6 @@ class Search extends Component {
             </SafeAreaView>
           )
         }
-        <BottomNavBar navigation={this.props.navigation}/>
       </View>
 
     )
@@ -226,8 +225,8 @@ const styles = StyleSheet.create({
     margin: 10
   },
   userNotFound: {
-    color: "grey",
-    fontSize: 35,
+    color: "black",
+    fontSize: 19,
     marginTop: SIZE_SCREEN.height/4,
     textAlign: 'center'
   },

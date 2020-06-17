@@ -100,6 +100,8 @@ class People extends Component {
           keys.forEach(elem => {
             // Make sure that they are friends and not just a request
             let contact = response[elem]
+            console.log(elem)
+            console.log(contact)
             if(contact["subscription"] === "to" || contact["subscription"] === "from"){
               friends.push(elem)
             } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe") {
@@ -234,7 +236,7 @@ class People extends Component {
               keyExtractor={this.keyExtractor}
             />
           </SafeAreaView>) :
-          (<Text style={styles.userNotFound}> No friends </Text>)
+          (<Text style={styles.userNotFound}> No friends yet </Text>)
         }
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
@@ -289,8 +291,8 @@ const styles = StyleSheet.create({
     margin: 10
   },
   userNotFound: {
-    color: "grey",
-    fontSize: 35,
+    color: "black",
+    fontSize: 19,
     marginTop: SIZE_SCREEN.height/4,
     textAlign: 'center'
   },
