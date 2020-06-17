@@ -15,7 +15,6 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import ChatService from "../../../services/chat-service";
 import UsersService from "../../../services/users-service";
 import Message from "./message";
-import Avatar from "../../components/avatar";
 import ImagePicker from "react-native-image-crop-picker";
 import { DIALOG_TYPE } from "../../../helpers/constants";
 
@@ -26,51 +25,69 @@ export class Search extends PureComponent {
       activeIndicator: true,
       messageText: "",
     };
+    this.currentSelection = 1
   }
 
   needToGetMoreMessage = null;
 
   static navigationOptions = ({ navigation }) => {
     let dialog = navigation.state.params.dialog;
+    let searchResponse = navigation.state.params.searchResponse;
     let dialogPhoto = "";
+    
     if (dialog.type === DIALOG_TYPE.PRIVATE) {
       dialogPhoto = UsersService.getUsersAvatar(dialog.occupants_ids);
     } else {
       dialogPhoto = dialog.photo;
     }
+    var searchAmount = searchResponse.messages.length
+    {console.log(searchResponse)}
+    {console.log('SEARCH SHITTTT')}
+    {console.log(searchAmount)}
+    {console.log(currentSelection)}
+
     return {
       headerTitle: (
         <Text numberOfLines={3} style={{ fontSize: 22, color: "black" }}>
-          {navigation.state.params.dialog.name + " - Search Result"}
+          {/* {navigation.state.params.dialog.name + " - Search Result"} */}
+          {"Search Result"}
         </Text>
       ),
       headerRight: (
-        <View>
-          <Avatar
-            photo={dialogPhoto}
-            name={navigation.state.params.dialog.name}
-            iconSize="small"
-          />
+        <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={this.nextSearch}>
+              <Icon name="keyboard-arrow-up" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
+          <Text>{this.currentSelection+ " / " + searchAmount}</Text>
+          <TouchableOpacity onPress={this.prevSearch}>
+              <Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
         </View>
       ),
     };
   };
 
   componentDidMount() {
-    const { dialog } = this.props.navigation.state.params;
-    ChatService.getMessages(dialog)
+    const { dialog, searchResponse } = this.props.navigation.state.params;
+    ChatService.getSearchMessages(dialog)
       .catch((e) => alert(`Error.\n\n${JSON.stringify(e)}`))
       .then((amountMessages) => {
         amountMessages === 100
           ? (this.needToGetMoreMessage = true)
           : (this.needToGetMoreMessage = false);
-        // amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
         this.setState({ activeIndicator: false });
       });
   }
 
   componentWillUnmount() {
     ChatService.resetSelectedDialogs();
+  }
+
+  nextSearch(){
+    this.currentSelection++;
+  }
+  prevSearch(){
+    this.currentSelection--;
   }
 
   getMoreMessages = () => {
@@ -86,15 +103,6 @@ export class Search extends PureComponent {
     }
   };
 
-  onPickImage = () => {
-    return ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then((image) => {
-      return image;
-    });
-  };
 
   _keyExtractor = (item, index) => index.toString();
 
@@ -153,32 +161,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingTop: 25,
   },
-  textInput: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: "300",
-    color: "#8c8c8c",
-    borderRadius: 25,
-    paddingHorizontal: 12,
-    paddingTop: Platform.OS === "ios" ? 14 : 10,
-    paddingBottom: Platform.OS === "ios" ? 14 : 10,
-    paddingRight: 35,
-    backgroundColor: "whitesmoke",
-  },
   button: {
     width: 40,
     height: 50,
     marginBottom: Platform.OS === "ios" ? 15 : 0,
-    marginLeft: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  attachment: {
-    width: 40,
-    height: 50,
-    position: "absolute",
-    right: 5,
-    bottom: 0,
     marginLeft: 12,
     alignItems: "center",
     justifyContent: "center",

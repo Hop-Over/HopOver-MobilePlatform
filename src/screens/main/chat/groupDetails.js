@@ -172,10 +172,10 @@ export default class GroupDetails extends Component {
 	return users
   }
 
-  goToSearchScreen = () => {
+  goToSearchScreen = (searchResponse) => {
 	const { navigation } = this.props
 	const dialog = navigation.getParam('dialog', false)
-	navigation.push('searchDialog', { dialog })
+	navigation.push('searchDialog', { dialog, searchResponse })
   }
 
   search = (phrase) => {
@@ -196,7 +196,7 @@ export default class GroupDetails extends Component {
             if(response.messages.length == 0){
                 alert("No search results with \"" + phrase + "\" were found :(")
             }else{
-                this.goToSearchScreen()
+                this.goToSearchScreen(response)
             }
         })
     }
@@ -213,23 +213,6 @@ export default class GroupDetails extends Component {
 	console.log("sendInput (DialogInput#1): "+inputText);
 	this.search(inputText)
   }
-  
-
-//   _renderSearch = () => {
-//     return (
-//         <View style={styles.renderContainer}>
-//             <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.search("fuck")}>
-//                 <View style={styles.renderAvatar}>
-//                     <Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-//                 </View>
-//                 <View>
-//                     <Text style={styles.nameTitle}>Search</Text>
-//                 </View>
-//             </TouchableOpacity>
-//         </View>
-//     )
-//   }
-
 
   updateName = dialogName => this.setState({ dialogName })
 
@@ -308,7 +291,8 @@ export default class GroupDetails extends Component {
 				message={"Enter a keyword to search"}
 				hintInput ={"Search"}
 				submitInput={ (inputText) => {this.sendInput(inputText)} }
-				closeDialog={ () => {this.showDialog(false)}}>
+				closeDialog={ () => {this.showDialog(false)}}
+            >
 			</DialogInput>
 			<TextInput
 			  style={styles.input}
