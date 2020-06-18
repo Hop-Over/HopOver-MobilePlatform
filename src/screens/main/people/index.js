@@ -104,7 +104,7 @@ class People extends Component {
             console.log(contact)
             if(contact["subscription"] === "to" || contact["subscription"] === "from"){
               friends.push(elem)
-            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe") {
+            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
               pending.push(elem)
             }
           })

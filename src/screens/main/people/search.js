@@ -114,21 +114,29 @@ class Search extends Component {
             name={item.full_name}
             iconSize="medium"
           />
-          <Text style={styles.nameTitle}>{item.full_name}</Text>
+          <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
           <View style={styles.buttonContainer}>
-            {!this.state.friendId.includes(item.id.toString()) && !this.state.pendingId.includes(item.id.toString()) ?
+            {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
             (<TouchableOpacity style={styles.iconButtons}
               onPress={() => {
-                ContactService.sendRequest(item.id)
+                if (this.state.friendId.includes(item.id.toString())){
+                  ContactService.rejectRequest(item.id)
+                  ContactService.deleteContact(item.id)
+                  let index = this.state.friendId.indexOf(item.id.toString())
+                  this.state.friendId.splice(index, 1)
+                  this.searchUsers()
+
+                } else if (!this.state.pendingId.includes(item.id.toString())) {
+                  ContactService.sendRequest(item.id)
+                  this.state.pendingId.push(item.id.toString())
+                  this.searchUsers()
+                }
               }}>
-              <Icon name="add" size={30} color="black"/>
+              <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="black"/>
             </TouchableOpacity>) :
-            (<TouchableOpacity style={styles.iconButtons}
-              onPress={() => {
-                ContactService.deleteContact(item.id)
-              }}>
-              <Icon name="close" size={30} color="black"/>
-            </TouchableOpacity>)}
+            (<View style={styles.pendingButton}>
+              <Text style={styles.pendingText}> Pending </Text>
+            </View>)}
           </View>
         </View>
       </View> :
@@ -142,6 +150,8 @@ class Search extends Component {
 
   render() {
     const { isLoader, friendId, pendingId, initalUpdate } = this.state
+    console.log(friendId)
+    console.log(pendingId)
     if (!initalUpdate){
       this.searchUsers()
       this.setState({initalUpdate: true})
@@ -230,7 +240,19 @@ const styles = StyleSheet.create({
     marginTop: SIZE_SCREEN.height/4,
     textAlign: 'center'
   },
-
+  pendingText: {
+    color: "grey",
+    fontSize: 15,
+  },
+  pendingButton: {
+    width: 80,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: '#EAEAEA',
+    alignSelf: 'flex-end',
+  },
   listUsers: {
     marginLeft: 20,
     flex: 1
@@ -250,6 +272,10 @@ const styles = StyleSheet.create({
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.5,
+    fontSize: 17
+  },
+  pendingTitle: {
+    width: SIZE_SCREEN.width/1.7,
     fontSize: 17
   },
   iconButtons: {
