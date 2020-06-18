@@ -22,12 +22,7 @@ class ChatService {
     ConnectyCube.chat.onSentMessageCallback = this.onSentMessageListener.bind(this)
     ConnectyCube.chat.onDeliveredStatusListener = this.onDeliveredStatus.bind(this)
     ConnectyCube.chat.onReadStatusListener = this.onReadStatus.bind(this)
-    ConnectyCube.chat.onRejectSubscribeListener = this.onRejectSubscribeListener.bind(this)
     AppState.addEventListener('change', this.handleAppStateChange)
-  }
-  onRejectSubscribeListener(userId){
-      ConnectyCube.chat.contactList.remove(userId);
-      {console.log('rejected')}
   }
 
   async fetchDialogsFromServer() {
@@ -124,13 +119,11 @@ class ChatService {
     this.setSelectedDialog(dialog.id)
     const user = this.currentUser
     const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
-    { console.log('messages') }
-    { console.log(isAlredyUpdate) }
     let amountMessages = null
 
     // If the first entry into the chat
 
-    if (!dialog.isAlreadyMessageFetch || dialog.unread_messages_count > 0 && !dialog.isAlreadyMessageFetch) {
+    // if (!dialog.isAlreadyMessageFetch || dialog.unread_messages_count > 0 && !dialog.isAlreadyMessageFetch) {
       const historyFromServer = await ConnectyCube.chat.message.list({
         chat_dialog_id: dialog.id,
         sort_desc: 'date_sent'
@@ -147,41 +140,50 @@ class ChatService {
       this.updateDialogsUnreadMessagesCount(newObj)
       store.dispatch(fetchMessages(dialog.id, messages))
       amountMessages = messages.length
-    } else {
+    // } else {
 
-      // If the second entry into the chat
+    //   // If the second entry into the chat
 
-      if (dialog.unread_messages_count > 0) {
-        const messages = this.getMessagesByDialogId(dialog.id)
-        const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-        this.readAllMessages(dialog.id)
-        await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
-        this.updateDialogsUnreadMessagesCount(dialog)
-      }
-      amountMessages = isAlredyUpdate.length
-    }
+    //   if (dialog.unread_messages_count > 0) {
+    //     const messages = this.getMessagesByDialogId(dialog.id)
+    //     const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
+    //     this.readAllMessages(dialog.id)
+    //     await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
+    //     this.updateDialogsUnreadMessagesCount(dialog)
+    //   }
+    //   amountMessages = isAlredyUpdate.length
+    // }
     return amountMessages
   }
 
 
-  async getSearchMessages(dialog) {
+  async getSearchMessages(dialog, messagesObj) {
     this.setSelectedDialog(dialog.id)
     const user = this.currentUser
     const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
-    { console.log('messages') }
-    { console.log(isAlredyUpdate) }
     let amountMessages = null
-
     // If the first entry into the chat
-
-    if (!dialog.isAlreadyMessageFetch || dialog.unread_messages_count > 0 && !dialog.isAlreadyMessageFetch) {
+    //if did not fetch messages OR unread messages AND 
+    // if (!dialog.isAlreadyMessageFetch || dialog.unread_messages_count > 0 && !dialog.isAlreadyMessageFetch) {
       const historyFromServer = await ConnectyCube.chat.message.list({
         chat_dialog_id: dialog.id,
-        sort_desc: 'date_sent'
+        sort_desc: 'date_sent',
+        date_sent: { lte: messagesObj.date_sent },
+        filter: {
+            field: 'date_sent',
+            param: 'lt',
+            value: 1591465599
+        },
+        // skip: 10
+        //  1591982712
       })
+      console.log('messagesObj')
+      {console.log(messagesObj)}
       const messages = historyFromServer.items.map(elem => (
         new Message(elem, user.id)
       ))
+      {console.log('My Messages')}
+      {console.log(messages)}
       const newObj = Object.assign(dialog, { isAlreadyMessageFetch: true })
       if (dialog.unread_messages_count > 0) {
         const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
@@ -191,19 +193,19 @@ class ChatService {
       this.updateDialogsUnreadMessagesCount(newObj)
       store.dispatch(fetchMessages(dialog.id, messages))
       amountMessages = messages.length
-    } else {
+    // } else {
 
-      // If the second entry into the chat
+    //   // If the second entry into the chat
 
-      if (dialog.unread_messages_count > 0) {
-        const messages = this.getMessagesByDialogId(dialog.id)
-        const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-        this.readAllMessages(dialog.id)
-        await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
-        this.updateDialogsUnreadMessagesCount(dialog)
-      }
-      amountMessages = isAlredyUpdate.length
-    }
+    //   if (dialog.unread_messages_count > 0) {
+    //     const messages = this.getMessagesByDialogId(dialog.id)
+    //     const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
+    //     this.readAllMessages(dialog.id)
+    //     await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
+    //     this.updateDialogsUnreadMessagesCount(dialog)
+    //   }
+    //   amountMessages = isAlredyUpdate.length
+    // }
     return amountMessages
   }
 
@@ -442,7 +444,6 @@ class ChatService {
     const response = await ConnectyCube.chat.search(params)
     { console.log('search chat') }
     { console.log(response) }
-    const updateData = new Dialog(response)
     return response
   }
 

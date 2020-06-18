@@ -11,7 +11,6 @@ import {
   Alert
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-// import Dialog from "react-native-dialog";
 import DialogInput from 'react-native-dialog-input';
 import ImgPicker from '../../components/imgPicker'
 import CreateBtn from '../../components/createBtn'
@@ -183,7 +182,6 @@ export default class GroupDetails extends Component {
         alert("Please enter a keyword with 4 letters or more")
     }else{
 	this.handleCancel()
-	{ console.log('SEARCH') }
 	const dialog = this.props.navigation.getParam('dialog', false)
     var result = []
 	ChatService.search(dialog.id, phrase)
@@ -196,7 +194,7 @@ export default class GroupDetails extends Component {
             if(response.messages.length == 0){
                 alert("No search results with \"" + phrase + "\" were found :(")
             }else{
-                this.goToSearchScreen(response)
+                this.goToSearchScreen(response.messages.reverse(0))
             }
         })
     }
@@ -210,7 +208,7 @@ export default class GroupDetails extends Component {
   }
   sendInput(inputText){
 	this.showDialog(false)
-	console.log("sendInput (DialogInput#1): "+inputText);
+	console.log("sendInput: "+inputText);
 	this.search(inputText)
   }
 
@@ -262,7 +260,18 @@ export default class GroupDetails extends Component {
 				</View>
 			</TouchableOpacity>
 		</View>
-	  ) : false
+	  ) : (
+        <View>
+        <TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
+            <View style={styles.renderAvatar}>
+                <Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+            </View>
+            <View>
+                <Text style={styles.nameTitle}>Search</Text>
+            </View>
+        </TouchableOpacity>
+    </View>
+      )
   }
 
   _renderFlatListFooter = () => {

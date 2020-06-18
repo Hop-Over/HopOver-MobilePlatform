@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import ChatService from "../../../services/chat-service";
 import UsersService from "../../../services/users-service";
 import Message from "./message";
-import ImagePicker from "react-native-image-crop-picker";
+import Avatar from '../../components/avatar'
 import { DIALOG_TYPE } from "../../../helpers/constants";
 
 export class Search extends PureComponent {
@@ -25,7 +25,7 @@ export class Search extends PureComponent {
       activeIndicator: true,
       messageText: "",
     };
-    this.currentSelection = 1
+    this.currentSelection = 0
   }
 
   needToGetMoreMessage = null;
@@ -33,18 +33,13 @@ export class Search extends PureComponent {
   static navigationOptions = ({ navigation }) => {
     let dialog = navigation.state.params.dialog;
     let searchResponse = navigation.state.params.searchResponse;
-    let dialogPhoto = "";
-    
+    let dialogPhoto = '';
     if (dialog.type === DIALOG_TYPE.PRIVATE) {
       dialogPhoto = UsersService.getUsersAvatar(dialog.occupants_ids);
     } else {
       dialogPhoto = dialog.photo;
     }
-    var searchAmount = searchResponse.messages.length
-    {console.log(searchResponse)}
-    {console.log('SEARCH SHITTTT')}
-    {console.log(searchAmount)}
-    {console.log(currentSelection)}
+    // var searchAmount = searchResponse.messages.length
 
     return {
       headerTitle: (
@@ -54,14 +49,12 @@ export class Search extends PureComponent {
         </Text>
       ),
       headerRight: (
-        <View style={{flexDirection:"row"}}>
-          <TouchableOpacity onPress={this.nextSearch}>
-              <Icon name="keyboard-arrow-up" size={35} color='#48A6E3'/>
-          </TouchableOpacity>
-          <Text>{this.currentSelection+ " / " + searchAmount}</Text>
-          <TouchableOpacity onPress={this.prevSearch}>
-              <Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
-          </TouchableOpacity>
+        <View>
+          <Avatar
+            photo={dialogPhoto}
+            name={navigation.state.params.dialog.name}
+            iconSize="small"
+          />
         </View>
       ),
     };
@@ -69,10 +62,10 @@ export class Search extends PureComponent {
 
   componentDidMount() {
     const { dialog, searchResponse } = this.props.navigation.state.params;
-    ChatService.getSearchMessages(dialog)
+    ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
       .catch((e) => alert(`Error.\n\n${JSON.stringify(e)}`))
       .then((amountMessages) => {
-        amountMessages === 100
+        amountMessages === 10
           ? (this.needToGetMoreMessage = true)
           : (this.needToGetMoreMessage = false);
         this.setState({ activeIndicator: false });
@@ -83,11 +76,25 @@ export class Search extends PureComponent {
     ChatService.resetSelectedDialogs();
   }
 
-  nextSearch(){
-    this.currentSelection++;
+  nextSearch(searchAmount){
+    const { dialog, searchResponse } = this.props.navigation.state.params
+    if((this.currentSelection+1)<searchAmount){
+       this.currentSelection++;
+    }else{
+        alert('No More Search Results Available')
+    }
+    ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
+    {console.log(this.currentSelection)}
+    this.setState({ state: this.state }); //Updates state and page re-renders
   }
   prevSearch(){
-    this.currentSelection--;
+    if(this.currentSelection > 0){
+        this.currentSelection--;
+    }else{
+        alert('No More Search Results Available')
+    }
+    {console.log(this.currentSelection)}
+    this.setState({ state: this.state }); //Updates state and page re-renders
   }
 
   getMoreMessages = () => {
@@ -104,6 +111,22 @@ export class Search extends PureComponent {
   };
 
 
+
+  _renderFlatListSearchHeader = () => {
+	return(
+        <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={()=>{this.nextSearch()}}>
+              <Icon name="keyboard-arrow-up" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
+          {/* <Text>{this.currentSelection+ " / " + searchAmount}</Text> */}
+          <TouchableOpacity onPress={()=>{this.prevSearch()}}>
+              <Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
+        </View>
+	  )
+  }
+
+
   _keyExtractor = (item, index) => index.toString();
 
   _renderMessageItem(message) {
@@ -115,6 +138,10 @@ export class Search extends PureComponent {
   }
 
   render() {
+    const { searchResponse } = this.props.navigation.state.params;
+    {console.log('searchResponse')}
+    {console.log(searchResponse)}
+    const searchAmount = searchResponse.length
     const { history } = this.props;
     const { messageText, activeIndicator } = this.state;
     return (
@@ -133,6 +160,15 @@ export class Search extends PureComponent {
             <ActivityIndicator size="small" color="#0000ff" />
           </View>
         )}
+        <View style={{flexDirection:"row"}}>
+          <TouchableOpacity onPress={()=>{this.nextSearch(searchAmount)}}>
+              <Icon name="keyboard-arrow-up" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
+          <Text>{this.currentSelection+1+ " / " + searchAmount}</Text>
+          <TouchableOpacity onPress={()=>{this.prevSearch()}}>
+              <Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
+          </TouchableOpacity>
+        </View>
         <FlatList
           inverted
           data={history}
