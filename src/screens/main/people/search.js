@@ -101,6 +101,13 @@ class Search extends Component {
     }
   }
 
+  initStates = () => {
+    if (!this.state.initalUpdate){
+      this.searchUsers()
+      this.setState({initalUpdate: true})
+    }
+  }
+
   _renderUser = ({ item }) => {
     return (
       this.state.isLoader ?
@@ -149,13 +156,8 @@ class Search extends Component {
   keyExtractor = (item, index) => index.toString()
 
   render() {
+    this.initStates()
     const { isLoader, friendId, pendingId, initalUpdate } = this.state
-    console.log(friendId)
-    console.log(pendingId)
-    if (!initalUpdate){
-      this.searchUsers()
-      this.setState({initalUpdate: true})
-    }
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
