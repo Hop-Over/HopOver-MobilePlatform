@@ -118,7 +118,8 @@ export default class GroupDetails extends Component {
 
   goToContactDeteailsScreen = (dialog) => {
     const { navigation } = this.props
-    navigation.push('ContactDetails', { dialog })
+    const chatDialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ContactDetails', {dialog, chatDialog: chatDialog })
   }
 
   goToContactsScreen = () => {

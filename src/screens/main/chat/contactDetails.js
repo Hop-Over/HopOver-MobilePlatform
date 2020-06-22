@@ -8,7 +8,23 @@ import { popToTop } from '../../../routing/init'
 
 export default class ContactDetails extends Component {
   state = {
-    isLoader: false
+    isLoader: false,
+  }
+
+  isGroupCreator = (userId) => {
+    const dialog = this.props.navigation.getParam('dialog')
+    return ChatService.isGroupCreator(userId)
+  }
+
+  isAdmin = (userId) => {
+    const dialog = this.props.navigation.getParam('chatDialog')
+    const admins = dialog.admins_ids
+    console.log(admins)
+    if (admins.includes(userId) || this.isGroupCreator(userId)){
+      return true
+    } else {
+      return false
+    }
   }
 
   gotToChat = () => {
@@ -29,6 +45,7 @@ export default class ContactDetails extends Component {
 
   render() {
     const dialog = this.props.navigation.getParam('dialog', false)
+    const chatDialog = this.props.navigation.getParam('chatDialog', false)
     let dialogPhoto
 
     if (dialog?.type) {
@@ -40,6 +57,8 @@ export default class ContactDetails extends Component {
     }
 
     const { isLoader } = this.state
+    console.log(chatDialog.user_id , this.isAdmin(chatDialog.user_id))
+    console.log(dialog.id, this.isAdmin(dialog.id))
     return (
       <View style={styles.container}>
         {isLoader && (
@@ -58,6 +77,15 @@ export default class ContactDetails extends Component {
             <Text style={styles.buttonLabel}>Start a dialog</Text>
           </View>
         </TouchableOpacity>
+        {this.isAdmin(chatDialog.user_id) ?
+            <TouchableOpacity onPress={() => {this.isAdmin(dialog.id) ? ChatService.removeAdmin(chatDialog.id, dialog.id) : ChatService.addAdmin(chatDialog.id, dialog.id)}}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
+              </View>
+            </TouchableOpacity>
+            :
+          false
+        }
       </View>
     )
   }
