@@ -21,6 +21,7 @@ import { SIZE_SCREEN } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
+import store from '../../../store'
 
 export default class GroupDetails extends Component {
 
@@ -116,6 +117,18 @@ export default class GroupDetails extends Component {
     return ChatService.isGroupCreator(dialog.user_id)
   }
 
+  isAdmin = () => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    const admins = dialog.admins_ids
+    const userId = this.currentUser()
+    console.log(admins)
+    if (admins.includes(userId)){
+      return true
+    } else {
+      return false
+    }
+  }
+
   goToContactDeteailsScreen = (dialog) => {
     const { navigation } = this.props
     const chatDialog = this.props.navigation.getParam('dialog',false)
@@ -165,6 +178,10 @@ export default class GroupDetails extends Component {
       })
   }
 
+  currentUser = () => {
+    return store.getState().currentUser.user.id
+  }
+
   updateName = dialogName => this.setState({ dialogName })
 
   keyExtractor = (item, index) => index.toString()
@@ -191,7 +208,7 @@ export default class GroupDetails extends Component {
   }
 
   _renderFlatListHeader = () => {
-    return this.isGroupCreator() ?
+    return this.isGroupCreator() || this.isAdmin() ?
       (
         <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
@@ -218,14 +235,16 @@ export default class GroupDetails extends Component {
   render() {
     const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
     const dialog = this.props.navigation.getParam('dialog', false)
-    console.log(dialog.occupants_ids)
+    //console.log(this.currentUser())
+    //console.log(this.isAdmin())
+    console.log(this.isAdmin())
     return (
       <KeyboardAvoidingView style={styles.container}>
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
-        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled={!this.isGroupCreator()} />
-        {this.isGroupCreator() ?
+        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={!this.isGroupCreator() && !this.isAdmin()} />
+        {this.isGroupCreator() || this.isAdmin() ?
           (<View>
             <TextInput
               style={styles.input}
@@ -252,7 +271,7 @@ export default class GroupDetails extends Component {
             keyExtractor={this.keyExtractor}
           />
         </SafeAreaView>
-        {this.isGroupCreator() &&
+        {this.isGroupCreator() || this.isAdmin() &&
           <CreateBtn goToScreen={this.updateDialog} type={BTN_TYPE.CREATE_GROUP} />
         }
       </KeyboardAvoidingView>

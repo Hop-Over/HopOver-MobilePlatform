@@ -5,22 +5,34 @@ import ChatService from '../../../services/chat-service'
 import UsersService from '../../../services/users-service'
 import Indicator from '../../components/indicator'
 import { popToTop } from '../../../routing/init'
+import store from '../../../store'
 
 export default class ContactDetails extends Component {
   state = {
     isLoader: false,
+    chatDialog: this.props.navigation.getParam('chatDialog')
   }
 
-  isGroupCreator = (userId) => {
-    const dialog = this.props.navigation.getParam('dialog')
-    return ChatService.isGroupCreator(userId)
+  isGroupCreator = () => {
+    const dialog = this.state.chatDialog
+    return ChatService.isGroupCreator(dialog.user_id)
+  }
+
+  isUserGroupCreator = (userId) => {
+    const dialog = this.state.chatDialog
+    return dialog.user_id === userId ? true : false
+
+  }
+
+  currentUser = () => {
+    return store.getState().currentUser.user.id
   }
 
   isAdmin = (userId) => {
-    const dialog = this.props.navigation.getParam('chatDialog')
+    const dialog = this.state.chatDialog
     const admins = dialog.admins_ids
-    console.log(admins)
-    if (admins.includes(userId) || this.isGroupCreator(userId)){
+
+    if (admins.includes(userId) || userId === dialog.user_id){
       return true
     } else {
       return false
@@ -43,9 +55,25 @@ export default class ContactDetails extends Component {
     }
   }
 
+  removeAdmin = () => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    const chatDialog = this.state.chatDialog
+    ChatService.removeAdmin(chatDialog.id, dialog.id)
+    const index = chatDialog.admins_ids.indexOf(dialog.id)
+    chatDialog.admins_ids.splice(index, 1)
+    this.setState({chatDialog : chatDialog})
+  }
+
+  addAdmin = () => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    const chatDialog = this.state.chatDialog
+    ChatService.addAdmin(chatDialog.id, dialog.id)
+    chatDialog.admins_ids.push(dialog.id)
+    this.setState({chatDialog : chatDialog})
+  }
+
   render() {
     const dialog = this.props.navigation.getParam('dialog', false)
-    const chatDialog = this.props.navigation.getParam('chatDialog', false)
     let dialogPhoto
 
     if (dialog?.type) {
@@ -56,9 +84,9 @@ export default class ContactDetails extends Component {
       dialogPhoto = dialog.avatar
     }
 
-    const { isLoader } = this.state
-    console.log(chatDialog.user_id , this.isAdmin(chatDialog.user_id))
-    console.log(dialog.id, this.isAdmin(dialog.id))
+    const { isLoader, chatDialog } = this.state
+    const currentId = this.currentUser()
+
     return (
       <View style={styles.container}>
         {isLoader && (
@@ -77,8 +105,10 @@ export default class ContactDetails extends Component {
             <Text style={styles.buttonLabel}>Start a dialog</Text>
           </View>
         </TouchableOpacity>
-        {this.isAdmin(chatDialog.user_id) ?
-            <TouchableOpacity onPress={() => {this.isAdmin(dialog.id) ? ChatService.removeAdmin(chatDialog.id, dialog.id) : ChatService.addAdmin(chatDialog.id, dialog.id)}}>
+        {chatDialog.type === 2 && this.isGroupCreator() ?
+            <TouchableOpacity onPress={() => {this.isAdmin(dialog.id) ?
+              this.removeAdmin()
+              : this.addAdmin()}}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
               </View>
