@@ -35,7 +35,8 @@ export default class GroupDetails extends Component {
 	  dialogPhoto: dialog.photo,
 	  isLoader: false,
 	  occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids),
-	  isDialogVisible: false
+	  isDialogVisible: false,
+	  searchKeyword: ''
 	}
   }
 
@@ -55,6 +56,11 @@ export default class GroupDetails extends Component {
 
   pickPhoto = (image) => {
 	this.setState({ isPickImage: image })
+  }
+
+  updateSearch = (searchKeyword) => {
+	  this.setState({searchKeyword})
+	  {console.log('Search ' + this.state.searchKeyword )}
   }
 
   updateDialog = () => {
@@ -178,26 +184,28 @@ export default class GroupDetails extends Component {
   }
 
   search = (phrase) => {
-    if(phrase.length < 4){
-        alert("Please enter a keyword with 4 letters or more")
-    }else{
+	if(phrase.length < 4){
+		alert("Please enter a keyword with 4 letters or more")
+	}else{
 	this.handleCancel()
 	const dialog = this.props.navigation.getParam('dialog', false)
-    var result = []
+	var result = []
 	ChatService.search(dialog.id, phrase)
 		.then(response => {
-			for(var i = 0; i < response.messages.length; i++){
-					result.push(response.messages[i])
-				   { console.log(response.messages[i].message) }                    
-                }
-            {console.log(result)}
-            if(response.messages.length == 0){
-                alert("No search results with \"" + phrase + "\" were found :(")
-            }else{
-                this.goToSearchScreen(response.messages.reverse(0))
-            }
-        })
-    }
+			if(response.messages.length == 0){
+				alert("No search results with \"" + phrase + "\" were found :(")
+			}else{
+				const searchResponse = response.messages
+				searchResponse.sort(function(a, b){
+					return b.date_sent - a.date_sent;
+				});
+				// for(var i = 0; i < searchResponse.length; i++){
+				//     {console.log(searchResponse[i].message + ' - ' + searchResponse[i].sender_id)}
+				// }
+				this.goToSearchScreen(searchResponse)
+			}
+		})
+	}
   }
   
   handleCancel = () => {
@@ -212,7 +220,9 @@ export default class GroupDetails extends Component {
 	this.search(inputText)
   }
 
-  updateName = dialogName => this.setState({ dialogName })
+  updateName = (dialogName) => {
+	  this.setState({ dialogName })
+  }
 
   keyExtractor = (item, index) => index.toString()
 
@@ -240,9 +250,20 @@ export default class GroupDetails extends Component {
   }
 
   _renderFlatListHeader = () => {
+	const {searchKeyword} = this.state
 	return this.isGroupCreator() ?
 	  (
 		<View>
+			<TextInput style={styles.searchInput}
+			autoCapitalize="none"
+			placeholder="Search Chat..."
+			placeholderTextColor="grey"
+			clearButtonMode = "while-editing"
+			returnKeyType = "search"
+			onChangeText={this.updateSearch}
+			onSubmitEditing = {() => this.sendInput(this.state.searchKeyword)}
+			value={this.state.search}
+		  />
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
 				<View style={styles.renderAvatar}>
 					<Icon name="person-add" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
@@ -251,27 +272,19 @@ export default class GroupDetails extends Component {
 					<Text style={styles.nameTitle}>Add member</Text>
 				</View>
 			</TouchableOpacity>
-			<TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
-				<View style={styles.renderAvatar}>
-					<Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-				</View>
-				<View>
-					<Text style={styles.nameTitle}>Search</Text>
-				</View>
-			</TouchableOpacity>
 		</View>
 	  ) : (
-        <View>
-        <TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
-            <View style={styles.renderAvatar}>
-                <Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-            </View>
-            <View>
-                <Text style={styles.nameTitle}>Search</Text>
-            </View>
-        </TouchableOpacity>
-    </View>
-      )
+		<View>
+		<TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
+			<View style={styles.renderAvatar}>
+				<Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+			</View>
+			<View>
+				<Text style={styles.nameTitle}>Search</Text>
+			</View>
+		</TouchableOpacity>
+	</View>
+	  )
   }
 
   _renderFlatListFooter = () => {
@@ -301,7 +314,7 @@ export default class GroupDetails extends Component {
 				hintInput ={"Search"}
 				submitInput={ (inputText) => {this.sendInput(inputText)} }
 				closeDialog={ () => {this.showDialog(false)}}
-            >
+			>
 			</DialogInput>
 			<TextInput
 			  style={styles.input}
@@ -337,86 +350,95 @@ export default class GroupDetails extends Component {
 }
 // [{"avatar": null, "created_at": "2020-05-05T17:54:20Z", "custom_data": "asdfghjk", "full_name": "bilal", "id": 1338358, "last_request_at": null, "login": "dofypp", "phone": "", "updated_at": "2020-05-31T18:27:05Z"}]
 const styles = StyleSheet.create({
-  container: {
-	flex: 1,
-	alignItems: 'center',
-	marginTop: 40
-  },
-  picker: {
-	width: 102,
-	height: 102,
-	borderWidth: 1,
-	borderColor: 'red'
-  },
-  imgPicker: {
-	width: 100,
-	height: 100,
-	borderRadius: 50,
-  },
-  icon: {
-	position: 'absolute',
-	bottom: 0,
-	left: 0,
-	padding: 5,
-	backgroundColor: 'white',
-	width: 32,
-	height: 32,
-	borderRadius: 16,
-	borderWidth: 1,
-	borderColor: '#48A6E3'
-  },
-  input: {
-	borderBottomWidth: 1,
-	borderColor: 'grey',
-	color: 'black',
-	width: 200,
-	marginVertical: 15,
-	padding: 7,
-	paddingTop: 15,
-	fontSize: 17
-  },
-  subtitleInpu: {
-	color: 'grey'
-  },
-  subtitleWrap: {
-	position: 'absolute',
-	marginVertical: -7,
-	bottom: 0,
-  },
-  listUsers: {
-	marginVertical: 35,
-	flex: 1
-  },
-  renderContainer: {
-	width: SIZE_SCREEN.width - 30,
-	borderBottomWidth: 0.5,
-	borderColor: 'grey',
-	flexDirection: 'row',
-	alignItems: 'center',
-	justifyContent: 'space-between',
-	paddingVertical: 7
-  },
-  renderHeaderContainer: {
-	width: SIZE_SCREEN.width - 30,
-	flexDirection: 'row',
-	borderBottomWidth: 0.5,
-	borderColor: 'grey',
-	alignItems: 'center',
-	paddingVertical: 7
-  },
-  renderAvatar: {
-	flexDirection: 'row',
-	alignItems: 'center',
-  },
-  nameTitle: {
-	fontSize: 17
-  },
-  removeTitle: {
-	fontSize: 14,
-	color: '#949494'
-  },
-  dialogName: {
-	fontSize: 17,
-	marginTop: 35
-  }
+	searchInput: {
+		fontSize: 15,
+		fontWeight: '300',
+		borderWidth: 0.25,
+		borderRadius: 50,
+		borderColor: 'black',
+		color: 'black',
+		padding: 10,
+	  },
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		marginTop: 40
+	},
+	picker: {
+		width: 102,
+		height: 102,
+		borderWidth: 1,
+		borderColor: 'red'
+	},
+	imgPicker: {
+		width: 100,
+		height: 100,
+		borderRadius: 50,
+	},
+	icon: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		padding: 5,
+		backgroundColor: 'white',
+		width: 32,
+		height: 32,
+		borderRadius: 16,
+		borderWidth: 1,
+		borderColor: '#48A6E3'
+	},
+	input: {
+		borderBottomWidth: 1,
+		borderColor: 'grey',
+		color: 'black',
+		width: 200,
+		marginVertical: 15,
+		padding: 7,
+		paddingTop: 15,
+		fontSize: 17
+	},
+	subtitleInpu: {
+		color: 'grey'
+	},
+	subtitleWrap: {
+		position: 'absolute',
+		marginVertical: -7,
+		bottom: 0,
+	},
+	listUsers: {
+		marginVertical: 35,
+		flex: 1
+	},
+	renderContainer: {
+		width: SIZE_SCREEN.width - 30,
+		borderBottomWidth: 0.5,
+		borderColor: 'grey',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingVertical: 7
+	},
+	renderHeaderContainer: {
+		width: SIZE_SCREEN.width - 30,
+		flexDirection: 'row',
+		borderBottomWidth: 0.5,
+		borderColor: 'grey',
+		alignItems: 'center',
+		paddingVertical: 7
+	},
+	renderAvatar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	nameTitle: {
+		fontSize: 17
+	},
+	removeTitle: {
+		fontSize: 14,
+		color: '#949494'
+	},
+	dialogName: {
+		fontSize: 17,
+		marginTop: 35
+	}
 })

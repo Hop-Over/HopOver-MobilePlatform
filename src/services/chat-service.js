@@ -118,7 +118,7 @@ class ChatService {
   async getMessages(dialog) {
     this.setSelectedDialog(dialog.id)
     const user = this.currentUser
-    const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
+    const isAlreadyUpdate = this.getMessagesByDialogId(dialog.id)
     let amountMessages = null
 
     // If the first entry into the chat
@@ -151,60 +151,7 @@ class ChatService {
     //     await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
     //     this.updateDialogsUnreadMessagesCount(dialog)
     //   }
-    //   amountMessages = isAlredyUpdate.length
-    // }
-    return amountMessages
-  }
-
-
-  async getSearchMessages(dialog, messagesObj) {
-    this.setSelectedDialog(dialog.id)
-    const user = this.currentUser
-    const isAlredyUpdate = this.getMessagesByDialogId(dialog.id)
-    let amountMessages = null
-    // If the first entry into the chat
-    //if did not fetch messages OR unread messages AND 
-    // if (!dialog.isAlreadyMessageFetch || dialog.unread_messages_count > 0 && !dialog.isAlreadyMessageFetch) {
-      const historyFromServer = await ConnectyCube.chat.message.list({
-        chat_dialog_id: dialog.id,
-        sort_desc: 'date_sent',
-        date_sent: { lte: messagesObj.date_sent },
-        filter: {
-            field: 'date_sent',
-            param: 'lt',
-            value: 1591465599
-        },
-        // skip: 10
-        //  1591982712
-      })
-      console.log('messagesObj')
-      {console.log(messagesObj)}
-      const messages = historyFromServer.items.map(elem => (
-        new Message(elem, user.id)
-      ))
-      {console.log('My Messages')}
-      {console.log(messages)}
-      const newObj = Object.assign(dialog, { isAlreadyMessageFetch: true })
-      if (dialog.unread_messages_count > 0) {
-        const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-        this.readAllMessages(dialog.id)
-        this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
-      }
-      this.updateDialogsUnreadMessagesCount(newObj)
-      store.dispatch(fetchMessages(dialog.id, messages))
-      amountMessages = messages.length
-    // } else {
-
-    //   // If the second entry into the chat
-
-    //   if (dialog.unread_messages_count > 0) {
-    //     const messages = this.getMessagesByDialogId(dialog.id)
-    //     const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-    //     this.readAllMessages(dialog.id)
-    //     await this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
-    //     this.updateDialogsUnreadMessagesCount(dialog)
-    //   }
-    //   amountMessages = isAlredyUpdate.length
+    //   amountMessages = isAlreadyUpdate.length
     // }
     return amountMessages
   }
@@ -213,10 +160,7 @@ class ChatService {
   getMoreMessages = async (dialog) => {
     const currentMessages = this.getMessagesByDialogId(dialog.id)
     const lastMessageDate = currentMessages[currentMessages.length - 1]
-    { console.log('LMD') }
-    { console.log(lastMessageDate) }
     const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
-
     const filter = {
       chat_dialog_id: dialog.id,
       date_sent: { lt: lastMessageDate.date_sent },
@@ -230,6 +174,64 @@ class ChatService {
     return amountMessages.history.length
   }
 
+  async getSearchMessages(dialog, messagesObj) {
+    this.setSelectedDialog(dialog.id)
+    const user = this.currentUser
+    const isAlreadyUpdate = this.getMessagesByDialogId(dialog.id)
+    let amountMessages = null
+    const filter = {
+        chat_dialog_id: dialog.id,
+        date_sent: { lte: messagesObj.date_sent },
+        sort_desc: 'date_sent'
+    }
+    const historyFromServer = await ConnectyCube.chat.message.list(filter)
+      const messages = historyFromServer.items.map(elem => (
+        new Message(elem, user.id)
+      ))
+      const newObj = Object.assign(dialog, { isAlreadyMessageFetch: true })
+      if (dialog.unread_messages_count > 0) {
+        const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
+        this.readAllMessages(dialog.id)
+        this.sendReadStatus(firstUnreadMsg.id, firstUnreadMsg.sender_id, firstUnreadMsg.dialog_id)
+      }
+      this.updateDialogsUnreadMessagesCount(newObj)
+      store.dispatch(fetchMessages(dialog.id, messages))
+      amountMessages = messages.length
+    return amountMessages
+  }
+
+  getMoreSearchMessages = async (dialog, highLow) => {
+    const currentMessages = this.getMessagesByDialogId(dialog.id)
+    if(highLow === 1){
+        var lastMessageDate = currentMessages[0]
+        var filter = {
+          chat_dialog_id: dialog.id,
+          date_sent: { gte: lastMessageDate.date_sent },
+          sort_desc: 'date_sent'
+        }
+    }else if(highLow === 0){
+        var lastMessageDate = currentMessages[0]
+        {console.log('body: ' + lastMessageDate.body)}
+        var filter = {
+          chat_dialog_id: dialog.id,
+          date_sent: { lte: lastMessageDate.date_sent },
+          sort_desc: 'date_sent'
+        }
+    }
+    
+    {console.log(lastMessageDate.body)}
+    const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
+    const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
+    const messages = moreHistoryFromServer.items.map(elem => new Message(elem))
+    store.dispatch(updateDialog(updateObj))
+    store.dispatch(fetchMessages(dialog.id, messages))
+    // const amountMessages = store.dispatch(lazyFetchMessages(dialog.id, messages))
+    const amountMessages = messages.length
+    return amountMessages
+  }
+  
+
+  
 
   async sendMessage(dialog, messageText, attachments = false) {
     const user = this.currentUser
