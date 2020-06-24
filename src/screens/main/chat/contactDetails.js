@@ -6,6 +6,7 @@ import UsersService from '../../../services/users-service'
 import Indicator from '../../components/indicator'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
+import { showAlert } from '../../../helpers/alert'
 
 export default class ContactDetails extends Component {
   state = {
@@ -72,6 +73,24 @@ export default class ContactDetails extends Component {
     this.setState({chatDialog : chatDialog})
   }
 
+  removeParticipant = (participants) => {
+    { console.log('participants: ') }
+    { console.log(participants) }
+    const chatDialog = this.props.navigation.getParam('chatDialog', false)
+    this.setState({ isLoader: true })
+    ChatService.removeOccupantsFromDialog(chatDialog.id, participants)
+      .then(dialog => {
+      //const updateArrUsers = UsersService.getUsersInfoFromRedux(chatDialog.occupants_ids)
+      this.props.navigation.goBack(null);
+      showAlert('Participant Removed')
+      //this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
+      })
+      .catch(error => {
+      console.warn('removeParticipant', error)
+      this.setState({ isLoader: false })
+      })
+    }
+
   render() {
     const dialog = this.props.navigation.getParam('dialog', false)
     let dialogPhoto
@@ -86,7 +105,7 @@ export default class ContactDetails extends Component {
 
     const { isLoader, chatDialog } = this.state
     const currentId = this.currentUser()
-
+    console.log(dialog)
     return (
       <View style={styles.container}>
         {isLoader && (
@@ -106,13 +125,20 @@ export default class ContactDetails extends Component {
           </View>
         </TouchableOpacity>
         {chatDialog.type === 2 && this.isGroupCreator() ?
-            <TouchableOpacity onPress={() => {this.isAdmin(dialog.id) ?
-              this.removeAdmin()
-              : this.addAdmin()}}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
-              </View>
-            </TouchableOpacity>
+            <View>
+              <TouchableOpacity onPress={() => {this.isAdmin(dialog.id) ?
+                this.removeAdmin()
+                : this.addAdmin()}}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.removeParticipant([dialog])}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonLabel}> Remove User </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
             :
           false
         }

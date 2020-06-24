@@ -42,12 +42,21 @@ export default class GroupDetails extends Component {
   }
 
   componentDidMount() {
-	const dialog = this.props.navigation.getParam('dialog', false)
-	const isNeedFetchUsers = this.props.navigation.getParam('isNeedFetchUsers', false)
-	if (isNeedFetchUsers) {
-	  this.fetchMoreUsers(dialog.occupants_ids)
-	}
-  }
+
+    this.props.navigation.addListener(
+    'didFocus',
+    payload => {
+      const updateArrUsers = UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
+      this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
+    });
+
+  	const dialog = this.props.navigation.getParam('dialog', false)
+  	const isNeedFetchUsers = this.props.navigation.getParam('isNeedFetchUsers', false)
+
+  	if (isNeedFetchUsers) {
+  	  this.fetchMoreUsers(dialog.occupants_ids)
+  	}
+    }
 
   fetchMoreUsers = async (occupants_ids) => {
 	await UsersService.getOccupants(occupants_ids)
@@ -156,37 +165,22 @@ export default class GroupDetails extends Component {
   }
 
   addParticipant = (participants) => {
-	{ console.log('participants') }
-	{ console.log(participants) }
-	const dialog = this.props.navigation.getParam('dialog', false)
-	this.setState({ isLoader: true })
-	ChatService.addOccupantsToDialog(dialog.id, participants)
-	  .then(dialog => {
-		const updateArrUsers = UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
-		showAlert('Participants added')
-		this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
-	  })
-	  .catch(error => {
-		console.warn('addParticipant', error)
-		this.setState({ isLoader: false })
-	  })
-  }
-  removeParticipant = (participants) => {
-	{ console.log('participants: ') }
-	{ console.log(participants) }
-	const dialog = this.props.navigation.getParam('dialog', false)
-	this.setState({ isLoader: true })
-	ChatService.removeOccupantsFromDialog(dialog.id, participants)
-	  .then(dialog => {
-		const updateArrUsers = UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
-		showAlert('Participant Removed')
-		this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
-	  })
-	  .catch(error => {
-		console.warn('removeParticipant', error)
-		this.setState({ isLoader: false })
-	  })
-  }
+  	{ console.log('participants') }
+  	{ console.log(participants) }
+  	const dialog = this.props.navigation.getParam('dialog', false)
+  	this.setState({ isLoader: true })
+  	ChatService.addOccupantsToDialog(dialog.id, participants)
+  	  .then(dialog => {
+  		const updateArrUsers = UsersService.getUsersInfoFromRedux(dialog.occupants_ids)
+  		showAlert('Participants added')
+  		this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
+  	  })
+  	  .catch(error => {
+  		console.warn('addParticipant', error)
+  		this.setState({ isLoader: false })
+  	  })
+    }
+
   getUserName = async (id) => {
 	await UsersService.getUserById(id)
 	const users = UsersService.getUsersInfoFromRedux([id])
@@ -224,7 +218,7 @@ export default class GroupDetails extends Component {
 		})
 	}
   }
-  
+
   handleCancel = () => {
 	this.setState({ dialogVisible: false });
   };
@@ -244,27 +238,25 @@ export default class GroupDetails extends Component {
   keyExtractor = (item, index) => index.toString()
 
   _renderUser = ({ item }) => {
-	return (
-		<View>
-			<View style={styles.renderContainer}>
-				<View style={styles.renderAvatar}>
-					<Avatar
-					photo={item.avatar}
-					name={item.full_name}
-					iconSize="medium"
-					/>
-					<Text style={styles.nameTitle}>{item.full_name}</Text>
-				</View>
-				<TouchableOpacity onPress={() => this.removeParticipant([item])}>
-					<Text style={styles.removeTitle}>Remove</Text>
-				</TouchableOpacity>
-				<TouchableOpacity onPress={() => this.goToContactDetailsScreen(item)}>
-					<Icon name="keyboard-arrow-right" size={30} color='#48A6E3' />
-				</TouchableOpacity>
-			</View>
-		</View>
-	)
-  }
+    console.log(item)
+  	return (
+  		<View>
+  			<View style={styles.renderContainer}>
+  				<View style={styles.renderAvatar}>
+  					<Avatar
+  					photo={item.avatar}
+  					name={item.full_name}
+  					iconSize="medium"
+  					/>
+  					<Text style={styles.nameTitle}>{item.full_name}</Text>
+  				</View>
+  				<TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
+  					<Icon name="keyboard-arrow-right" size={30} color='#48A6E3' />
+  				</TouchableOpacity>
+  			</View>
+  		</View>
+  	)
+    }
 
   _renderFlatListHeader = () => {
 	const {searchKeyword} = this.state
@@ -455,5 +447,8 @@ const styles = StyleSheet.create({
 	dialogName: {
 		fontSize: 17,
 		marginTop: 35
-	}
+	},
+  spacing : {
+    paddingVertical: 20,
+  }
 })
