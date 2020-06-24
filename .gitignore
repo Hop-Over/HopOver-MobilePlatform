@@ -41,6 +41,12 @@ captures/
 
 # IntelliJ
 *.iml
+android/.idea/workspace.xml
+android/.idea/tasks.xml
+android/.idea/gradle.xml
+android/.idea/assetWizardSettings.xml
+android/.idea/dictionaries
+android/.idea/libraries
 .idea/workspace.xml
 .idea/tasks.xml
 .idea/gradle.xml

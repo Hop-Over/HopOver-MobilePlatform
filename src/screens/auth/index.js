@@ -23,7 +23,7 @@ export default class Auth extends Component {
         style={{ flex: 1, backgroundColor: 'white' }}
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         keyboardVerticalOffset={Platform.OS === 'ios' ? Header.HEIGHT + 20 : 0}>
-        <StatusBar barStyle={'dark-content'} />
+        <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
         <AuthLogo />
         <AuthForm
           navigation={navigation}

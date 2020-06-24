@@ -11,6 +11,7 @@ import Contacts from '../screens/main/contacts/index'
 import CreateDialog from '../screens/main/contacts/createDialog'
 import GroupDetails from '../screens/main/chat/groupDetails'
 import ContactDetails from '../screens/main/chat/contactDetails'
+import searchDialog from '../screens/main/chat/searchDialog'
 
 export default createAppContainer(createSwitchNavigator(
   {
@@ -62,6 +63,9 @@ export default createAppContainer(createSwitchNavigator(
         navigationOptions: {
           headerTitle: 'Contact details'
         }
+      },
+      searchDialog: {
+        screen: searchDialog,
       }
     }),
   },
