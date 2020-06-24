@@ -20,19 +20,21 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import { showAlert } from '../../../helpers/alert'
 import { SIZE_SCREEN } from '../../../helpers/constants'
 
-class People extends Component {
+class Search extends Component {
   static currentUserInfo = ''
   dialogs = []
 
+
   constructor(props) {
     super(props)
+    navigation = this.props.navigation
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
-      keyword: '',
+      keyword: navigation.getParam("keyword"),
       isUpdate: false,
-      friendId: [],
-      pendingId: [],
-      updateContacts: true,
+      friendId: navigation.getParam("friendId"),
+      pendingId: navigation.getParam("pendingId"),
+      initalUpdate: false,
     }
   }
 
@@ -42,21 +44,10 @@ class People extends Component {
 
   userNotFound = false
 
-  updateSearch = keyword => this.setState({keyword })
-
-  toggleUserSelect = (user) => {
-    let newArr = []
-    this.selectedUsers.forEach(elem => {
-      if (elem.id !== user.id) {
-        newArr.push(elem)
-      }
-    })
-    this.selectedUsers = newArr
-    this.setState({ isUpdate: !this.state.isUpdate })
-  }
+  updateSearch = keyword => this.setState({keyword})
 
   static navigationOptions = ({ navigation }) => {
-    People.currentUserInfo = { ...store.getState().currentUser.user }
+    Search.currentUserInfo = { ...store.getState().currentUser.user }
     return {
       headerTitle: (
         <Text style={[
@@ -64,14 +55,14 @@ class People extends Component {
           Platform.OS === 'android' ?
             { paddingLeft: 13 } :
             { paddingLeft: 0 }]}>
-          {People.currentUserInfo.full_name}
+          {Search.currentUserInfo.full_name}
         </Text>
       ),
       headerRight: (
         <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
           <Avatar
-            photo={People.currentUserInfo.avatar}
-            name={People.currentUserInfo.full_name}
+            photo={Search.currentUserInfo.avatar}
+            name={Search.currentUserInfo.full_name}
             iconSize="small"
           />
         </TouchableOpacity>
@@ -80,53 +71,14 @@ class People extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.currentUser.user.full_name !== People.currentUserInfo.full_name) {
-      People.currentUserInfo = { ...props.currentUser.user }
+    if (props.currentUser.user.full_name !== Search.currentUserInfo.full_name) {
+      Search.currentUserInfo = { ...props.currentUser.user }
       return true
     } return null
   }
 
   static goToSettingsScreen = (props) => {
-    props.push('Settings', { user: People.currentUserInfo })
-  }
-
-  getFriends = async () => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
-        .then((response) => {
-          let friends = []
-          let pending = []
-          keys = Object.keys(response)
-          keys.forEach(elem => {
-            // Make sure that they are friends and not just a request
-            let contact = response[elem]
-            console.log(elem)
-            console.log(contact)
-            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
-              friends.push(elem)
-            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
-              pending.push(elem)
-            }
-          })
-          this.setState({friendId: friends})
-          this.setState({pendingId: pending})
-      })
-      this.setState({updateContacts: false})
-      await UserService.getOccupants(this.state.friendId)
-      this.setState({isLoader: false})
-    }
-  }
-
-  _renderUser = ({ item }) => {
-    const isSelected = this.selectedUsers.find(elem => elem.id === item.id)
-    return (
-      <User
-        user={item}
-        selectUsers={this.selectUsers}
-        dialogType={this.state.dialogType}
-        selectedUsers={isSelected ? true : false}
-      />
-    )
+    props.push('Settings', { user: Search.currentUserInfo })
   }
 
   searchUsers = () => {
@@ -134,7 +86,7 @@ class People extends Component {
     let str = keyword.trim()
     if (str.length > 2) {
       this.setState({ isLoader: true })
-      UserService.listUsersByFullName(str, [People.currentUserInfo.id])
+      UserService.listUsersByFullName(str, [Search.currentUserInfo.id])
         .then(users => {
           this.listUsers = users
           this.userNotFound = false
@@ -149,25 +101,14 @@ class People extends Component {
     }
   }
 
-
-  selectUsers = (user) => {
-    // True - Publick dialog
-    const userSelect = this.selectedUsers.find(elem => elem.id === user.id)
-    if (userSelect) {
-      let newArr = []
-      this.selectedUsers.forEach(elem => {
-        if (elem.id !== user.id) {
-          newArr.push(elem)
-        }
-      })
-      this.selectedUsers = newArr
-    } else {
-      this.selectedUsers.push(user)
+  initStates = () => {
+    if (!this.state.initalUpdate){
+      this.searchUsers()
+      this.setState({initalUpdate: true})
     }
-    this.setState({ isUpdate: !this.state.isUpdate })
   }
 
-  _renderFriend = ({ item }) => {
+  _renderUser = ({ item }) => {
     return (
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :
@@ -180,15 +121,29 @@ class People extends Component {
             name={item.full_name}
             iconSize="medium"
           />
-          <Text style={styles.nameTitle}>{item.full_name}</Text>
+          <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.iconButtons}
+            {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
+            (<TouchableOpacity style={styles.iconButtons}
               onPress={() => {
-                ContactService.deleteContact(item.id)
-                this.setState({updateContacts: true})
+                if (this.state.friendId.includes(item.id.toString())){
+                  ContactService.rejectRequest(item.id)
+                  ContactService.deleteContact(item.id)
+                  let index = this.state.friendId.indexOf(item.id.toString())
+                  this.state.friendId.splice(index, 1)
+                  this.searchUsers()
+
+                } else if (!this.state.pendingId.includes(item.id.toString())) {
+                  ContactService.sendRequest(item.id)
+                  this.state.pendingId.push(item.id.toString())
+                  this.searchUsers()
+                }
               }}>
-              <Icon name="close" size={30} color="black"/>
-            </TouchableOpacity>
+              <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="black"/>
+            </TouchableOpacity>) :
+            (<View style={styles.pendingButton}>
+              <Text style={styles.pendingText}> Pending </Text>
+            </View>)}
           </View>
         </View>
       </View> :
@@ -201,15 +156,11 @@ class People extends Component {
   keyExtractor = (item, index) => index.toString()
 
   render() {
-    const navigation = this.props.navigation
-    const { isLoader, friendId, pendingId, keyword } = this.state
-    this.getFriends()
-    data = UserService.getUsersInfoFromRedux(this.state.friendId)
-
+    this.initStates()
+    const { isLoader, friendId, pendingId, initalUpdate } = this.state
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
-        <Nav navigation={this.props.navigation}/>
 
         <View style={styles.searchUser}>
           <TextInput style={styles.searchInput}
@@ -218,27 +169,22 @@ class People extends Component {
             placeholderTextColor="grey"
             returnKeyType="search"
             onChangeText={this.updateSearch}
-            onSubmitEditing={() => {
-              if (keyword.length > 3){
-              navigation.navigate('Search',{navigation: navigation, pendingId: pendingId, friendId: friendId, keyword: keyword})
-            } else {
-              showAlert('Enter more than 3 characters')
-            }
-            }}
-            value={this.state.search}
+            onSubmitEditing={this.searchUsers}
+            value={this.state.keyword}
           />
         </View>
-        {friendId.length > 0 ?
-          (<SafeAreaView style={styles.listUsers}>
-            <FlatList
-              data={data}
-              renderItem={this._renderFriend}
-              keyExtractor={this.keyExtractor}
-            />
-          </SafeAreaView>) :
-          (<Text style={styles.userNotFound}> No friends yet </Text>)
+        {this.userNotFound ?
+          (<Text style={styles.userNotFound}>Couldn't find user</Text>) :
+          (
+            <SafeAreaView style={styles.listUsers}>
+              <FlatList
+                data={this.listUsers}
+                keyExtractor={this.keyExtractor}
+                renderItem={(item) => this._renderUser(item)}
+              />
+            </SafeAreaView>
+          )
         }
-        <BottomNavBar navigation={this.props.navigation}/>
       </View>
 
     )
@@ -273,7 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   searchUser: {
-    marginTop: 90,
+    marginTop: 30,
     margin: 10
   },
   searchInput: {
@@ -296,7 +242,19 @@ const styles = StyleSheet.create({
     marginTop: SIZE_SCREEN.height/4,
     textAlign: 'center'
   },
-
+  pendingText: {
+    color: "grey",
+    fontSize: 15,
+  },
+  pendingButton: {
+    width: 80,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    backgroundColor: '#EAEAEA',
+    alignSelf: 'flex-end',
+  },
   listUsers: {
     marginLeft: 20,
     flex: 1
@@ -310,11 +268,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderColor: 'grey',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 7,
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.5,
+    fontSize: 17
+  },
+  pendingTitle: {
+    width: SIZE_SCREEN.width/1.7,
     fontSize: 17
   },
   iconButtons: {
@@ -324,7 +287,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#EAEAEA',
-    alignSelf: "flex-end"
+    alignSelf: 'flex-end'
   },
   buttonContainer: {
     flexDirection: "row",
@@ -338,4 +301,4 @@ const mapStateToProps = ({ dialogs, currentUser }) => ({
   currentUser
 })
 
-export default connect(mapStateToProps)(People)
+export default connect(mapStateToProps)(Search)

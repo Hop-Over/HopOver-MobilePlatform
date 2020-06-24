@@ -385,6 +385,22 @@ class ChatService {
     return newDialog
   }
 
+  addAdmin(dialogId,userId){
+    const adminId = [userId]
+    ConnectyCube.chat.dialog
+      .addAdmins(dialogId, adminId)
+      .then(dialog => {console.log("Successsfully made " + userId + " admin")})
+      .catch(error => {console.log("Failed to make " + userId + " admin")});
+  }
+
+  removeAdmin(dialogId,userId){
+    const adminId = [userId]
+    ConnectyCube.chat.dialog
+      .removeAdmins(dialogId, adminId)
+      .then(dialog => {console.log("Successsfully removed " + userId + " as admin")})
+      .catch(error => {console.log("Failed to remove " + userId + " as admin")});
+  }
+
   async uploadPhoto(params) {
     const file = preparationUploadImg(params)
     return ConnectyCube.storage.createAndUpload({ file })

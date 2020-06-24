@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, Image } from 'react-native'
 import AuthService from '../services/auth-service'
 import ChatService from '../services/chat-service'
+import ContactService from '../services/contacts-service'
 
 export default class AppWrap extends Component {
   constructor(props) {
@@ -14,6 +15,7 @@ export default class AppWrap extends Component {
     const rootStackScreen = await AuthService.init()
     if (rootStackScreen === 'Dialogs') {
       ChatService.setUpListeners()
+      ContactService.setUpListeners()
     }
     navigation.navigate(rootStackScreen)
   }

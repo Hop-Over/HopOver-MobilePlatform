@@ -22,6 +22,7 @@ import { SIZE_SCREEN } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
+import store from '../../../store'
 
 export default class GroupDetails extends Component {
 
@@ -124,9 +125,24 @@ export default class GroupDetails extends Component {
 	return ChatService.isGroupCreator(dialog.user_id)
   }
 
-  goToContactDetailsScreen = (dialog) => {
-	const { navigation } = this.props
-	navigation.push('ContactDetails', { dialog })
+
+  isAdmin = () => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    const admins = dialog.admins_ids
+    const userId = this.currentUser()
+    console.log(admins)
+    if (admins.includes(userId)){
+      return true
+    } else {
+      return false
+    }
+  }
+
+  goToContactDeteailsScreen = (dialog) => {
+    const { navigation } = this.props
+    const chatDialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ContactDetails', {dialog, chatDialog: chatDialog })
+
   }
 
   goToContactsScreen = () => {
@@ -177,6 +193,10 @@ export default class GroupDetails extends Component {
 	return users
   }
 
+  currentUser = () => {
+    return store.getState().currentUser.user.id
+  }
+
   goToSearchScreen = (searchResponse) => {
 	const { navigation } = this.props
 	const dialog = navigation.getParam('dialog', false)
@@ -199,9 +219,6 @@ export default class GroupDetails extends Component {
 				searchResponse.sort(function(a, b){
 					return b.date_sent - a.date_sent;
 				});
-				// for(var i = 0; i < searchResponse.length; i++){
-				//     {console.log(searchResponse[i].message + ' - ' + searchResponse[i].sender_id)}
-				// }
 				this.goToSearchScreen(searchResponse)
 			}
 		})
@@ -251,7 +268,7 @@ export default class GroupDetails extends Component {
 
   _renderFlatListHeader = () => {
 	const {searchKeyword} = this.state
-	return this.isGroupCreator() ?
+	return this.isGroupCreator() || this.isAdmin() ?
 	  (
 		<View>
 			<TextInput style={styles.searchInput}
@@ -265,24 +282,26 @@ export default class GroupDetails extends Component {
 			value={this.state.search}
 		  />
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
-				<View style={styles.renderAvatar}>
-					<Icon name="person-add" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-				</View>
-				<View>
-					<Text style={styles.nameTitle}>Add member</Text>
-				</View>
-			</TouchableOpacity>
+          <View style={styles.renderAvatar}>
+            <Icon name="person-add" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
+          </View>
+          <View>
+            <Text style={styles.nameTitle}>Add member</Text>
+          </View>
+      </TouchableOpacity>
 		</View>
 	  ) : (
 		<View>
-		<TouchableOpacity style={styles.renderHeaderContainer} onPress={()=>{this.showDialog(true)}}>
-			<View style={styles.renderAvatar}>
-				<Icon name="search" size={35} color='#48A6E3' style={{ marginRight: 15 }} />
-			</View>
-			<View>
-				<Text style={styles.nameTitle}>Search</Text>
-			</View>
-		</TouchableOpacity>
+		<TextInput style={styles.searchInput}
+			autoCapitalize="none"
+			placeholder="Search Chat..."
+			placeholderTextColor="grey"
+			clearButtonMode = "while-editing"
+			returnKeyType = "search"
+			onChangeText={this.updateSearch}
+			onSubmitEditing = {() => this.sendInput(this.state.searchKeyword)}
+			value={this.state.search}
+		  />
 	</View>
 	  )
   }
@@ -299,53 +318,49 @@ export default class GroupDetails extends Component {
   }
 
   render() {
-	const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
-	return (
-	  <KeyboardAvoidingView style={styles.container}>
-		{isLoader &&
-		  <Indicator color={'blue'} size={40} />
-		}
-		<ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled={!this.isGroupCreator()} />
-		{this.isGroupCreator() ?
-		  (<View>
-			<DialogInput isDialogVisible={this.state.isDialogVisible}
-				title={"Search"}
-				message={"Enter a keyword to search"}
-				hintInput ={"Search"}
-				submitInput={ (inputText) => {this.sendInput(inputText)} }
-				closeDialog={ () => {this.showDialog(false)}}
-			>
-			</DialogInput>
-			<TextInput
-			  style={styles.input}
-			  ref="input"
-			  autoCapitalize="none"
-			  placeholder="Change group name ..."
-			  placeholderTextColor="grey"
-			  onChangeText={this.updateName}
-			  value={dialogName}
-			  maxLength={100}
-			/>
-			<View style={styles.subtitleWrap}>
-			  <Text style={styles.subtitleInpu}>Change group name</Text>
-			</View>
-		  </View>) :
-		  <Text style={styles.dialogName}>{dialogName}</Text>
-		}
-		<SafeAreaView style={styles.listUsers}>
-		  <FlatList
-			data={occupantsInfo}
-			ListHeaderComponent={this._renderFlatListHeader}
-			ListFooterComponent={this._renderFlatListFooter}
-			renderItem={this._renderUser}
-			keyExtractor={this.keyExtractor}
-		  />
-		</SafeAreaView>
-		{this.isGroupCreator() &&
-		  <CreateBtn goToScreen={this.updateDialog} type={BTN_TYPE.CREATE_GROUP} />
-		}
-	  </KeyboardAvoidingView>
-	)
+    const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
+    const dialog = this.props.navigation.getParam('dialog', false)
+    //console.log(this.currentUser())
+    //console.log(this.isAdmin())
+    console.log(this.isAdmin())
+    return (
+      <KeyboardAvoidingView style={styles.container}>
+        {isLoader &&
+          <Indicator color={'blue'} size={40} />
+        }
+        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={!this.isGroupCreator() && !this.isAdmin()} />
+        {this.isGroupCreator() || this.isAdmin() ?
+          (<View>
+            <TextInput
+              style={styles.input}
+              ref="input"
+              autoCapitalize="none"
+              placeholder="Change group name ..."
+              placeholderTextColor="grey"
+              onChangeText={this.updateName}
+              value={dialogName}
+              maxLength={100}
+            />
+            <View style={styles.subtitleWrap}>
+              <Text style={styles.subtitleInpu}>Change group name</Text>
+            </View>
+          </View>) :
+          <Text style={styles.dialogName}>{dialogName}</Text>
+        }
+        <SafeAreaView style={styles.listUsers}>
+          <FlatList
+            data={occupantsInfo}
+            ListHeaderComponent={this._renderFlatListHeader}
+            ListFooterComponent={this._renderFlatListFooter}
+            renderItem={this._renderUser}
+            keyExtractor={this.keyExtractor}
+          />
+        </SafeAreaView>
+        {this.isGroupCreator() || this.isAdmin() &&
+          <CreateBtn goToScreen={this.updateDialog} type={BTN_TYPE.CREATE_GROUP} />
+        }
+      </KeyboardAvoidingView>
+    )
   }
 }
 // [{"avatar": null, "created_at": "2020-05-05T17:54:20Z", "custom_data": "asdfghjk", "full_name": "bilal", "id": 1338358, "last_request_at": null, "login": "dofypp", "phone": "", "updated_at": "2020-05-31T18:27:05Z"}]
