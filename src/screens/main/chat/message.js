@@ -86,8 +86,8 @@ export default class Message extends Component {
           (
             <View style={[styles.container, styles.positionToLeft]}>
               <Avatar
-                photo={user.avatar}
-                name={user.full_name}
+                //photo={user.avatar}
+                //name={user.full_name}
                 name="insert name here"
                 iconSize="small"
               />

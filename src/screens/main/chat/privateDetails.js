@@ -24,7 +24,7 @@ import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
 
-export default class GroupDetails extends Component {
+export default class PrivateDetails extends Component {
 
   constructor(props) {
 	super(props)
@@ -105,7 +105,7 @@ export default class GroupDetails extends Component {
 	const { navigation } = this.props
 	const dialog = navigation.getParam('dialog', false)
 	Alert.alert(
-	  'Are you sure you want to leave the group chat?',
+	  'Are you sure you want to delete the chat?',
 	  '',
 	  [
 		{
@@ -245,69 +245,6 @@ export default class GroupDetails extends Component {
 
   keyExtractor = (item, index) => index.toString()
 
-  _renderUser = ( {item} ) => {
-    const showUsers = this.state.showUsers
-    console.log(showUsers)
-    return (
-  		<View>
-      {showUsers ?
-  			(<TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
-          <View style={styles.renderContainer}>
-  				<View style={styles.renderAvatar}>
-  					<Avatar
-  					photo={item.avatar}
-  					name={item.full_name}
-  					iconSize="medium"
-  					/>
-  					<Text style={styles.nameTitle}>{item.full_name}</Text>
-  				</View>
-  					<Icon name="keyboard-arrow-right" size={30} color='black' />
-  			</View>
-        </TouchableOpacity>)
-  	     : null
-       }
-      </View>
-  	)
-  }
-
-  _renderFlatListHeader = () => {
-	const {searchKeyword, showUsers} = this.state
-	return this.isGroupCreator() || this.isAdmin() ?
-	  (
-		<View>
-      <Text style={styles.labelTitle}> Group </Text>
-			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
-          <View style={styles.renderAvatar}>
-            <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />
-          </View>
-          <View>
-            <Text style={styles.nameTitle}>Add member</Text>
-          </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
-          <View style={styles.renderAvatar}>
-            <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
-          </View>
-          <View>
-            <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
-          </View>
-      </TouchableOpacity>
-		</View>
-  ) :
-  <View>
-  <Text style={styles.labelTitle}> Group </Text>
-    <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
-        <View style={styles.renderAvatar}>
-          <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
-        </View>
-        <View>
-          <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
-        </View>
-    </TouchableOpacity>
-    </View>
-  }
-
   _renderFlatListFooter = () => {
 	return(
   <View>
@@ -337,10 +274,10 @@ export default class GroupDetails extends Component {
   <Text style={styles.labelTitle}> More actions </Text>
   <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
-		<Icon name="exit-to-app" size={35} color='black' style={{ marginRight: 15 }} />
+		<Icon name="delete" size={35} color='black' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.nameTitle}>Exit group</Text>
+		<Text style={styles.nameTitle}>Delete Chat</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
@@ -357,32 +294,12 @@ export default class GroupDetails extends Component {
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
-        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={!this.isGroupCreator() && !this.isAdmin()} />
-        {this.isGroupCreator() || this.isAdmin() ?
-          (<View>
-            <TextInput
-              style={styles.input}
-              ref="input"
-              autoCapitalize="none"
-              placeholder="Change group name ..."
-              placeholderTextColor="grey"
-              onChangeText={this.updateName}
-              value={dialogName}
-              maxLength={100}
-              onSubmitEditing = {() => this.updateDialog()}
-            />
-            <View style={styles.subtitleWrap}>
-              <Text style={styles.subtitleInpu}>Change group name</Text>
-            </View>
-          </View>) :
-          <Text style={styles.dialogName}>{dialogName}</Text>
-        }
+        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={true} />
+        <Text style={styles.dialogName}>{dialogName}</Text>
         <SafeAreaView style={styles.listUsers}>
           <FlatList
             data={occupantsInfo}
-            ListHeaderComponent={this._renderFlatListHeader}
             ListFooterComponent={this._renderFlatListFooter}
-            renderItem={this._renderUser}
             keyExtractor={this.keyExtractor}
             extraData={this.state}
           />

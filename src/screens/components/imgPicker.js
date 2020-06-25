@@ -37,7 +37,7 @@ export default class ImgPicker extends Component {
               source={{ uri: isPickImage.path }}
             />
             <View style={styles.icon}>
-              <Icon name="create" size={20} color='#48A6E3' />
+              <Icon name="create" size={20} color='black' />
             </View>
           </>
         ) :
@@ -49,7 +49,7 @@ export default class ImgPicker extends Component {
             />
             {!isDidabled &&
               <View style={styles.icon}>
-                <Icon name="create" size={20} color='#48A6E3' />
+                <Icon name="create" size={20} color='black' />
               </View>
             }
           </View>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#48A6E3'
+    borderWidth: 1.5,
+    borderColor: 'black'
   },
 })

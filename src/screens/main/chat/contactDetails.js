@@ -15,7 +15,7 @@ export default class ContactDetails extends Component {
   }
 
   isGroupCreator = () => {
-    const dialog = this.state.chatDialog
+    dialog = this.props.navigation.getParam('chatDialog', false)
     return ChatService.isGroupCreator(dialog.user_id)
   }
 
@@ -105,7 +105,7 @@ export default class ContactDetails extends Component {
 
     const { isLoader, chatDialog } = this.state
     const currentId = this.currentUser()
-    console.log(dialog)
+    //console.log(chatDialog.user_id === dialog.id)
     return (
       <View style={styles.container}>
         {isLoader && (
@@ -140,7 +140,15 @@ export default class ContactDetails extends Component {
               </TouchableOpacity>
             </View>
             :
-          false
+          <View>
+          {chatDialog.type === 2 && this.isAdmin(currentId) ?
+            <TouchableOpacity onPress={() => this.removeParticipant([dialog])}
+              disabled={this.isUserGroupCreator(dialog.id)}>
+              <View style={this.isUserGroupCreator(dialog.id) ? styles.disabledContainer : styles.buttonContainer }>
+                <Text style={styles.buttonLabel}> Remove User </Text>
+              </View>
+            </TouchableOpacity> : null}
+          </View>
         }
       </View>
     )
@@ -154,23 +162,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   nameContainer: {
-    marginVertical: 70,
-    borderBottomWidth: 1,
-    borderColor: 'grey',
-    width: '40%'
+    marginTop: 20,
+    marginBottom: 70,
+    borderBottomWidth: 2,
+    width: '50%',
   },
   name: {
-    fontSize: 18,
+    fontSize: 24,
     textAlign: 'center',
-    padding: 5
+    padding: 5,
   },
+
   buttonContainer: {
     height: 50,
     width: 200,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#00e3cf',
-    backgroundColor: '#00e3cf',
+    borderColor: 'black',
+    backgroundColor: 'black',
+    marginHorizontal: 20,
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  disabledContainer: {
+    height: 50,
+    width: 200,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: 'grey',
+    backgroundColor: 'grey',
     marginHorizontal: 20,
     marginVertical: 10,
     alignItems: 'center',

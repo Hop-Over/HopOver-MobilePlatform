@@ -12,6 +12,7 @@ import Chat from '../screens/main/chat/index'
 import Contacts from '../screens/main/contacts/index'
 import CreateDialog from '../screens/main/contacts/createDialog'
 import GroupDetails from '../screens/main/chat/groupDetails'
+import PrivateDetails from '../screens/main/chat/privateDetails'
 import ContactDetails from '../screens/main/chat/contactDetails'
 import searchDialog from '../screens/main/chat/searchDialog'
 
@@ -64,6 +65,12 @@ export default createAppContainer(createSwitchNavigator(
         screen: GroupDetails,
         navigationOptions: {
           headerTitle: 'Group details'
+        }
+      },
+      PrivateDetails:{
+        screen: PrivateDetails,
+        navigationOptions: {
+          headerTitle: 'Private details'
         }
       },
       ContactDetails: {

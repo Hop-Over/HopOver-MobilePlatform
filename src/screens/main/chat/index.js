@@ -61,7 +61,7 @@ export class Chat extends PureComponent {
   static goToDetailsScreen = (props) => {
     const isNeedFetchUsers = props.getParam('isNeedFetchUsers', false)
     if (props.state.params.dialog.type === DIALOG_TYPE.PRIVATE) {
-      props.push('ContactDetails', { dialog: props.state.params.dialog })
+      props.push('PrivateDetails', { dialog: props.state.params.dialog })
     } else {
       props.push('GroupDetails', { dialog: props.state.params.dialog, isNeedFetchUsers })
     }
@@ -134,6 +134,7 @@ export class Chat extends PureComponent {
   render() {
     const { history } = this.props
     const { messageText, activeIndicator } = this.state
+    //console.log(this.props.navigation.state.params.dialog)
     return (
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: 'white' }}
