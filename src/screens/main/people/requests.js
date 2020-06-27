@@ -78,8 +78,7 @@ class Requests extends Component {
           keys.forEach(elem => {
             // Make sure that they are requesting and not friends
             let contact = response[elem]
-            console.log(elem)
-            console.log(response[elem])
+
             if (contact["subscription"] === "none" && contact["ask"] === null && elem !== "NaN"){
               requests.push(elem)
             }

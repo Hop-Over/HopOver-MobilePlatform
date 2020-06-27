@@ -4,10 +4,12 @@ import UserModel from '../models/user'
 
 class ContactService {
   setUpListeners() {
+    console.log("Setting up listeners")
     ConnectyCube.chat.onContactListListener= this.onContactListListener.bind(this)
     ConnectyCube.chat.onRejectSubscribeListener = this.onRejectSubscribeListener.bind(this)
     ConnectyCube.chat.onConfirmSubscribeListener = this.onConfirmSubscribeListener.bind(this)
     ConnectyCube.chat.onSubscribeListener = this.onSubscribeListener.bind(this)
+    console.log("Completed setting up listeners")
   }
 
   async fetchContactList(){
@@ -35,7 +37,10 @@ class ContactService {
     console.log(userId + " ACCEPTED REQUEST")
   }
   onRejectSubscribeListener(userId){
-    console.log(userId + " REJECTED REQUEST")
+    //this.deleteContact(userId)
+    if (userId !== undefined) {
+      onsole.log(userId + " REJECTED REQUEST")
+    }
   }
   onContactListListener(userId, type){
     console.log("CONTACT LIST UPDATED")
@@ -45,5 +50,6 @@ class ContactService {
   }
 }
 
-const contactService = new ContactService()
+let contactService = new ContactService()
+//Object.freeze(contactService)
 export default contactService

@@ -100,8 +100,6 @@ class People extends Component {
           keys.forEach(elem => {
             // Make sure that they are friends and not just a request
             let contact = response[elem]
-            console.log(elem)
-            console.log(contact)
             if(contact["subscription"] === "to" || contact["subscription"] === "from"){
               friends.push(elem)
             } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {

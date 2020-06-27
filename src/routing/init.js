@@ -14,6 +14,7 @@ import CreateDialog from '../screens/main/contacts/createDialog'
 import GroupDetails from '../screens/main/chat/groupDetails'
 import PrivateDetails from '../screens/main/chat/privateDetails'
 import ContactDetails from '../screens/main/chat/contactDetails'
+import SharedMedia from '../screens/main/chat/sharedMedia'
 import searchDialog from '../screens/main/chat/searchDialog'
 
 export default createAppContainer(createSwitchNavigator(
@@ -55,6 +56,13 @@ export default createAppContainer(createSwitchNavigator(
           headerTitle: 'Contacts'
         }
       },
+      SharedMedia: {
+        screen: SharedMedia,
+        navigationOptions: {
+          headerTitle: 'Media'
+        }
+      },
+
       CreateDialog: {
         screen: CreateDialog,
         navigationOptions: {

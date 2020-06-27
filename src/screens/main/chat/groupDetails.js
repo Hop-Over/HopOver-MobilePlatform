@@ -156,6 +156,12 @@ export default class GroupDetails extends Component {
 
   }
 
+  goToSharedMediaScreen = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('SharedMedia', {dialog})
+  }
+
   goToContactsScreen = () => {
 	if (this.state.occupantsInfo.length === 8) {
 	  showAlert('Maximum 9 participants')
@@ -324,7 +330,7 @@ export default class GroupDetails extends Component {
     value={this.state.search}
   />
   </View>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => console.log("Media button pressed")}>
+  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => this.goToSharedMediaScreen()}>
     <View style={styles.renderAvatar}>
     <Icon name="image" size={35} color='black' style={{ marginRight: 15 }} />
     </View>
