@@ -15,6 +15,7 @@ import GroupDetails from '../screens/main/chat/groupDetails'
 import PrivateDetails from '../screens/main/chat/privateDetails'
 import ContactDetails from '../screens/main/chat/contactDetails'
 import SharedMedia from '../screens/main/chat/sharedMedia'
+import ChatMap from '../screens/main/chat/chatMap'
 import searchDialog from '../screens/main/chat/searchDialog'
 
 export default createAppContainer(createSwitchNavigator(
@@ -60,6 +61,12 @@ export default createAppContainer(createSwitchNavigator(
         screen: SharedMedia,
         navigationOptions: {
           headerTitle: 'Media'
+        }
+      },
+      ChatMap: {
+        screen: ChatMap,
+        navigationOptions: {
+          headerTitle: 'Map'
         }
       },
 
