@@ -69,6 +69,12 @@ export default class PrivateDetails extends Component {
 	this.setState({ isPickImage: image })
   this.updateDialog()
   }
+  
+  goToSharedMediaScreen = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('SharedMedia', {dialog})
+  }
 
   updateSearch = (searchKeyword) => {
 	  this.setState({searchKeyword})
@@ -261,7 +267,7 @@ export default class PrivateDetails extends Component {
     value={this.state.search}
   />
   </View>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => console.log("Media button pressed")}>
+  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => this.goToSharedMediaScreen()}>
     <View style={styles.renderAvatar}>
     <Icon name="image" size={35} color='black' style={{ marginRight: 15 }} />
     </View>
