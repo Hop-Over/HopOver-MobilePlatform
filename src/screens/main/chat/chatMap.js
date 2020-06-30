@@ -16,59 +16,111 @@ import { showAlert } from '../../../helpers/alert'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { SIZE_SCREEN } from '../../../helpers/constants'
 
-
-const fullWidth = Dimensions.get('window').width
-const fullHeight = Dimensions.get('window').height
-
 export default class ChatMap extends Component {
   state = {
     isLoader: false,
-    dialog: this.props.navigation.getParam('dialog'),
-    userLocation: null,
+    region: null,
     reload: true,
+    locations: [],
+    updateLocations: true,
+    sharing: false,
+  }
+
+  isSharing = async (chatId, userId) => {
+    await FirebaseService.isSharing(chatId, userId)
+    .then(res => {
+      if  (res === null){
+        this.setState({sharing: false})
+      } else {
+        this.setState({sharing: true})
+      }
+    })
+  }
+
+  stopLocation = () => {
+    const userId = this.currentUser()
+    const dialog = this.props.navigation.getParam('dialog')
+    FirebaseService.stopLocation(userId, dialog.id)
+    this.isSharing(dialog.id, userId)
+    this.getChatLocations(dialog.id)
+    this.setState({updateLocations: true})
+  }
+
+  shareLocation = () => {
+    const userId = this.currentUser()
+    const dialog = this.props.navigation.getParam('dialog')
+    const location = this.state.region
+    FirebaseService.shareLocation(userId, dialog.id, location)
+    this.isSharing(dialog.id, userId)
+    this.setState({updateLocations: true})
   }
 
   currentUser = () => {
     return store.getState().currentUser.user.id
   }
 
-  getChatLocations = async (chatId) => {
-    await FirebaseService.getLocations(chatId)
-      .then(res => console.log(res))
-      .catch(err => console.log(err))
-
+  getUserNameById = (userId) => {
+    if (userId === this.currentUser().toString()){
+      return "Me"
+    } else {
+      return store.getState().users[userId].full_name}
   }
 
-  getLocationHandler = () => {
+  getChatLocations = async (chatId) => {
+    const {updateLocations} = this.state
+    if (updateLocations){
+      let locations = []
+      await FirebaseService.getLocations(chatId)
+        .then(res => {
+          for (let key in res){
+            locations.push({
+              latitude: res[key].latitude,
+              longitude: res[key].longitude,
+              id: key
+            })
+          }
+        })
+        .catch(err => console.log(err))
+        this.setState({locations: locations})
+        this.setState({updateLocations: false})
+        this.isSharing(chatId, this.currentUser())
+    }
+  }
+
+  getRegion = () => {
     const {reload} = this.state
     if (reload){
-      console.log("Updating Location")
       Geolocation.getCurrentPosition(position =>
-        { this.setState({
-          userLocation: {
+        {this.setState({
+          region: {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
             latitudeDelta: 0.0222,
             longitudeDelta: 0.0221,
           }
         })
-      console.log(this.state.userLocation)});
+      });
       this.setState({reload: false})
     }
   }
 
   render() {
-    this.getLocationHandler()
-    const {dialog,isLoader, userLocation} = this.state
+    let dialog = this.props.navigation.getParam('dialog')
+    this.getRegion()
+    this.getChatLocations(dialog.id)
+    const {isLoader, region, locations, sharing} = this.state
+    console.log(sharing)
     const chatId = dialog.id
-    const userId = this.currentUser
+    const userLocations = locations.map(userPlace => (
+      <MapView.Marker coordinate={userPlace} key={userPlace.id} title={this.getUserNameById(userPlace.id)} />
+    ))
     return (
       <View style={styles.container}>
         {isLoader && (
           <Indicator color={'red'} size={40} />
         )}
         <View style={styles.container}>
-        {userLocation === null ?
+        {region === null ?
         <View>
           {isLoader && (
             <Indicator color={'red'} size={40} />
@@ -76,17 +128,31 @@ export default class ChatMap extends Component {
         </View> :
           <View style={styles.container}>
             <MapView
+              showsUserLocation={true}
               style={styles.map}
               initialRegion={{
-                latitude: userLocation.latitude,
-                longitude: userLocation.longitude,
-                latitudeDelta: userLocation.latitudeDelta,
-                longitudeDelta: userLocation.longitudeDelta,
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0221,
+                longitudeDelta: 0.0221,
               }}
-            />
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => {this.getChatLocations(chatId)}}>
-              <Text style={styles.buttonText}> Share Location </Text>
-            </TouchableOpacity>
+              region={{
+                latitude: region.latitude,
+                longitude: region.longitude,
+                latitudeDelta: region.latitudeDelta,
+                longitudeDelta: region.longitudeDelta}}
+              >
+              {userLocations}
+            </MapView>
+            <View>
+            {sharing ?
+              (<TouchableOpacity style={styles.buttonContainer} onPress={() => {this.stopLocation()}}>
+                <Text style={styles.stopText}> Stop Sharing Location </Text>
+              </TouchableOpacity>) :
+              (<TouchableOpacity style={styles.buttonContainer} onPress={() => {this.shareLocation()}}>
+                <Text style={styles.shareText}> Share Location </Text>
+              </TouchableOpacity>)}
+            </View>
           </View>}
         </View>
       </View>
@@ -98,9 +164,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  buttonText:{
+  shareText:{
     color: 'white',
     fontSize: 20,
+    fontWeight: '700',
+  },
+  stopText: {
+    color: 'white',
+    fontSize: 15,
     fontWeight: '700',
   },
   buttonContainer: {
