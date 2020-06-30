@@ -15,7 +15,11 @@
     },
       "debug": {
         "mode": 2
-      } 
+      }
     }
-  ]
+  ],
+  "firebaseConfig" :
+    {
+      "firebaseUrl": "https://hopover-39af1.firebaseio.com/"
+    }
 }

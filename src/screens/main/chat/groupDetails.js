@@ -162,6 +162,12 @@ export default class GroupDetails extends Component {
     navigation.push('SharedMedia', {dialog})
   }
 
+  goToChatMap= () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ChatMap', {dialog})
+  }
+
   goToContactsScreen = () => {
 	if (this.state.occupantsInfo.length === 8) {
 	  showAlert('Maximum 9 participants')
@@ -336,6 +342,15 @@ export default class GroupDetails extends Component {
     </View>
     <View>
     <Text style={styles.nameTitle}>Shared Media</Text>
+    </View>
+  </TouchableOpacity>
+
+  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => this.goToChatMap()}>
+    <View style={styles.renderAvatar}>
+    <Icon name="room" size={35} color='black' style={{ marginRight: 15 }} />
+    </View>
+    <View>
+    <Text style={styles.nameTitle}>Chat Map</Text>
     </View>
   </TouchableOpacity>
 
