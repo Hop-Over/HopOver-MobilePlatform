@@ -29,28 +29,42 @@ export default class SharedMedia extends Component {
     endReached: false
   }
 
+  componentDidMount(){
+    const {fetchImages} = this.state
+
+    if (fetchImages){
+      this.getAttachments()
+      this.setState({fetchImages: false})
+    }
+  }
+
+  componentDidUpdate(){
+    const {fetchImages} = this.state
+    if (fetchImages){
+      this.getAttachments()
+      this.setState({fetchImages: false})
+    }
+  }
+
   getAttachments = () => {
     const {fetchImages, numberLoaded, images} = this.state
     const dialogId = this.state.dialog.id
     const data =  ChatService.getMessagesByDialogId(dialogId)
-    const loadNumber = numberLoaded + 40
+    const loadNumber = numberLoaded + Math.floor((fullHeight/100) * (fullWidth/100))
     let displayImages = images
     let count = numberLoaded
 
-    if (fetchImages) {
-      while (images.length !== loadNumber && count < data.length){
-        if (data[count].attachment !== null){
-          displayImages.push(data[count].attachment)
-        }
-        count++
+    while (images.length !== loadNumber && count < data.length){
+      if (data[count].attachment !== null){
+        displayImages.push(data[count].attachment)
       }
+      count++
+    }
     if (count >= data.length -1){
       this.setState({endReached: true})
     }
       this.setState({images: displayImages})
-      this.setState({fetchImages: false})
       this.setState({numberLoaded: loadNumber})
-    }
   }
 
   _renderAttachment = (item) => {
@@ -75,9 +89,7 @@ export default class SharedMedia extends Component {
   }
 
   render() {
-    this.getAttachments()
     const {isLoader, dialog, images, isModal, displayImage, endReached} = this.state
-
     return (
       <View>
         {isLoader && (
