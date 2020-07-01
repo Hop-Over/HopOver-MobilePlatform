@@ -24,24 +24,36 @@ export default class ChatMap extends Component {
     locations: [],
     updateLocations: true,
     sharing: false,
-    dialog: this.props.navigation.getParam('dialog')
+    dialog: this.props.navigation.getParam('dialog'),
+    updateLocations: true
   }
 
   componentDidMount(){
-    const {reload, dialog}  = this.state
+    const {reload, updateLocations,dialog}  = this.state
     if (reload) {
       this.getRegion()
-      this.getChatLocations(dialog.id)
       this.setState({reload: false})
+
+    } else if (updateLocations){
+      this.getChatLocations(dialog.id)
+      this.setState({updateLocations: false})
     }
+    this.interval = setInterval(() => {
+      this.getChatLocations(dialog.id)
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   async componentDidUpdate(){
-    const {reload, dialog} = this.state
-    if (reload){
+    const {reload, dialog, updateLocations} = this.state
+    if (updateLocations){
       await this.getChatLocations(dialog.id)
-      this.setState({reload: false})
+      this.setState({updateLocations: false})
     }
+    //this.interval = setInterval(() => this.setState({reload: true}), 5000);
   }
 
   isSharing = async (chatId, userId) => {
@@ -61,7 +73,7 @@ export default class ChatMap extends Component {
     FirebaseService.stopLocation(userId, dialog.id)
     this.isSharing(dialog.id, userId)
     this.getChatLocations(dialog.id)
-    this.setState({reload: true})
+    this.setState({updateLocations: true})
   }
 
   shareLocation = () => {
@@ -70,7 +82,7 @@ export default class ChatMap extends Component {
     const location = this.state.region
     FirebaseService.shareLocation(userId, dialog.id, location)
     this.isSharing(dialog.id, userId)
-    this.setState({reload: true})
+    this.setState({updateLocations: true})
   }
 
   currentUser = () => {
@@ -139,16 +151,11 @@ export default class ChatMap extends Component {
               showsUserLocation={true}
               style={styles.map}
               initialRegion={{
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0221,
-                longitudeDelta: 0.0221,
-              }}
-              region={{
                 latitude: region.latitude,
                 longitude: region.longitude,
                 latitudeDelta: region.latitudeDelta,
-                longitudeDelta: region.longitudeDelta}}
+                longitudeDelta: region.longitudeDelta,
+              }}
               >
               {userLocations}
             </MapView>
