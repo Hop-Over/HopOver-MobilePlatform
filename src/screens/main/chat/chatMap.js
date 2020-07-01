@@ -24,6 +24,24 @@ export default class ChatMap extends Component {
     locations: [],
     updateLocations: true,
     sharing: false,
+    dialog: this.props.navigation.getParam('dialog')
+  }
+
+  componentDidMount(){
+    const {reload, dialog}  = this.state
+    if (reload) {
+      this.getRegion()
+      this.getChatLocations(dialog.id)
+      this.setState({reload: false})
+    }
+  }
+
+  async componentDidUpdate(){
+    const {reload, dialog} = this.state
+    if (reload){
+      await this.getChatLocations(dialog.id)
+      this.setState({reload: false})
+    }
   }
 
   isSharing = async (chatId, userId) => {
@@ -43,7 +61,7 @@ export default class ChatMap extends Component {
     FirebaseService.stopLocation(userId, dialog.id)
     this.isSharing(dialog.id, userId)
     this.getChatLocations(dialog.id)
-    this.setState({updateLocations: true})
+    this.setState({reload: true})
   }
 
   shareLocation = () => {
@@ -52,7 +70,7 @@ export default class ChatMap extends Component {
     const location = this.state.region
     FirebaseService.shareLocation(userId, dialog.id, location)
     this.isSharing(dialog.id, userId)
-    this.setState({updateLocations: true})
+    this.setState({reload: true})
   }
 
   currentUser = () => {
@@ -67,49 +85,39 @@ export default class ChatMap extends Component {
   }
 
   getChatLocations = async (chatId) => {
-    const {updateLocations} = this.state
-    if (updateLocations){
-      let locations = []
-      await FirebaseService.getLocations(chatId)
-        .then(res => {
-          for (let key in res){
-            locations.push({
-              latitude: res[key].latitude,
-              longitude: res[key].longitude,
-              id: key
-            })
-          }
-        })
-        .catch(err => console.log(err))
-        this.setState({locations: locations})
-        this.setState({updateLocations: false})
-        this.isSharing(chatId, this.currentUser())
-    }
+    let locations = []
+    await FirebaseService.getLocations(chatId)
+      .then(res => {
+        for (let key in res){
+          locations.push({
+            latitude: res[key].latitude,
+            longitude: res[key].longitude,
+            id: key
+          })
+        }
+      })
+      .catch(err => console.log(err))
+      this.setState({locations: locations})
+      this.isSharing(chatId, this.currentUser())
   }
 
   getRegion = () => {
     const {reload} = this.state
-    if (reload){
-      Geolocation.getCurrentPosition(position =>
-        {this.setState({
-          region: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.0222,
-            longitudeDelta: 0.0221,
-          }
-        })
-      });
-      this.setState({reload: false})
-    }
+    Geolocation.getCurrentPosition(position =>
+      {this.setState({
+        region: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          latitudeDelta: 0.0222,
+          longitudeDelta: 0.0221,
+        }
+      })
+    });
   }
 
   render() {
     let dialog = this.props.navigation.getParam('dialog')
-    this.getRegion()
-    this.getChatLocations(dialog.id)
     const {isLoader, region, locations, sharing} = this.state
-    console.log(sharing)
     const chatId = dialog.id
     const userLocations = locations.map(userPlace => (
       <MapView.Marker coordinate={userPlace} key={userPlace.id} title={this.getUserNameById(userPlace.id)} />

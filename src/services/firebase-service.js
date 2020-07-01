@@ -14,7 +14,6 @@ class FirebaseService{
 
   isSharing = async (chatId, userId) => {
     const fetchUrl = config.firebaseConfig.firebaseUrl + chatId + "/locations/" + userId +".json"
-    console.log(fetchUrl)
     const response = await fetch(fetchUrl)
     const data = await response.json()
     return data
@@ -31,17 +30,16 @@ class FirebaseService{
         }
       })
     })
-    .then(res => console.log(res))
+    .then(res => console.log("Sharing"))
     .catch(err => console.log(err))
   }
 
   stopLocation = (userId, dialogId) => {
     const postUrl = config.firebaseConfig.firebaseUrl + dialogId + '/locations/' + userId + ".json"
-    console.log(postUrl)
     fetch(postUrl,{
       method: 'DELETE'
     })
-    .then(res => res.json())
+    .then(res => console.log("Stopped Sharing"))
     .catch(err => console.log(err))
   }
 }
