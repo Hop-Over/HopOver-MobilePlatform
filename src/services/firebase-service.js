@@ -1,4 +1,8 @@
 import config from '../../config.json'
+import ChatService from './chat-service'
+import store from '../store'
+import { fetchDialogs } from '../actions/dialogs'
+
 
 class FirebaseService{
   state = {
@@ -12,11 +16,16 @@ class FirebaseService{
     return data
   }
 
-  isSharing = async (chatId, userId) => {
+  isSharing = async (userId, chatId) => {
     const fetchUrl = config.firebaseConfig.firebaseUrl + chatId + "/locations/" + userId +".json"
     const response = await fetch(fetchUrl)
     const data = await response.json()
-    return data
+
+    if (data === null){
+      return false
+    } else {
+      return true
+    }
   }
 
   shareLocation = (userId, dialogId,location) => {
@@ -36,7 +45,6 @@ class FirebaseService{
         }
       })
     })
-    .then(res => console.log("Sharing"))
     .catch(err => console.log(err))
   }
 
@@ -45,7 +53,6 @@ class FirebaseService{
     fetch(postUrl,{
       method: 'DELETE'
     })
-    .then(res => console.log("Stopped Sharing"))
     .catch(err => console.log(err))
   }
 }

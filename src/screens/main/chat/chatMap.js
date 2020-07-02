@@ -21,57 +21,45 @@ export default class ChatMap extends Component {
     isLoader: false,
     region: null,
     locations: [],
-    sharing: false,
+    sharing: true,
     dialog: this.props.navigation.getParam('dialog'),
-    updateLocations: true,
     currentUser: store.getState().currentUser.user.id
   }
 
-  componentDidMount(){
-    const {updateLocations, dialog}  = this.state
+  async componentDidMount(){
+    const {dialog, currentUser}  = this.state
+    const currentlySharing = await FirebaseService.isSharing(currentUser, dialog.id)
+    this.setState({sharing: currentlySharing})
     this.getRegion()
     this.getChatLocations(dialog.id)
-    this.setState({updateLocations: false})
-
-    this.interval = setInterval(() => {
+    this.locationsInterval = setInterval(() => {
       this.getChatLocations(dialog.id)
+    }, 1000);
+
+    this.sharingInterval = setInterval(() => {
+      console.log(this.state.sharing)
       if (this.state.sharing){
         this.shareLocation()
       }
-      console.log(this.state.sharing)
     }, 1000);
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.sharingInterval);
+    clearInterval(this.locationsInterval);
   }
 
-  async componentDidUpdate(){
-    const {reload, dialog, updateLocations, sharing} = this.state
-    if (updateLocations){
-      await this.getChatLocations(dialog.id)
-      this.setState({updateLocations: false})
-    }
-  }
-
-  isSharing = async (chatId, userId) => {
-    await FirebaseService.isSharing(chatId, userId)
-    .then(res => {
-      if  (res === null){
-        this.setState({sharing: false})
-      } else {
-        this.setState({sharing: true})
-      }
-    })
+  sharingToggle = () => {
+    const {sharing} = this.state
+    this.setState({sharing: !sharing})
   }
 
   stopLocation = () => {
     const userId = this.state.currentUser
     const dialog = this.props.navigation.getParam('dialog')
     FirebaseService.stopLocation(userId, dialog.id)
-    this.isSharing(dialog.id, userId)
     this.getChatLocations(dialog.id)
-    this.setState({updateLocations: true})
+    this.setState({sharing: false })
   }
 
   shareLocation = () => {
@@ -79,8 +67,7 @@ export default class ChatMap extends Component {
     const dialog = this.props.navigation.getParam('dialog')
     const location = this.state.region
     FirebaseService.shareLocation(userId, dialog.id, location)
-    this.isSharing(dialog.id, userId)
-    this.setState({updateLocations: true})
+    this.setState({sharing: true })
   }
 
   getUserNameById = (userId) => {
@@ -104,7 +91,6 @@ export default class ChatMap extends Component {
       })
       .catch(err => console.log(err))
       this.setState({locations: locations})
-      this.isSharing(chatId, this.state.currentUser)
   }
 
   getRegion = () => {
