@@ -6,6 +6,7 @@ import MapView from 'react-native-maps';
 import Avatar from '../../components/avatar'
 import ChatService from '../../../services/chat-service'
 import FirebaseService from '../../../services/firebase-service'
+import AuthService from '../../../services/auth-service'
 import UsersService from '../../../services/users-service'
 import Indicator from '../../components/indicator'
 import ChatImage from '../../components/chatImage'
@@ -23,7 +24,7 @@ export default class ChatMap extends Component {
     locations: [],
     sharing: true,
     dialog: this.props.navigation.getParam('dialog'),
-    currentUser: store.getState().currentUser.user.id
+    currentUser: store.getState().currentUser.user.id,
   }
 
   async componentDidMount(){
@@ -32,12 +33,12 @@ export default class ChatMap extends Component {
     this.setState({sharing: currentlySharing})
     this.getRegion()
     this.getChatLocations(dialog.id)
+
     this.locationsInterval = setInterval(() => {
       this.getChatLocations(dialog.id)
     }, 1000);
 
     this.sharingInterval = setInterval(() => {
-      console.log(this.state.sharing)
       if (this.state.sharing){
         this.shareLocation()
       }
@@ -45,13 +46,11 @@ export default class ChatMap extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.sharingInterval);
-    clearInterval(this.locationsInterval);
-  }
-
-  sharingToggle = () => {
     const {sharing} = this.state
-    this.setState({sharing: !sharing})
+    if (!sharing){
+    clearInterval(this.sharingInterval)
+    }
+    clearInterval(this.locationsInterval)
   }
 
   stopLocation = () => {
@@ -72,7 +71,7 @@ export default class ChatMap extends Component {
 
   getUserNameById = (userId) => {
     if (userId === this.state.currentUser.toString()){
-      return "Me"
+      return "You"
     } else {
       return store.getState().users[userId].full_name}
   }
