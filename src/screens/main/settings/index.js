@@ -4,6 +4,8 @@ import AuthService from '../../../services/auth-service'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import ImgPicker from '../../components/imgPicker'
+import { StackActions, NavigationActions } from 'react-navigation';
+
 
 export default class Settings extends Component {
 
@@ -64,7 +66,13 @@ export default class Settings extends Component {
         {
           text: 'Yes',
           onPress: () => {
+            const resetAction = StackActions.reset({
+                index: 0,
+                key: null,
+                actions: [NavigationActions.navigate({ routeName: 'Auth' })],
+            });
             navigation.navigate('Auth')
+            navigation.dispatch(resetAction);
             AuthService.logout()
           }
         },
