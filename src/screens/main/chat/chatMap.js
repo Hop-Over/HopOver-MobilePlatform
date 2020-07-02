@@ -53,7 +53,6 @@ export default class ChatMap extends Component {
       await this.getChatLocations(dialog.id)
       this.setState({updateLocations: false})
     }
-    //this.interval = setInterval(() => this.setState({reload: true}), 5000);
   }
 
   isSharing = async (chatId, userId) => {

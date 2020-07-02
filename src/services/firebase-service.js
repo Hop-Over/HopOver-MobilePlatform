@@ -21,12 +21,18 @@ class FirebaseService{
 
   shareLocation = (userId, dialogId,location) => {
     const postUrl = config.firebaseConfig.firebaseUrl + dialogId + '/locations/' + ".json"
+    const d = new Date()
+    const date = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()
+    const time = d.getHours() + ':' + d.getMinutes() + ':'+ d.getSeconds()
+
     fetch(postUrl,{
       method: 'PATCH',
       body: JSON.stringify({
         [userId]:{
         latitude: location.latitude,
-        longitude: location.longitude
+        longitude: location.longitude,
+        date: date,
+        time: time
         }
       })
     })
