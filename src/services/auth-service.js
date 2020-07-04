@@ -1,4 +1,5 @@
 import ConnectyCube from 'react-native-connectycube'
+import DevSettings from 'react-native'
 import appConfig from '../../config.json'
 import AsyncStorage from '@react-native-community/async-storage'
 import RNRestart from 'react-native-restart'
@@ -85,7 +86,8 @@ class AuthService {
     await AsyncStorage.clear()
     await ConnectyCube.logout()
     store.dispatch(LogOut())
-    RNRestart.Restart();
+    RNRestart.Restart()
+
   }
 
   async connect(userId, password) {
