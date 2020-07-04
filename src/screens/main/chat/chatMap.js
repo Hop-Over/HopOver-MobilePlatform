@@ -45,10 +45,17 @@ export default class ChatMap extends Component {
     }, 1000);
   }
 
+  componentDidUpdate(){
+    // Stop updating location if you stop sharing
+    if (!this.state.sharing){
+      clearInterval(this.sharingInterval)
+    }
+  }
+
   componentWillUnmount() {
     const {sharing} = this.state
     if (!sharing){
-    clearInterval(this.sharingInterval)
+      clearInterval(this.sharingInterval)
     }
     clearInterval(this.locationsInterval)
   }
@@ -56,17 +63,17 @@ export default class ChatMap extends Component {
   stopLocation = () => {
     const userId = this.state.currentUser
     const dialog = this.props.navigation.getParam('dialog')
+    this.setState({sharing: false })
     FirebaseService.stopLocation(userId, dialog.id)
     this.getChatLocations(dialog.id)
-    this.setState({sharing: false })
   }
 
   shareLocation = () => {
     const userId = this.state.currentUser
     const dialog = this.props.navigation.getParam('dialog')
     const location = this.state.region
-    FirebaseService.shareLocation(userId, dialog.id, location)
     this.setState({sharing: true })
+    FirebaseService.shareLocation(userId, dialog.id, location)
   }
 
   getUserNameById = (userId) => {
