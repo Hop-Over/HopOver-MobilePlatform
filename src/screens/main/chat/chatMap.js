@@ -22,7 +22,7 @@ export default class ChatMap extends Component {
     isLoader: false,
     region: null,
     locations: [],
-    sharing: true,
+    sharing: false,
     dialog: this.props.navigation.getParam('dialog'),
     currentUser: store.getState().currentUser.user.id,
   }
@@ -32,7 +32,7 @@ export default class ChatMap extends Component {
     const currentlySharing = await FirebaseService.isSharing(currentUser, dialog.id)
     this.setState({sharing: currentlySharing})
     this.getRegion()
-    this.getChatLocations(dialog.id)
+    //this.getChatLocations(dialog.id)
 
     this.locationsInterval = setInterval(() => {
       this.getChatLocations(dialog.id)
@@ -46,34 +46,31 @@ export default class ChatMap extends Component {
   }
 
   componentDidUpdate(){
+    const {sharing} = this.state
     // Stop updating location if you stop sharing
-    if (!this.state.sharing){
+    if (!sharing){
       clearInterval(this.sharingInterval)
     }
   }
 
   componentWillUnmount() {
-    const {sharing} = this.state
-    if (!sharing){
-      clearInterval(this.sharingInterval)
-    }
     clearInterval(this.locationsInterval)
   }
 
   stopLocation = () => {
     const userId = this.state.currentUser
     const dialog = this.props.navigation.getParam('dialog')
-    this.setState({sharing: false })
     FirebaseService.stopLocation(userId, dialog.id)
     this.getChatLocations(dialog.id)
+    this.setState({sharing: false })
   }
 
   shareLocation = () => {
     const userId = this.state.currentUser
     const dialog = this.props.navigation.getParam('dialog')
     const location = this.state.region
-    this.setState({sharing: true })
     FirebaseService.shareLocation(userId, dialog.id, location)
+    this.setState({sharing: true })
   }
 
   getUserNameById = (userId) => {
@@ -88,10 +85,12 @@ export default class ChatMap extends Component {
     await FirebaseService.getLocations(chatId)
       .then(res => {
         for (let key in res){
+          const lastActive = this.lastActive(res[key])
           locations.push({
             latitude: res[key].latitude,
             longitude: res[key].longitude,
-            id: key
+            id: key,
+            lastActive: lastActive
           })
         }
       })
@@ -112,12 +111,32 @@ export default class ChatMap extends Component {
     });
   }
 
+  lastActive = (res) => {
+    const d = new Date()
+    // Get milliseconds since Jan 1,1970
+    const currentTime = d.getTime()
+    // Get milliseconds since Jan 1, 1970 and the last active date
+    const activeTime = Date.parse(res.date)
+    // get time diff in seconds
+    const timeDiff = ((currentTime - activeTime)/1000)
+
+    if (timeDiff < 60){
+      return "now"
+    } else if (timeDiff > 60 && timeDiff <= 3600){
+      return Math.floor(timeDiff/60) + " minutes ago"
+    } else if (timeDiff > 3600 && timeDiff <=86400){
+      return Math.floor(timeDiff/3600) + " hours ago"
+    } else {
+      return Math.floor(timeDiff/86400) + "days ago"
+    }
+  }
+
   render() {
     let dialog = this.props.navigation.getParam('dialog')
     const {isLoader, region, locations, sharing} = this.state
     const chatId = dialog.id
     const userLocations = locations.map(userPlace => (
-      <MapView.Marker coordinate={userPlace} key={userPlace.id} title={this.getUserNameById(userPlace.id)} />
+      <MapView.Marker coordinate={userPlace} key={userPlace.id} description={"Last active: " + userPlace.lastActive} title={this.getUserNameById(userPlace.id)} />
     ))
     return (
       <View style={styles.container}>

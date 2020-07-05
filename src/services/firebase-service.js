@@ -31,8 +31,8 @@ class FirebaseService{
   shareLocation = (userId, dialogId,location) => {
     const postUrl = config.firebaseConfig.firebaseUrl + dialogId + '/locations/' + ".json"
     const d = new Date()
-    const date = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()
-    const time = d.getHours() + ':' + d.getMinutes() + ':'+ d.getSeconds()
+    const date = {year: d.getFullYear(), month: d.getMonth()+1, day: d.getDate()}
+    const time = {hours: d.getHours(), minutes: d.getMinutes(), seconds: d.getSeconds()}
 
     fetch(postUrl,{
       method: 'PATCH',
@@ -40,8 +40,7 @@ class FirebaseService{
         [userId]:{
         latitude: location.latitude,
         longitude: location.longitude,
-        date: date,
-        time: time
+        date: d
         }
       })
     })
