@@ -115,7 +115,8 @@ export class Chat extends PureComponent {
     return ImagePicker.openPicker({
       width: 300,
       height: 400,
-      cropping: true
+      mediaType: 'any',
+    //   cropping: true
     }).then(image => {
       return image
     })

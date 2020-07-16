@@ -98,9 +98,9 @@ class ChatService {
     { console.log(attachment) }
     msg.extension.attachments = [attachment]
     if(attachment.type.includes("image")){
-        msg.body = 'Image attachment'
+        msg.body = ' '
     }else{
-        msg.body = 'Video attachment'
+        msg.body = ' '
     }
     // { console.log(msg) }
     const message = new FakeMessage(msg)
