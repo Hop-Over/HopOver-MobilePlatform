@@ -109,6 +109,7 @@ export class Chat extends PureComponent {
     const { dialog } = this.props.navigation.state.params
     const img = await this.onPickImage()
     ChatService.sendMessage(dialog, '', img)
+    // this.setState({state: this.state})
   }
 
   onPickImage = () => {

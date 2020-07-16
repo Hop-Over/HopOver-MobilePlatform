@@ -8,7 +8,7 @@ import MessageSendState from '../../components/messageSendState'
 import ChatImage from '../../components/chatImage'
 import Icon from 'react-native-vector-icons/AntDesign'
 import Video from 'react-native-video';
-
+import VideoPlayer from 'react-native-video-controls';
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
@@ -94,16 +94,16 @@ export default class Message extends Component {
                 :
                 (
                 <View style={styles.background}>
-                    <Icon style={styles.backgroundX} name="close" size={30} color='white' onPress={this.handleModalState} />
-                    <Video source={{uri: message.attachment[0].url}}   // Can be a URL or a local file.
+                    <VideoPlayer source={{uri: message.attachment[0].url}}   // Can be a URL or a local file.
                     ref={(ref) => {
                     this.player = ref
                     }}                                      // Store reference
                     onBuffer={this.onBuffer}                // Callback when remote video is buffering
                     onError={this.videoError}               // Callback when video cannot be loaded
-                    controls={true}
-                    resizeMode={"cover"}
-                    style={styles.backgroundVideo} />
+                    // controls={true}
+                    onBack={this.handleModalState}
+                    style={styles.backgroundVideo}
+                    />
                 </View>
                 )}
 
@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-    zIndex: 1,
   },
   background: {
     position: 'absolute',
@@ -177,14 +176,14 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'black',
   },
-  backgroundX: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: 10,
-  },
+//   backgroundX: {
+//     position: 'absolute',
+//     top: 0,
+//     left: 0,
+//     bottom: 0,
+//     right: 0,
+//     zIndex: 10,
+//   },
   container: {
     padding: 10,
     flexDirection: 'row',
