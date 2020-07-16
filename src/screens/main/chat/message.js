@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer'
 import store from '../../../store'
 import Avatar from '../../components/avatar'
@@ -7,6 +7,8 @@ import { getTime } from '../../../helpers/getTime'
 import MessageSendState from '../../components/messageSendState'
 import ChatImage from '../../components/chatImage'
 import Icon from 'react-native-vector-icons/AntDesign'
+import Video from 'react-native-video';
+
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
@@ -55,6 +57,7 @@ export default class Message extends Component {
 
   render() {
     const { message, otherSender } = this.props
+    if(this.isAtachment){ console.log(message.attachment[0]) }
     const { isModal } = this.state
     const user = otherSender ? store.getState().users[message.sender_id] : '.'
     return (
@@ -65,6 +68,7 @@ export default class Message extends Component {
               width: fullWidth,
               height: fullHeight,
             }}>
+            {this.isAtachment && message.attachment[0].type !== "video/mp4" ? 
               <ImageViewer
                 imageUrls={[{ url: message.attachment[0].url }]}
                 onCancel={() => this.handleModalState()}
@@ -77,8 +81,25 @@ export default class Message extends Component {
                     width={+message.attachment[0].width}
                     height={+message.attachment[0].height}
                   />
+                  
                 )}
               />
+                :
+                (
+                <View style={styles.background}>
+                    <Icon style={styles.backgroundX} name="close" size={30} color='white' onPress={this.handleModalState} />
+                    <Video source={{uri: message.attachment[0].url}}   // Can be a URL or a local file.
+                    ref={(ref) => {
+                    this.player = ref
+                    }}                                      // Store reference
+                    onBuffer={this.onBuffer}                // Callback when remote video is buffering
+                    onError={this.videoError}               // Callback when video cannot be loaded
+                    controls={true}
+                    resizeMode={"cover"}
+                    style={styles.backgroundVideo} />
+                </View>
+                )}
+
             </View>
           </Modal>
         }
@@ -86,9 +107,8 @@ export default class Message extends Component {
           (
             <View style={[styles.container, styles.positionToLeft]}>
               <Avatar
-                //photo={user.avatar}
-                //name={user.full_name}
-                name="insert name here"
+                photo={user.avatar}
+                name={user.full_name}
                 iconSize="small"
               />
               <View style={[styles.message, styles.messageToLeft]}>
@@ -129,6 +149,30 @@ export default class Message extends Component {
 }
 
 const styles = StyleSheet.create({
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 1,
+  },
+  background: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'black',
+  },
+  backgroundX: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 10,
+  },
   container: {
     padding: 10,
     flexDirection: 'row',

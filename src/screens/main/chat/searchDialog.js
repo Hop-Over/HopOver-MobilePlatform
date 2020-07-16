@@ -41,12 +41,10 @@ export class Search extends PureComponent {
 	} else {
 		dialogPhoto = dialog.photo;
 	}
-	// var searchAmount = searchResponse.messages.length
 
 	return {
 		headerTitle: (
 		<Text numberOfLines={3} style={{ fontSize: 22, color: "black" }}>
-			{/* {navigation.state.params.dialog.name + " - Search Result"} */}
 			{"Search Result"}
 		</Text>
 		),
@@ -63,12 +61,10 @@ export class Search extends PureComponent {
 	};
 
 	componentDidMount() {
-	{console.log('Component Did Mount')}
 	const { dialog, searchResponse } = this.props.navigation.state.params;
 	ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
 		.catch((e) => alert(`Error.\n\n${JSON.stringify(e)}`))
 		.then((amountMessages) => {
-		{console.log('Component amount ' + amountMessages)}			
 		amountMessages === 10
 			? (this.needToGetMoreMessage = true)
 			: (this.needToGetMoreMessage = false);
@@ -77,39 +73,38 @@ export class Search extends PureComponent {
 	}
 
 	componentWillUnmount() {
-	ChatService.resetSelectedDialogs();
+        const { dialog } = this.props.navigation.state.params
+        ChatService.resetSelectedDialogs();
+        ChatService.getMessages(dialog)
 	}
 
 	nextSearch(searchAmount){
-	const { dialog, searchResponse } = this.props.navigation.state.params
-	if((this.currentSelection+1)<searchAmount){
-		 this.currentSelection++;
-	}else{
-		alert('No More Search Results Available')
+        const { dialog, searchResponse } = this.props.navigation.state.params
+        if((this.currentSelection+1)<searchAmount){
+            this.currentSelection++;
+        }else{
+            alert('No More Search Results Available')
+        }
+        ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
+        this.setState({ state: this.state }); //Updates state and page re-renders
 	}
-	ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
-	{console.log(this.currentSelection)}
-	this.setState({ state: this.state }); //Updates state and page re-renders
-	}
-	prevSearch(){
-	const { dialog, searchResponse } = this.props.navigation.state.params
-	if(this.currentSelection > 0){
-		this.currentSelection--;
-	}else{
-		alert('No More Search Results Available')
-	}
-	ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
-	{console.log(this.currentSelection)}
-	this.setState({ state: this.state }); //Updates state and page re-renders
+
+    prevSearch(){
+        const { dialog, searchResponse } = this.props.navigation.state.params
+        if(this.currentSelection > 0){
+            this.currentSelection--;
+        }else{
+            alert('No More Search Results Available')
+        }
+        ChatService.getSearchMessages(dialog, searchResponse[this.currentSelection])
+        this.setState({ state: this.state }); //Updates state and page re-renders
 	}
 
 	getMoreMessages = (highLow) => {
 	const { dialog } = this.props.navigation.state.params;
-	{console.log('Get more messages')}
 	if (this.needToGetMoreMessage) {
 		this.setState({ activeIndicator: true });
 		ChatService.getMoreSearchMessages(dialog, highLow).then((amountMessages) => {
-			console.log("Amount Messages " + amountMessages)
 		amountMessages === 9
 			? (this.needToGetMoreMessage = true)
 			: (this.needToGetMoreMessage = false);
@@ -119,13 +114,11 @@ export class Search extends PureComponent {
 	};
 
 	loadMoreOld = () => {
-		{console.log('Load More High')}
 		this.needToGetMoreMessage = true
 		this.getMoreMessages(0)
 		// this.setState({ state: this.state }); //Updates state and page re-renders
 	}
 	loadMoreNew = () => {
-		{console.log('Load More Low')}
 		this.needToGetMoreMessage = true
 		this.getMoreMessages(1)
 		this.scrollUp()
@@ -133,7 +126,6 @@ export class Search extends PureComponent {
 	}
 
 	scrollUp = () => {
-		{console.log('scroll up')}
 		this.ListView_Ref.scrollToEnd({ animated: false });
 	}
 
@@ -200,9 +192,6 @@ export class Search extends PureComponent {
 			<Text>{this.currentSelection+1+ " / " + searchAmount}</Text>
 			<TouchableOpacity onPress={()=>{this.prevSearch()}}>
 				<Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
-			</TouchableOpacity>
-			<TouchableOpacity>
-			<Text onPress={() => {this.goToDialog()}}> Done</Text>
 			</TouchableOpacity>
 
 		</View>

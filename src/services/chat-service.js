@@ -95,8 +95,14 @@ class ChatService {
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments) {
     //create fake data for render img
     const attachment = preparationAttachment(attachments)
+    { console.log(attachment) }
     msg.extension.attachments = [attachment]
-    msg.body = 'Image attachment'
+    if(attachment.type.includes("image")){
+        msg.body = 'Image attachment'
+    }else{
+        msg.body = 'Video attachment'
+    }
+    // { console.log(msg) }
     const message = new FakeMessage(msg)
     store.dispatch(pushMessage(message, dialog.id))
 
@@ -228,58 +234,6 @@ class ChatService {
     // const amountMessages = store.dispatch(lazyFetchMessages(dialog.id, messages))
     const amountMessages = messages.length
     return amountMessages
-  }
-  
-
-  
-
-  async sendMessage(dialog, messageText, attachments = false) {
-    const user = this.currentUser
-    const text = messageText.trim()
-    const date = Math.floor(Date.now() / 1000)
-    const recipient_id = dialog.type === DIALOG_TYPE.PRIVATE ? dialog.occupants_ids.find(elem => elem != user.id)
-      : dialog.xmpp_room_jid
-
-    let msg = {
-      type: dialog.xmpp_type,
-      body: text,
-      extension: {
-        save_to_history: 1,
-        dialog_id: dialog.id,
-        sender_id: user.id,
-        date_sent: date,
-      },
-      markable: 1
-    }
-
-    msg.id = this.messageUniqueId
-
-    // If send message as Attachment
-    if (attachments) {
-      return this.sendMessageAsAttachment(dialog, recipient_id, msg, attachments)
-    }
-
-    const message = new FakeMessage(msg)
-    store.dispatch(pushMessage(message, dialog.id))
-    await ConnectyCube.chat.send(recipient_id, msg)
-    store.dispatch(sortDialogs(message))
-  }
-
-  async sendMessageAsAttachment(dialog, recipient_id, msg, attachments) {
-    //create fake data for render img
-    const attachment = preparationAttachment(attachments)
-    msg.extension.attachments = [attachment]
-    msg.body = 'Image attachment'
-    const message = new FakeMessage(msg)
-    store.dispatch(pushMessage(message, dialog.id))
-
-    // create real data for attachment
-    const response = await this.uploadPhoto(attachments)
-    const updateAttach = preparationAttachment(attachments, response.uid)
-    msg.extension.attachments = [updateAttach]
-    await ConnectyCube.chat.send(recipient_id, msg)
-    store.dispatch(sortDialogs(message))
-    return
   }
 
   updateDialogsUnreadMessagesCount = (dialog) => {
@@ -461,6 +415,8 @@ class ChatService {
     }
     const response = await ConnectyCube.chat.search(params)
     { console.log('search chat') }
+    { console.log(params.search_text) }
+    { console.log(params.chat_dialog_ids) }
     { console.log(response) }
     return response
   }

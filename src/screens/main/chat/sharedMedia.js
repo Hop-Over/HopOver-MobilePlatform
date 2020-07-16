@@ -12,6 +12,7 @@ import store from '../../../store'
 import { showAlert } from '../../../helpers/alert'
 import Icon from 'react-native-vector-icons/AntDesign'
 import { SIZE_SCREEN } from '../../../helpers/constants'
+import Video from 'react-native-video';
 
 
 const fullWidth = Dimensions.get('window').width
@@ -122,6 +123,8 @@ export default class SharedMedia extends Component {
             width: fullWidth,
             height: fullHeight,
           }}>
+            {displayImage.type !== 'video/mp4' ?
+            (
             <ImageViewer
               imageUrls={[{ url: displayImage.url }]}
               onCancel={() => this.handleModalState()}
@@ -136,6 +139,21 @@ export default class SharedMedia extends Component {
                 />
               )}
             />
+            ) : (
+            <View style={styles.background}>
+                <Icon style={styles.backgroundX} name="close" size={30} color='white' onPress={this.handleModalState} />
+                <Video source={{uri: displayImage.url}}   // Can be a URL or a local file.
+                ref={(ref) => {
+                this.player = ref
+                }}                                      // Store reference
+                onBuffer={this.onBuffer}                // Callback when remote video is buffering
+                onError={this.videoError}               // Callback when video cannot be loaded
+                controls={true}
+                resizeMode={"cover"}
+                style={styles.backgroundVideo} />
+            </View>
+            )
+        }
           </View>
         </Modal>
       </View>
@@ -144,6 +162,30 @@ export default class SharedMedia extends Component {
 }
 
 const styles = StyleSheet.create({
+    backgroundVideo: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        zIndex: 1,
+        },
+    background: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        backgroundColor: 'black',
+        },
+    backgroundX: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        zIndex: 10,
+        },
   moreButton:{
     color: 'white',
     fontSize: 20,
