@@ -102,7 +102,6 @@ class ChatService {
     }else{
         msg.body = ' '
     }
-    // { console.log(msg) }
     const message = new FakeMessage(msg)
     store.dispatch(pushMessage(message, dialog.id))
 

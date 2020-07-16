@@ -75,6 +75,13 @@ export default class SharedMedia extends Component {
         this.setState({displayImage: item.item[0]})
       }}>
         <ChatImage photo={item.item[0].url} width={100} height={100} />
+        {item.item[0].type.includes("video") ?
+        (
+            <Icon name="caretright" size={40} style={styles.playIcon}/>
+        )
+        :
+        (null)
+        }
       </TouchableOpacity>
     )
   }
@@ -162,6 +169,11 @@ export default class SharedMedia extends Component {
 }
 
 const styles = StyleSheet.create({
+    playIcon:{
+        position: 'absolute',
+        top: 30,
+        left: 30
+    },
     backgroundVideo: {
         position: 'absolute',
         top: 0,

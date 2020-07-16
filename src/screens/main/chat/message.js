@@ -41,6 +41,13 @@ export default class Message extends Component {
     return (
       <TouchableOpacity style={{ marginBottom: 3 }} onPress={this.handleModalState}>
         <ChatImage photo={message.attachment[0].url} width={200} height={150} />
+        {message.attachment[0].type.includes("video") ?
+        (
+            <Icon name="caretright" size={60} style={styles.playIcon}/>
+        )
+        :
+        (null)
+        }
       </TouchableOpacity>
     )
   }
@@ -149,6 +156,11 @@ export default class Message extends Component {
 }
 
 const styles = StyleSheet.create({
+  playIcon:{
+      position: 'absolute',
+      top: 50,
+      left: 65
+  },
   backgroundVideo: {
     position: 'absolute',
     top: 0,
