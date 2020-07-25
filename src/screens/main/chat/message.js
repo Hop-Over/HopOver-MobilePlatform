@@ -118,7 +118,9 @@ export default class Message extends Component {
                 name={user.full_name}
                 iconSize="small"
               />
-              <View style={[styles.message, styles.messageToLeft]}>
+              
+              {this.isAtachment ?
+              (<View style={styles.message}>
                 {this.isAtachment &&
                   this.renderAttachment()
                 }
@@ -128,12 +130,26 @@ export default class Message extends Component {
                 <Text style={styles.dateSent}>
                   {getTime(message.date_sent)}
                 </Text>
-              </View>
+              </View>)
+              :
+              (<View style={[styles.message, styles.messageToLeft]}>
+                {this.isAtachment &&
+                  this.renderAttachment()
+                }
+                <Text style={[styles.messageText, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                  {message.body || ' '}
+                </Text>
+                <Text style={styles.dateSent}>
+                  {getTime(message.date_sent)}
+                </Text>
+              </View>)}
+
             </View>
           ) :
           (
             <View style={[styles.container, styles.positionToRight]}>
-              <View style={[styles.message, styles.messageToRight]}>
+              {this.isAtachment ?
+              (<View style={styles.message}>
                 {this.isAtachment &&
                   this.renderAttachment()
                 }
@@ -146,7 +162,23 @@ export default class Message extends Component {
                   </Text>
                   <MessageSendState send_state={message.send_state} />
                 </View>
-              </View>
+              </View>)
+              :
+              (<View style={[styles.message, styles.messageToRight]}>
+                {this.isAtachment &&
+                  this.renderAttachment()
+                }
+                <Text style={[styles.messageText, styles.selfToRight]}>
+                  {message.body || ' '}
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
+                  <Text style={styles.dateSent}>
+                    {getTime(message.date_sent)}
+                  </Text>
+                  <MessageSendState send_state={message.send_state} />
+                </View>
+              </View>)}
+
             </View>
           )
         }
@@ -176,14 +208,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'black',
   },
-//   backgroundX: {
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     bottom: 0,
-//     right: 0,
-//     zIndex: 10,
-//   },
   container: {
     padding: 10,
     flexDirection: 'row',
