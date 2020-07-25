@@ -36,10 +36,16 @@ export default class Message extends Component {
   }
 
 
-  renderAttachment = () => {
+  renderAttachment = (location) => {
     const { message } = this.props
+    var locationStyle = styles.media
+    if(location === "left"){
+        locationStyle = styles.mediaLeft
+    }else{
+        locationStyle = styles.mediaRight
+    }
     return (
-      <TouchableOpacity style={{ marginBottom: 3 }} onPress={this.handleModalState}>
+      <TouchableOpacity style={locationStyle} onPress={this.handleModalState}>
         <ChatImage photo={message.attachment[0].url} width={200} height={150} />
         {message.attachment[0].type.includes("video") ?
         (
@@ -118,41 +124,34 @@ export default class Message extends Component {
                 name={user.full_name}
                 iconSize="small"
               />
-              
-              {this.isAtachment ?
-              (<View style={styles.message}>
+              {this.isAtachment ? (
+                <View style={[styles.message, styles.media, styles.mediaLeft]}>
                 {this.isAtachment &&
-                  this.renderAttachment()
+                  this.renderAttachment('left')
                 }
+              </View>
+              ):(
+                <View style={[styles.message, styles.messageToLeft]}>
                 <Text style={[styles.messageText, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
                   {message.body || ' '}
                 </Text>
                 <Text style={styles.dateSent}>
                   {getTime(message.date_sent)}
                 </Text>
-              </View>)
-              :
-              (<View style={[styles.message, styles.messageToLeft]}>
-                {this.isAtachment &&
-                  this.renderAttachment()
-                }
-                <Text style={[styles.messageText, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
-                  {message.body || ' '}
-                </Text>
-                <Text style={styles.dateSent}>
-                  {getTime(message.date_sent)}
-                </Text>
-              </View>)}
-
+              </View>  
+              )}
             </View>
           ) :
           (
             <View style={[styles.container, styles.positionToRight]}>
-              {this.isAtachment ?
-              (<View style={styles.message}>
-                {this.isAtachment &&
-                  this.renderAttachment()
-                }
+              {this.isAtachment ? (
+                  <View style={[styles.message, styles.media, styles.mediaRight]}>
+                  {this.isAtachment &&
+                    this.renderAttachment('right')
+                  }
+                </View>
+              ):(
+                <View style={[styles.message, styles.messageToRight]}>
                 <Text style={[styles.messageText, styles.selfToRight]}>
                   {message.body || ' '}
                 </Text>
@@ -162,22 +161,9 @@ export default class Message extends Component {
                   </Text>
                   <MessageSendState send_state={message.send_state} />
                 </View>
-              </View>)
-              :
-              (<View style={[styles.message, styles.messageToRight]}>
-                {this.isAtachment &&
-                  this.renderAttachment()
-                }
-                <Text style={[styles.messageText, styles.selfToRight]}>
-                  {message.body || ' '}
-                </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                  <Text style={styles.dateSent}>
-                    {getTime(message.date_sent)}
-                  </Text>
-                  <MessageSendState send_state={message.send_state} />
-                </View>
-              </View>)}
+              </View>
+              )}
+              
 
             </View>
           )
@@ -188,6 +174,15 @@ export default class Message extends Component {
 }
 
 const styles = StyleSheet.create({
+  mediaLeft:{
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderBottomLeftRadius: 2,
+  },mediaRight:{
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderBottomRightRadius: 2,
+  },
   playIcon:{
       position: 'absolute',
       top: 50,
