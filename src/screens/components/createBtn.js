@@ -7,7 +7,7 @@ export default function CreateBtn({ goToScreen, type }) {
   let renderIcon
   switch (type) {
     case BTN_TYPE.DIALOG: {
-      renderIcon = <Icon name="chat" size={30} color='white' />
+      renderIcon = <Icon name="chat" size={30} color='black' />
       break
     }
     case BTN_TYPE.CONTACTS: {
