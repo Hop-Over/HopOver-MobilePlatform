@@ -94,13 +94,13 @@ class ChatService {
 
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments) {
     //create fake data for render img
-    const attachment = preparationAttachment(attachments)
+    var attachment = preparationAttachment(attachments)
     { console.log(attachment) }
     msg.extension.attachments = [attachment]
     if(attachment.type.includes("image")){
-        msg.body = ' '
+        msg.body = 'Image Attachment'
     }else{
-        msg.body = ' '
+        msg.body = 'Video Attachment'
     }
     const message = new FakeMessage(msg)
     store.dispatch(pushMessage(message, dialog.id))
@@ -355,6 +355,8 @@ class ChatService {
   }
 
   async uploadPhoto(params) {
+    console.log('params')
+    console.log(params)
     const file = preparationUploadImg(params)
     return ConnectyCube.storage.createAndUpload({ file })
   }

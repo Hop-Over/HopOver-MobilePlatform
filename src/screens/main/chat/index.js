@@ -26,11 +26,20 @@ export class Chat extends PureComponent {
     super(props)
     this.state = {
       activeIndicator: true,
-      messageText: ''
+      messageText: '',
+      uniqueValue: 1
     }
   }
 
+  
   needToGetMoreMessage = null
+
+
+  forceRemount = () => {
+    this.setState(({ uniqueValue }) => ({
+      uniqueValue: uniqueValue + 1
+    }));
+  }
 
   static navigationOptions = ({ navigation }) => {
     let dialog = navigation.state.params.dialog
@@ -109,7 +118,7 @@ export class Chat extends PureComponent {
     const { dialog } = this.props.navigation.state.params
     const img = await this.onPickImage()
     ChatService.sendMessage(dialog, '', img)
-    // this.setState({state: this.state})
+    this.componentDidMount
   }
 
   onPickImage = () => {
