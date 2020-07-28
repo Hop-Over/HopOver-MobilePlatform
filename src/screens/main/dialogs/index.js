@@ -11,6 +11,7 @@ import { BTN_TYPE } from '../../../helpers/constants'
 import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 class Dialogs extends Component {
   static currentUserInfo = ''
@@ -25,23 +26,31 @@ class Dialogs extends Component {
   static navigationOptions = ({ navigation }) => {
     Dialogs.currentUserInfo = { ...store.getState().currentUser.user }
     return {
+
       headerTitle: (
-        <Text style={[
-          { fontSize: 22, color: 'black' },
-          Platform.OS === 'android' ?
-            { paddingLeft: 13 } :
-            { paddingLeft: 0 }]}>
-          {Dialogs.currentUserInfo.full_name}
-        </Text>
+        <View style={styles.userIdContainer}>
+          <Text style={[
+            { fontSize: 22, color: 'black', fontWeight: "bold" },
+            Platform.OS === 'android' ?
+              { paddingLeft: 13 } :
+              { paddingLeft: 0 }]}>
+            {Dialogs.currentUserInfo.full_name}
+          </Text>
+          <Text> #{Dialogs.currentUserInfo.id}</Text>
+        </View>
       ),
       headerRight: (
-        <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
-          <Avatar
-            photo={Dialogs.currentUserInfo.avatar}
-            name={Dialogs.currentUserInfo.full_name}
-            iconSize="small"
-          />
-        </TouchableOpacity>
+        <View style={styles.navBarContainer}>
+          <TouchableOpacity
+            onPress={() => this.goToContactsScreen(navigation)}>
+            <Icon name="add" size={30} color="black" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.profilePicture} onPress={() => this.goToSettingsScreen(navigation)}>
+            <Icon name="settings" size={30} color="black" />
+          </TouchableOpacity>
+
+        </View>
       ),
     }
   }
@@ -64,6 +73,10 @@ class Dialogs extends Component {
     props.push('Settings', { user: Dialogs.currentUserInfo })
   }
 
+  static goToContactsScreen = (props) => {
+    props.push('Contacts')
+  }
+
   componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
@@ -78,11 +91,6 @@ class Dialogs extends Component {
     return (
       <Dialog dialog={item} navigation={this.props.navigation} />
     )
-  }
-
-  goToContactsScreen = () => {
-    const { navigation } = this.props
-    navigation.push('Contacts')
   }
 
   goToChatScreen = () => {
@@ -127,7 +135,6 @@ class Dialogs extends Component {
             )
         }
         <BottomNavBar navigation={this.props.navigation}/>
-        <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
       </View>
     )
   }
@@ -137,6 +144,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  navBarContainer: {
+    flex: 1,
+    flexDirection: "row",
+    marginRight: 5
+  },
+  userIdContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 10,
+  }
 })
 
 

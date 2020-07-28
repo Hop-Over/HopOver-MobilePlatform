@@ -89,4 +89,3 @@ const User = new UsersService()
 Object.freeze(User)
 
 export default User
-
