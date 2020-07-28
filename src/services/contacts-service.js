@@ -39,7 +39,7 @@ class ContactService {
   onRejectSubscribeListener(userId){
     //this.deleteContact(userId)
     if (userId !== undefined) {
-      onsole.log(userId + " REJECTED REQUEST")
+      console.log(userId + " REJECTED REQUEST")
     }
   }
   onContactListListener(userId, type){
