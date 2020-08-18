@@ -69,6 +69,7 @@ export default class CreateDialog extends PureComponent {
 
     return (
       <View style={styles.container}>
+          <Text>Hello</Text>
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }

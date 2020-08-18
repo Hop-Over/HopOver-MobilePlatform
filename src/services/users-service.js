@@ -61,6 +61,35 @@ class UsersService {
     return contacts
   }
 
+  async listContactUsersByFullName(name, friends, usersIdsToIgnore = []) {
+    if (!usersIdsToIgnore) {
+      usersIdsToIgnore = [this.currentUser.id]
+    }
+    const searchParams = { filter: { field: "id", param: "in", value: friends}}
+    const allUsers = await ConnectyCube.users.get(searchParams)
+    let contacts = []
+    allUsers.items.forEach(elem => {
+      if (!usersIdsToIgnore.includes(elem.user.id)) {
+        contacts.push(new UserModel(elem.user))
+      }
+    })
+    start = 0
+    indexArr = []
+    let searchContacts = []
+    for (var i=0; i < contacts.length; i++) {
+        console.log(contacts[i].full_name)
+        console.log(name)
+        if (contacts[i].full_name.includes(name)) {
+            indexArr.push(i);
+        }
+    }
+    indexArr.forEach(ind => 
+        searchContacts.push(contacts[ind]))
+    console.log(searchContacts)
+    return searchContacts
+  }
+
+
   getUsersInfoFromRedux(ids) {
     const currentUser = this.currentUser
     let usersInfo = []

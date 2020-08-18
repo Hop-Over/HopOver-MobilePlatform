@@ -95,7 +95,6 @@ class ChatService {
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments) {
     //create fake data for render img
     var attachment = preparationAttachment(attachments)
-    { console.log(attachment) }
     msg.extension.attachments = [attachment]
     if(attachment.type.includes("image")){
         msg.body = 'Image Attachment'
@@ -106,6 +105,10 @@ class ChatService {
     store.dispatch(pushMessage(message, dialog.id))
 
     // create real data for attachment
+    console.log('attachments')
+    console.log(attachments)
+    attachments = {"height": 697, "mime": "image/jpeg", "modificationDate": "1596669030000", "path": "https://i.imgur.com/Xpl5hCJ.jpeg", "size": 51404, "width": 526}
+    console.log(attachments)
     const response = await this.uploadPhoto(attachments)
     const updateAttach = preparationAttachment(attachments, response.uid)
     msg.extension.attachments = [updateAttach]
@@ -415,10 +418,6 @@ class ChatService {
         chat_dialog_ids: dialog_id,
     }
     const response = await ConnectyCube.chat.search(params)
-    { console.log('search chat') }
-    { console.log(params.search_text) }
-    { console.log(params.chat_dialog_ids) }
-    { console.log(response) }
     return response
   }
 

@@ -107,13 +107,13 @@ export class Chat extends PureComponent {
   onTypeMessage = messageText => this.setState({ messageText })
 
   sendMessage = async () => {
-    const { dialog } = this.props.navigation.state.params
-    const { messageText } = this.state
-    if (messageText.length <= 0) return
-    await ChatService.sendMessage(dialog, messageText)
-    this.setState({ messageText: '' })
+        const { dialog } = this.props.navigation.state.params
+        const { messageText } = this.state
+        if (messageText.length <= 0) return
+        await ChatService.sendMessage(dialog, messageText)
+        this.setState({ messageText: '' })
   }
-
+  
   sendAttachment = async () => {
     const { dialog } = this.props.navigation.state.params
     const img = await this.onPickImage()
