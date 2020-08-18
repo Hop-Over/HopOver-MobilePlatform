@@ -106,6 +106,8 @@ class People extends Component {
               pending.push(elem)
             }
           })
+        var friendIds=friends.map(Number)
+
           this.setState({friendId: friends})
           this.setState({pendingId: pending})
       })

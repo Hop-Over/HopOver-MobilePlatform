@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import IconGroup from 'react-native-vector-icons/FontAwesome'
 import UsersService from '../../../services/users-service'
+// import Friends from '../../../screens/main/contact/index'
 import Indicator from '../../components/indicator'
 import User from './renderUser'
 import Avatar from '../../components/avatar'
@@ -24,7 +25,8 @@ class Contacts extends PureComponent {
       keyword: '',
       isLoader: false,
       isUpdate: false,
-      dialogType: this.isGroupDetails
+      dialogType: this.isGroupDetails,
+      friends: []
     }
   }
 
@@ -117,13 +119,36 @@ class Contacts extends PureComponent {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
+  getFriends = async () => {
+    if (this.state.updateContacts){
+      await ContactService.fetchContactList()
+        .then((response) => {
+          this.friends = []
+          let pending = []
+          keys = Object.keys(response)
+          keys.forEach(elem => {
+            // Make sure that they are friends and not just a request
+            let contact = response[elem]
+            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
+              this.friends.push(elem)
+            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
+              pending.push(elem)
+            }
+          })
+        var friendIds=this.friends.map(Number)
+      })
+    }
+  }
+
+
   searchUsers = () => {
     const dialog = this.props.navigation.getParam('dialog', false)
     const { keyword } = this.state
     let str = keyword.trim()
+    this.getFriends()
     if (str.length > 2) {
       this.setState({ isLoader: true })
-      UsersService.listUsersByFullName(str, dialog?.occupants_ids)
+      UsersService.listContactUsersByFullName(str, this.friends, dialog?.occupants_ids)
         .then(users => {
           this.listUsers = users
           this.userNotFound = false

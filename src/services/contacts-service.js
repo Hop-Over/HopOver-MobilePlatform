@@ -37,10 +37,12 @@ class ContactService {
     console.log(userId + " ACCEPTED REQUEST")
   }
   onRejectSubscribeListener(userId){
-    if (userId !== undefined) {
+    console.log("Reject Listener Invoked")
+    if (userId != undefined) {
       this.deleteContact(userId)
     }
   }
+
   onContactListListener(userId, type){
     console.log("CONTACT LIST UPDATED")
   }

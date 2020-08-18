@@ -292,9 +292,6 @@ export default class PrivateDetails extends Component {
   render() {
     const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
     const dialog = this.props.navigation.getParam('dialog', false)
-    //console.log(this.currentUser())
-    //console.log(this.isAdmin())
-    //console.log(this.state.showUsers)
     return (
       <KeyboardAvoidingView style={styles.container}>
         {isLoader &&
