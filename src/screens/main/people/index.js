@@ -101,7 +101,7 @@ class People extends Component {
           keys.forEach(elem => {
             // Make sure that they are friends and not just a request
             let contact = response[elem]
-            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
+            if(contact["subscription"] === "both"{
               friends.push(elem)
             } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
               pending.push(elem)
