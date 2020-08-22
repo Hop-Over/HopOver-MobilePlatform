@@ -21,6 +21,16 @@ export default class BottomNavBar extends Component {
     navigation.dispatch(resetAction);
   }
 
+  goToEventsScreen = () => {
+    const navigation = this.props.navigation
+
+    const resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Events' })],
+    });
+    navigation.dispatch(resetAction);
+  }
+
   goToPeopleScreen = () => {
     const navigation = this.props.navigation
 
@@ -49,7 +59,7 @@ export default class BottomNavBar extends Component {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => console.log('Pressed')}>
+        <TouchableOpacity onPress={() => this.goToEventsScreen()}>
           <View style={styles.footerElement}>
             <Icon name="event-note" size={35} color={navigation.state.routeName === "Events" ? "black": "grey"}/>
             <Text style={navigation.state.routeName === "Events" ? styles.footerTextCurrent : styles.footerText}> Events </Text>

@@ -4,12 +4,14 @@ import { createSwitchNavigator, createAppContainer, StackActions } from 'react-n
 import Auth from '../screens/auth'
 import Dialogs from '../screens/main/dialogs'
 import People from '../screens/main/people/index'
+import Events from '../screens/main/events/index'
 import Search from '../screens/main/people/search'
 import Requests from '../screens/main/people/requests'
 import AppWrap from '../screens/appWrap'
 import Settings from '../screens/main/settings/index'
 import Chat from '../screens/main/chat/index'
 import Contacts from '../screens/main/contacts/index'
+import EventContacts from '../screens/main/eventcontact/index'
 import CreateDialog from '../screens/main/contacts/createDialog'
 import GroupDetails from '../screens/main/chat/groupDetails'
 import PrivateDetails from '../screens/main/chat/privateDetails'
@@ -45,7 +47,10 @@ export default createAppContainer(createSwitchNavigator(
       People: {
         screen: People,
       },
-      Search: {
+      Events: {
+        screen: Events,
+      },
+            Search: {
         screen: Search,
       },
       Requests: {
@@ -55,6 +60,12 @@ export default createAppContainer(createSwitchNavigator(
         screen: Contacts,
         navigationOptions: {
           headerTitle: 'Contacts'
+        }
+      },
+      EventContacts: {
+        screen: EventContacts,
+        navigationOptions: {
+          headerTitle: 'Event Contacts'
         }
       },
       SharedMedia: {

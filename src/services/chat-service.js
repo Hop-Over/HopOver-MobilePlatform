@@ -47,6 +47,31 @@ class ChatService {
     store.dispatch(fetchDialogs(dialogs))
   }
 
+  async fetchEventsFromServer() {
+    const dialogsFromServer = await ConnectyCube.chat.dialog.list()
+    const currentUserId = this.currentUser
+    let privatChatIdsUser = []
+
+    const dialogs = dialogsFromServer.items.map(elem => {
+      if (elem.description === null){
+        console.log("DESCRIPTION: "+ elem.description)
+      }
+      if (elem.type === DIALOG_TYPE.PRIVATE && elem.description === 'private_event'){
+        elem.occupants_ids.forEach(elem => {
+          elem != currentUserId.id && privatChatIdsUser.push(elem)
+        })
+      return new Dialog(elem)
+      }
+    })
+    return []
+    if (privatChatIdsUser.length !== 0) {
+      const usersInfo = await this.getUsersList(privatChatIdsUser)
+      store.dispatch(fetchUsers(usersInfo))
+    }
+
+    store.dispatch(fetchDialogs(dialogs))
+  }
+
   async getUsersList(ids) {
     const usersList = await ConnectyCube.users.get({
       per_page: 100,
@@ -226,7 +251,7 @@ class ChatService {
           sort_desc: 'date_sent'
         }
     }
-    
+
     {console.log(lastMessageDate.body)}
     const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
     const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
@@ -244,7 +269,7 @@ class ChatService {
     return true
   }
 
-  
+
 
 
 
