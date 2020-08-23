@@ -30,12 +30,8 @@ export default class Dialog extends Component {
 
     return (
       <TouchableOpacity onPress={this.getOccupants}>
+      <View style={styles.totalContainer}>
         <View style={styles.container}>
-          <Avatar
-            photo={dialogPhoto}
-            name={dialog.name}
-            iconSize="large"
-          />
           <View style={styles.border} >
             <DialogTitles
               name={dialog.name}
@@ -44,7 +40,6 @@ export default class Dialog extends Component {
             <View style={styles.infoContainer}>
               <DialogLastDate
                 lastDate={dialog.last_message_date_sent}
-                lastMessage={dialog.last_message}
                 updatedDate={dialog.updated_date}
               />
               <DialogUnreadCounter
@@ -53,32 +48,55 @@ export default class Dialog extends Component {
             </View>
           </View>
         </View>
+        <View style={styles.avatarContainer}>
+          <View>
+            <Avatar
+              photo={dialogPhoto}
+              name={dialog.name}
+              iconSize="large"
+            />
+          </View>
+        </View>
+      </View>
       </TouchableOpacity >
     )
   }
 }
 
 const styles = StyleSheet.create({
+  avatarContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: -30,
+  },
+  totalContainer:{
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
   container: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    backgroundColor: "#F1F1F1",
+    maxWidth: 400
   },
   border: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'lightgrey'
   },
   infoContainer: {
     maxWidth: 75,
-    height: 50,
+    height: 75,
     justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingVertical: 10,
-    marginLeft: 5
+    paddingVertical: 20,
+    marginRight: 35,
   }
 })

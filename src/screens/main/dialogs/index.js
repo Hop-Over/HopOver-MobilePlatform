@@ -24,19 +24,17 @@ class Dialogs extends Component {
     }
   }
   static navigationOptions = ({ navigation }) => {
-    Dialogs.currentUserInfo = { ...store.getState().currentUser.user }
     return {
-
-      headerTitle: (
-        <View style={styles.userIdContainer}>
+      headerStyle: {borderBottomWidth: 0},
+      headerLeft: (
+                <View style={styles.userIdContainer}>
           <Text style={[
-            { fontSize: 22, color: 'black', fontWeight: "bold" },
+            { fontSize: 35, color: 'black', fontWeight: "bold" },
             Platform.OS === 'android' ?
               { paddingLeft: 13 } :
               { paddingLeft: 0 }]}>
-            {Dialogs.currentUserInfo.full_name}
+            Chat
           </Text>
-          <Text> #{Dialogs.currentUserInfo.id}</Text>
         </View>
       ),
       headerRight: (
@@ -49,7 +47,6 @@ class Dialogs extends Component {
           <TouchableOpacity style={styles.profilePicture} onPress={() => this.goToSettingsScreen(navigation)}>
             <Icon name="settings" size={30} color="black" />
           </TouchableOpacity>
-
         </View>
       ),
     }
@@ -143,17 +140,21 @@ class Dialogs extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 20,
   },
   navBarContainer: {
     flex: 1,
     flexDirection: "row",
-    marginRight: 5
+    marginRight: 5,
   },
   userIdContainer: {
     justifyContent: "center",
+    height: 100,
     alignItems: "center",
     paddingTop: 10,
     paddingBottom: 10,
+    fontSize: 100,
+    paddingLeft: 20,
   }
 })
 

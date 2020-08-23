@@ -31,7 +31,7 @@ class ChatService {
     let privatChatIdsUser = []
 
     const dialogs = dialogsFromServer.items.map(elem => {
-      if (elem.type === DIALOG_TYPE.PRIVATE) {
+      if (elem.type === DIALOG_TYPE.PRIVATE && elem.description === null) {
         elem.occupants_ids.forEach(elem => {
           elem != currentUserId.id && privatChatIdsUser.push(elem)
         })

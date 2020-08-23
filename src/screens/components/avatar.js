@@ -26,17 +26,12 @@ export default function ProfileIcon({ photo, name, iconSize }) {
 
   function randomizeColor() {
     const colors = [
-      'blue',
-      'darkmagenta',
-      'fuchsia',
-      'gold',
-      'green',
-      'limegreen',
-      'navy',
-      'purple',
-      'red',
-      'skyblue'
-    ]
+      '#7BC8FE',
+      '#1986D4',
+      '#F55167',
+      '#D12422',
+      '#323232',
+      ]
 
     return colors[name.length % colors.length]
   }
@@ -81,7 +76,7 @@ const extraLargeIcon = StyleSheet.create({
     width: 100,
     marginRight: 5,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   randomIcon: {
     fontSize: 48,
@@ -99,7 +94,7 @@ const largeIcon = StyleSheet.create({
     marginVertical: 10,
     marginRight: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   randomIcon: {
     fontSize: 22,

@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
     color: 'grey',
     lineHeight: 25,
     fontSize: 12,
-    fontWeight: '500'
+    fontWeight: '200'
   }
 })

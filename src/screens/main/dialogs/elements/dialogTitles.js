@@ -15,18 +15,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingVertical: 10
+    paddingVertical: 10,
+    maxWidth: 250,
   },
   name: {
     height: 30,
     lineHeight: 30,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700'
   },
   message: {
     height: 15,
     lineHeight: 15,
-    fontSize: 15,
-    fontWeight: '400'
+    fontSize: 13,
+    fontWeight: '300'
   }
 })
