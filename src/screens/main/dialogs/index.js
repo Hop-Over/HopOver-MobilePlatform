@@ -13,6 +13,7 @@ import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+
 class Dialogs extends Component {
   static currentUserInfo = ''
   dialogs = []
@@ -24,10 +25,11 @@ class Dialogs extends Component {
     }
   }
   static navigationOptions = ({ navigation }) => {
+    Dialogs.currentUserInfo = { ...store.getState().currentUser.user }
     return {
       headerStyle: {borderBottomWidth: 0},
       headerLeft: (
-                <View style={styles.userIdContainer}>
+        <View style={styles.userIdContainer}>
           <Text style={[
             { fontSize: 35, color: 'black', fontWeight: "bold" },
             Platform.OS === 'android' ?
@@ -39,14 +41,13 @@ class Dialogs extends Component {
       ),
       headerRight: (
         <View style={styles.navBarContainer}>
-          <TouchableOpacity
-            onPress={() => this.goToContactsScreen(navigation)}>
-            <Icon name="add" size={30} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.profilePicture} onPress={() => this.goToSettingsScreen(navigation)}>
-            <Icon name="settings" size={30} color="black" />
-          </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
+          <Avatar
+            photo={Dialogs.currentUserInfo.avatar}
+            name={Dialogs.currentUserInfo.full_name}
+            iconSize="small"
+          />
+        </TouchableOpacity>
         </View>
       ),
     }
@@ -68,10 +69,6 @@ class Dialogs extends Component {
 
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: Dialogs.currentUserInfo })
-  }
-
-  static goToContactsScreen = (props) => {
-    props.push('Contacts')
   }
 
   componentDidUpdate(prevProps) {
@@ -99,6 +96,11 @@ class Dialogs extends Component {
     navigation.dispatch(resetAction);
   }
 
+  goToContactsScreen = () => {
+    const { navigation } = this.props
+    navigation.push('Contacts')
+  }
+
   goToPeopleScreen = () => {
     const navigation = this.props.navigation
     const resetAction = StackActions.reset({
@@ -110,6 +112,7 @@ class Dialogs extends Component {
 
   render() {
     const { isLoader } = this.state
+    console.log(this.dialogs)
     return (
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
@@ -131,6 +134,7 @@ class Dialogs extends Component {
               </View>
             )
         }
+        <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
@@ -145,13 +149,14 @@ const styles = StyleSheet.create({
   navBarContainer: {
     flex: 1,
     flexDirection: "row",
+    paddingTop: 10,
     marginRight: 5,
   },
   userIdContainer: {
     justifyContent: "center",
     height: 100,
     alignItems: "center",
-    paddingTop: 10,
+    paddingTop: 40,
     paddingBottom: 10,
     fontSize: 100,
     paddingLeft: 20,

@@ -58,16 +58,20 @@ class People extends Component {
   static navigationOptions = ({ navigation }) => {
     People.currentUserInfo = { ...store.getState().currentUser.user }
     return {
-      headerTitle: (
-        <Text style={[
-          { fontSize: 22, color: 'black' },
-          Platform.OS === 'android' ?
-            { paddingLeft: 13 } :
-            { paddingLeft: 0 }]}>
-          {People.currentUserInfo.full_name}
-        </Text>
+      headerStyle: {borderBottomWidth: 0},
+      headerLeft: (
+        <View style={styles.userIdContainer}>
+          <Text style={[
+            { fontSize: 35, color: 'black', fontWeight: "bold" },
+            Platform.OS === 'android' ?
+              { paddingLeft: 13 } :
+              { paddingLeft: 0 }]}>
+            People
+          </Text>
+        </View>
       ),
       headerRight: (
+        <View style={styles.navBarContainer}>
         <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
           <Avatar
             photo={People.currentUserInfo.avatar}
@@ -75,6 +79,7 @@ class People extends Component {
             iconSize="small"
           />
         </TouchableOpacity>
+        </View>
       ),
     }
   }
@@ -249,6 +254,21 @@ class People extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  navBarContainer: {
+    flex: 1,
+    flexDirection: "row",
+    paddingTop: 10,
+    marginRight: 5,
+  },
+  userIdContainer: {
+    justifyContent: "center",
+    height: 100,
+    alignItems: "center",
+    paddingTop: 40,
+    paddingBottom: 10,
+    fontSize: 100,
+    paddingLeft: 20,
   },
   space: {
     paddingRight: 50,

@@ -23,33 +23,31 @@ class Events extends Component {
       isLoader: props.dialogs.length === 0 && true,
     }
   }
+
   static navigationOptions = ({ navigation }) => {
     Events.currentUserInfo = { ...store.getState().currentUser.user }
     return {
-
-      headerTitle: (
+      headerStyle: {borderBottomWidth: 0},
+      headerLeft: (
         <View style={styles.userIdContainer}>
           <Text style={[
-            { fontSize: 22, color: 'black', fontWeight: "bold" },
+            { fontSize: 35, color: 'black', fontWeight: "bold" },
             Platform.OS === 'android' ?
               { paddingLeft: 13 } :
               { paddingLeft: 0 }]}>
-            {Events.currentUserInfo.full_name}
+            Events
           </Text>
-          <Text> #{Events.currentUserInfo.id}</Text>
         </View>
       ),
       headerRight: (
         <View style={styles.navBarContainer}>
-          <TouchableOpacity
-            onPress={() => this.goToEventContactsScreen(navigation)}>
-            <Icon name="add" size={30} color="black" />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.profilePicture} onPress={() => this.goToSettingsScreen(navigation)}>
-            <Icon name="settings" size={30} color="black" />
-          </TouchableOpacity>
-
+        <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
+          <Avatar
+            photo={Events.currentUserInfo.avatar}
+            name={Events.currentUserInfo.full_name}
+            iconSize="small"
+          />
+        </TouchableOpacity>
         </View>
       ),
     }
@@ -130,14 +128,18 @@ const styles = StyleSheet.create({
   navBarContainer: {
     flex: 1,
     flexDirection: "row",
-    marginRight: 5
+    paddingTop: 10,
+    marginRight: 5,
   },
   userIdContainer: {
     justifyContent: "center",
+    height: 100,
     alignItems: "center",
-    paddingTop: 10,
+    paddingTop: 40,
     paddingBottom: 10,
-  }
+    fontSize: 100,
+    paddingLeft: 20,
+  },
 })
 
 

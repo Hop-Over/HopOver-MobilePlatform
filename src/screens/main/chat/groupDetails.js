@@ -23,6 +23,8 @@ import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
+import Modal from 'react-native-modal';
+import ModalTester from './elements/colorSelect'
 
 export default class GroupDetails extends Component {
 
@@ -255,6 +257,19 @@ export default class GroupDetails extends Component {
     {!showUsers ? this.setState({showUsers: true}) : this.setState({showUsers: false})}
   }
 
+  colorSelect = () => {
+  console.log("COLOR MODAL ACTIVE")
+  return (
+    <View style={{flex: 1}}>
+      <Modal isVisible={true}>
+        <View style={{flex: 1}}>
+          <Text>Hello!</Text>
+        </View>
+      </Modal>
+    </View>
+  )
+}
+
   keyExtractor = (item, index) => index.toString()
 
   _renderUser = ( {item} ) => {
@@ -288,6 +303,8 @@ export default class GroupDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Group </Text>
+      <ModalTester>
+      </ModalTester>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
             <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />

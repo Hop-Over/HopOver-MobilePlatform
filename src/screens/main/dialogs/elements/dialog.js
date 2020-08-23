@@ -6,6 +6,7 @@ import DialogLastDate from './dialogLastDate'
 import DialogUnreadCounter from './dialogUnreadCounter'
 import UsersService from '../../../../services/users-service'
 import { DIALOG_TYPE } from '../../../../helpers/constants'
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class Dialog extends Component {
   getOccupants = async () => {
@@ -31,7 +32,7 @@ export default class Dialog extends Component {
     return (
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
-        <View style={styles.container}>
+        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#FFFFFF', '#F1F1F1']} style={styles.container}>
           <View style={styles.border} >
             <DialogTitles
               name={dialog.name}
@@ -47,7 +48,7 @@ export default class Dialog extends Component {
               />
             </View>
           </View>
-        </View>
+        </LinearGradient>
         <View style={styles.avatarContainer}>
           <View>
             <Avatar

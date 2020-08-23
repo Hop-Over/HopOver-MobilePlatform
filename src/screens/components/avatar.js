@@ -128,7 +128,7 @@ const smallIcon = StyleSheet.create({
     width: 36,
     marginRight: 5,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   randomIcon: {
     fontSize: 18,
