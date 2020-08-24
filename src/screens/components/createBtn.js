@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { BTN_TYPE } from '../../helpers/constants'
 import { SIZE_SCREEN } from '../../helpers/constants'
@@ -24,24 +24,27 @@ export default function CreateBtn({ goToScreen, type }) {
   }
 
   return (
-    <TouchableOpacity onPress={goToScreen}>
-      <LinearGradient colors={['#84CDFF', '#1986D4']} style={styles.createDialog}>
-      {renderIcon}
-      </LinearGradient>
-    </TouchableOpacity>
+    <View style={styles.createDialog}>
+      <TouchableOpacity onPress={goToScreen}>
+        <LinearGradient colors={['#84CDFF', '#1986D4']} style={styles.gradient}>
+        {renderIcon}
+        </LinearGradient>
+      </TouchableOpacity>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   createDialog: {
     position: 'absolute',
-    width: 55,
-    height: 55,
+    bottom: 120,
+    marginLeft: SIZE_SCREEN.width/2 - 55/2
+  },
+  gradient:{
     alignItems: 'center',
     justifyContent: 'center',
+    width: 55,
+    height: 55,
     borderRadius: 30,
-    bottom: 80,
-    right: SIZE_SCREEN.width/2 - 55/2,
-    backgroundColor: "#48A5E7"
   }
 })

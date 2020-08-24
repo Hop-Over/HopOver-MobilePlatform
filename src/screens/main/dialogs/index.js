@@ -12,6 +12,8 @@ import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SIZE_SCREEN } from '../../../helpers/constants'
+
 
 
 class Dialogs extends Component {
@@ -110,6 +112,13 @@ class Dialogs extends Component {
     navigation.dispatch(resetAction);
   }
 
+  lastElement = () => {
+    return (
+      <View style={styles.lastElement}>
+      </View>
+    )
+  }
+
   render() {
     const { isLoader } = this.state
     console.log(this.dialogs)
@@ -130,12 +139,13 @@ class Dialogs extends Component {
                   data={this.dialogs}
                   keyExtractor={this.keyExtractor}
                   renderItem={(item) => this._renderDialog(item)}
+                  ListFooterComponent={this.lastElement}
                 />
               </View>
             )
         }
-        <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
-        <BottomNavBar navigation={this.props.navigation}/>
+          <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
+          <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
   }
@@ -145,6 +155,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
+    height: SIZE_SCREEN.height
   },
   navBarContainer: {
     flex: 1,
@@ -160,6 +171,9 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontSize: 100,
     paddingLeft: 20,
+  },
+  lastElement: {
+    paddingBottom: SIZE_SCREEN.height/5
   }
 })
 

@@ -47,20 +47,20 @@ export default class BottomNavBar extends Component {
       <View style={styles.container}>
         <View style={styles.footer}>
           <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
-            <View style={navigation.state.routeName === "People" || navigation.state.routeName === "Search" ? styles.footerChosen: styles.footerElement}>
-              <Icon name="group" size={35} color={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? "#48A5E7" : "black"}/>
+            <View style={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? styles.footerChosen: styles.footerElement}>
+              <Icon name="group" size={35} color={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? "#2E86FB" : "black"}/>
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => this.goToChatScreen()}>
             <View style={navigation.state.routeName === "Dialogs" ? styles.footerChosen: styles.footerElement}>
-              <Icon name="chat-bubble" size={35} color={navigation.state.routeName === "Dialogs" ? "#48A5E7": "black"}/>
+              <Icon name="chat-bubble" size={35} color={navigation.state.routeName === "Dialogs" ? "#2E86FB": "black"}/>
             </View>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => this.goToEventsScreen()}>
             <View style={navigation.state.routeName === "Events" ? styles.footerChosen: styles.footerElement}>
-              <Icon name="event-note" size={35} color={navigation.state.routeName === "Events" ? "#48A5E7": "black"}/>
+              <Icon name="event-note" size={35} color={navigation.state.routeName === "Events" ? "#2E86FB": "black"}/>
             </View>
           </TouchableOpacity>
         </View>
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    width: SIZE_SCREEN.width * 0.8,
+    width: SIZE_SCREEN.width * 0.9,
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -110,18 +110,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   footerChosen: {
-    height: SIZE_SCREEN.height/10,
+    height: SIZE_SCREEN.height/9,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingLeft: ((SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.8))/3),
-    paddingRight: ((SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.8))/3),
+    paddingLeft: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9),
+    paddingRight: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9),
     paddingTop: 10,
     justifyContent: "center",
     alignItems: 'center',
     borderLeftWidth: 0.5,
     borderRightWidth: 0.5,
     borderTopWidth: 5,
-    borderTopColor: "#48A5E7",
+    borderTopColor: "#2E86FB",
     borderLeftColor: "lightgrey",
     borderRightColor: "lightgrey"
   }
