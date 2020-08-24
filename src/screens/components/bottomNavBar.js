@@ -46,15 +46,15 @@ export default class BottomNavBar extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.footer}>
-          <TouchableOpacity onPress={() => this.goToChatScreen()}>
-            <View style={navigation.state.routeName === "Dialogs" ? styles.footerChosen: styles.footerElement}>
-              <Icon name="chat-bubble" size={35} color={navigation.state.routeName === "Dialogs" ? "#48A5E7": "black"}/>
-            </View>
-          </TouchableOpacity>
-
           <TouchableOpacity onPress={() => this.goToPeopleScreen()}>
             <View style={navigation.state.routeName === "People" || navigation.state.routeName === "Search" ? styles.footerChosen: styles.footerElement}>
               <Icon name="group" size={35} color={navigation.state.routeName === "People" || navigation.state.routeName === "Search" || navigation.state.routeName === "Requests" ? "#48A5E7" : "black"}/>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => this.goToChatScreen()}>
+            <View style={navigation.state.routeName === "Dialogs" ? styles.footerChosen: styles.footerElement}>
+              <Icon name="chat-bubble" size={35} color={navigation.state.routeName === "Dialogs" ? "#48A5E7": "black"}/>
             </View>
           </TouchableOpacity>
 
