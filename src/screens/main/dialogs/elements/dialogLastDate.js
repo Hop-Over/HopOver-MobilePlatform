@@ -27,7 +27,7 @@ export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
     } else if (curDay > msgDay) {
       return `${days[msgDay]}`
     } else {
-      return `${(msgHours > 9) ? msgHours : ('0' + msgHours)}:${(msgMinutes > 9) ? msgMinutes : ('0' + msgMinutes)}`
+      return `${(msgHours > 12) ? msgHours - 12 : ('0' + msgHours)}:${(msgMinutes > 9) ? msgMinutes : ('0' + msgMinutes)} ${(msgHours > 12) ? "PM" : "AM"}`
     }
   }
 

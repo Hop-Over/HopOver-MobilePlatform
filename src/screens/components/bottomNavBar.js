@@ -113,16 +113,25 @@ const styles = StyleSheet.create({
     height: SIZE_SCREEN.height/9,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingLeft: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9),
-    paddingRight: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9),
+    paddingLeft: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9) - 10,
+    paddingRight: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9) - 10,
     paddingTop: 10,
     justifyContent: "center",
     alignItems: 'center',
     borderLeftWidth: 0.5,
     borderRightWidth: 0.5,
+    borderLeftColor: '#2E86FB',
+    borderRightColor: '#2E86FB',
     borderTopWidth: 5,
     borderTopColor: "#2E86FB",
-    borderLeftColor: "lightgrey",
-    borderRightColor: "lightgrey"
+    shadowColor: "#000",
+    shadowOffset: {
+    	width: 0,
+    	height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   }
 })
