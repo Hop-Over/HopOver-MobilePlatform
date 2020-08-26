@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import IconGroup from 'react-native-vector-icons/FontAwesome'
 import UsersService from '../../../services/users-service'
+import UserService from '../../../services/users-service'
+import ContactService from '../../../services/contacts-service'
 // import Friends from '../../../screens/main/contact/index'
 import Indicator from '../../components/indicator'
 import User from './renderUser'
@@ -13,6 +15,8 @@ import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
 import { popToTop } from '../../../routing/init'
+// import { fetchUsers } from '../actions/users'
+
 
 class Contacts extends PureComponent {
   isGroupDetails = false
@@ -24,10 +28,11 @@ class Contacts extends PureComponent {
     this.state = {
       keyword: '',
       isLoader: false,
-      isUpdate: false,
       dialogType: this.isGroupDetails,
-      friends: []
-    }
+      isUpdate: false,
+      friendId: [],
+      pendingId: [],
+      updateContacts: true,    }
   }
 
   listUsers = null
@@ -119,48 +124,58 @@ class Contacts extends PureComponent {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
-  getFriends = async () => {
+  getFriends = async (str) => {
     if (this.state.updateContacts){
       await ContactService.fetchContactList()
         .then((response) => {
-          this.friends = []
+          let friends = []
           let pending = []
           keys = Object.keys(response)
           keys.forEach(elem => {
             // Make sure that they are friends and not just a request
             let contact = response[elem]
-            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
-              this.friends.push(elem)
+            if(contact["subscription"] === "both" || contact["subscription"] === "from" || contact["subscription"] === "to"){
+              friends.push(elem)
             } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
               pending.push(elem)
             }
           })
-        var friendIds=this.friends.map(Number)
+        var friendIds=friends.map(Number)
+        console.log(friends)
+        this.searchFunc(str, friends)
+          this.setState({friendId: friends})
+          this.setState({pendingId: pending})
       })
+      this.setState({updateContacts: false})
+      await UserService.getOccupants(this.state.friendId)
+      this.setState({isLoader: false})
     }
   }
 
 
   searchUsers = () => {
-    const dialog = this.props.navigation.getParam('dialog', false)
     const { keyword } = this.state
     let str = keyword.trim()
-    this.getFriends()
     if (str.length > 2) {
-      this.setState({ isLoader: true })
-      UsersService.listContactUsersByFullName(str, this.friends, dialog?.occupants_ids)
-        .then(users => {
-          this.listUsers = users
-          this.userNotFound = false
-          this.setState({ isLoader: false })
-        })
-        .catch(() => {
-          this.userNotFound = true
-          this.setState({ isLoader: false })
-        })
+        this.getFriends(str)
     } else {
-      showAlert('Enter more than 3 characters')
+        showAlert('Enter more than 3 characters')
     }
+  }
+
+  searchFunc = (str, friends) => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    this.setState({ isLoader: true })
+    UsersService.listContactUsersByFullName(str, friends, dialog?.occupants_ids)
+      .then(users => {
+        this.listUsers = users
+        this.userNotFound = false
+        this.setState({ isLoader: false })
+      })
+      .catch(() => {
+        this.userNotFound = true
+        this.setState({ isLoader: false })
+      })
   }
 
   goToCreateDialogScreen = () => {
