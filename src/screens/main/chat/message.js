@@ -81,7 +81,7 @@ export default class Message extends Component {
               width: fullWidth,
               height: fullHeight,
             }}>
-            {this.isAtachment && message.attachment[0].type !== "video/mp4" ? 
+            {this.isAtachment && message.attachment[0].type !== "video/mp4" ?
               <ImageViewer
                 imageUrls={[{ url: message.attachment[0].url }]}
                 onCancel={() => this.handleModalState()}
@@ -94,7 +94,7 @@ export default class Message extends Component {
                     width={+message.attachment[0].width}
                     height={+message.attachment[0].height}
                   />
-                  
+
                 )}
               />
                 :
@@ -120,7 +120,7 @@ export default class Message extends Component {
           (
             <View style={[styles.container, styles.positionToLeft]}>
               <Avatar
-                // photo={user.avatar}
+                //photo={user.avatar}
                 name={"user.full_name"}
                 iconSize="small"
               />
@@ -131,14 +131,18 @@ export default class Message extends Component {
                 }
               </View>
               ):(
+              <View>
                 <View style={[styles.message, styles.messageToLeft]}>
-                <Text style={[styles.messageText, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
-                  {message.body || ' '}
-                </Text>
-                <Text style={styles.dateSent}>
-                  {getTime(message.date_sent)}
-                </Text>
-              </View>  
+                  <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                    {message.body || ' '}
+                  </Text>
+                </View>
+                <View style={styles.timeStampLeftContainer}>
+                  <Text style={styles.dateSentLeft}>
+                    {getTime(message.date_sent)}
+                  </Text>
+                  </View>
+              </View>
               )}
             </View>
           ) :
@@ -151,20 +155,20 @@ export default class Message extends Component {
                   }
                 </View>
               ):(
-                <View style={[styles.message, styles.messageToRight]}>
-                <Text style={[styles.messageText, styles.selfToRight]}>
-                  {message.body || ' '}
-                </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' }}>
-                  <Text style={styles.dateSent}>
-                    {getTime(message.date_sent)}
-                  </Text>
-                  <MessageSendState send_state={message.send_state} />
+                <View>
+                  <View style={[styles.message, styles.messageToRight]}>
+                    <Text style={[styles.messageTextRight, styles.selfToRight]}>
+                      {message.body || ' '}
+                    </Text>
+                  </View>
+                  <View style={styles.timeStampRightContainer}>
+                    <Text style={styles.dateSentRight}>
+                      {getTime(message.date_sent)}
+                    </Text>
+                    <MessageSendState send_state={message.send_state} />
+                  </View>
                 </View>
-              </View>
               )}
-              
-
             </View>
           )
         }
@@ -212,39 +216,73 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start'
   },
   positionToRight: {
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   message: {
-    paddingTop: 5,
-    paddingBottom: 3,
-    paddingHorizontal: 6,
-    borderRadius: 10
+    paddingVertical: 10,
+    borderRadius: 20,
   },
   messageToLeft: {
     maxWidth: fullWidth - 90,
-    borderBottomLeftRadius: 2,
-    backgroundColor: '#63D9C6'
+    backgroundColor: '#FFFFFF',
+    shadowColor: "#267DC9",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingHorizontal: 15
   },
   messageToRight: {
     maxWidth: fullWidth - 55,
-    borderBottomRightRadius: 2,
-    backgroundColor: '#48A6E3'
+    backgroundColor: '#1897F8',
+    shadowColor: "#267DC9",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    paddingHorizontal: 15,
   },
-  messageText: {
+  messageTextLeft: {
     fontSize: 16,
-    color: 'white'
+    color: '#323232'
+  },
+  messageTextRight: {
+    fontSize: 16,
+    color: '#FFFFFF'
   },
   selfToLeft: {
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
+    alignItems: 'center',
   },
   selfToRight: {
     alignSelf: 'flex-end'
   },
-  dateSent: {
+  dateSentLeft: {
     alignSelf: 'flex-end',
-    paddingTop: 1,
-    paddingHorizontal: 3,
-    fontSize: 12,
-    color: 'lightcyan'
+    fontSize: 10,
+    color: '#50555C'
+  },
+  dateSentRight: {
+    alignSelf: 'flex-end',
+    fontSize: 10,
+    color: '#50555C',
+  },
+  timeStampRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    marginRight: 20
+  },
+  timeStampLeftContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    paddingVertical: 3,
   }
 })
