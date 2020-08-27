@@ -88,13 +88,15 @@ const extraLargeIcon = StyleSheet.create({
 
 const largeIcon = StyleSheet.create({
   photo: {
-    borderRadius: 25,
-    height: 50,
-    width: 50,
+    borderRadius: 30,
+    height:58,
+    width: 58,
     marginVertical: 10,
     marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: "#FFFFFF"
   },
   randomIcon: {
     fontSize: 22,
@@ -112,7 +114,7 @@ const mediumIcon = StyleSheet.create({
     marginVertical: 10,
     marginRight: 10,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   randomIcon: {
     fontSize: 20,
@@ -123,12 +125,14 @@ const mediumIcon = StyleSheet.create({
 
 const smallIcon = StyleSheet.create({
   photo: {
-    borderRadius: 18,
-    height: 36,
-    width: 36,
+    borderRadius: 15,
+    height: 30,
+    width: 30,
     marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
   randomIcon: {
     fontSize: 18,

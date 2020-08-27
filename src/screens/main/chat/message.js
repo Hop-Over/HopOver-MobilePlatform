@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image,Linking } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer'
 import store from '../../../store'
 import Avatar from '../../components/avatar'
@@ -133,9 +133,14 @@ export default class Message extends Component {
               ):(
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
-                  <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                {message.body.toLowerCase().includes(".com") ?
+                  (<Text style={[styles.messageTextLeft, styles.hyperlink, (otherSender ? styles.selfToLeft : styles.selfToRight)]}
+                    onPress={() => Linking.openURL(message.body.toLowerCase())}>
                     {message.body || ' '}
-                  </Text>
+                  </Text>) :
+                  (<Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                    {message.body || ' '}
+                  </Text>)}
                 </View>
                 <View style={styles.timeStampLeftContainer}>
                   <Text style={styles.dateSentLeft}>
@@ -157,9 +162,15 @@ export default class Message extends Component {
               ):(
                 <View>
                   <View style={[styles.message, styles.messageToRight]}>
-                    <Text style={[styles.messageTextRight, styles.selfToRight]}>
+                    {message.body.toLowerCase().includes(".com") ?
+                    (<Text style={[styles.messageTextRight, styles.selfToRight, styles.hyperlink]}
+                      onPress={() => Linking.openURL(message.body.toLowerCase())}>
                       {message.body || ' '}
-                    </Text>
+                    </Text>) :
+                    (<Text style={[styles.messageTextRight, styles.selfToRight]}>
+                      {message.body || ' '}
+                    </Text>)
+                  }
                   </View>
                   <View style={styles.timeStampRightContainer}>
                     <Text style={styles.dateSentRight}>
@@ -264,25 +275,29 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   dateSentLeft: {
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     fontSize: 10,
     color: '#50555C'
   },
   dateSentRight: {
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     fontSize: 10,
     color: '#50555C',
   },
   timeStampRightContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    marginRight: 20
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight: 10
   },
   timeStampLeftContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     paddingVertical: 3,
+    marginLeft: 10
+  },
+  hyperlink: {
+    textDecorationLine: 'underline'
   }
 })

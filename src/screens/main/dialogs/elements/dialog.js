@@ -32,7 +32,7 @@ export default class Dialog extends Component {
     return (
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
-        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#FFFFFF', '#F1F1F1']} style={styles.container}>
+        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={['#F1F1F1','#FFFFFF']} style={styles.container}>
           <View style={styles.border} >
             <DialogTitles
               name={dialog.name}
