@@ -19,6 +19,7 @@ class AuthService {
   }
 
   async updateCurrentUser({ image, full_name, login }) {
+    console.log(image, full_name, login)
     const updateData = {}
     if (full_name) {
       updateData.full_name = full_name

@@ -115,6 +115,7 @@ class Events extends Component {
               </View>
             )
         }
+        <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )

@@ -5,6 +5,7 @@ import AuthService from '../../services/auth-service'
 import Indicator from '../components/indicator'
 import ChatService from '../../services/chat-service'
 import ContactService from '../../services/contacts-service'
+import RNFS from 'react-native-fs'
 
 export default class AuthForm extends Component {
 	state = {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		height: 50,
 		borderRadius: 25,
-		backgroundColor: '#00e3cf',
+		backgroundColor: '#75C6FF',
 		marginHorizontal: 20,
 		marginVertical: 10,
 		alignItems: 'center',
