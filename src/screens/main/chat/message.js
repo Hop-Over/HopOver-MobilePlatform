@@ -58,6 +58,42 @@ export default class Message extends Component {
     )
   }
 
+  hyperlink = (msg) => {
+    const msgArray = msg.split(' ')
+    var formattedMessage = [];
+    var tempString = ""
+
+    msgArray.forEach(text => {
+      text = text.toLowerCase()
+      if (text.includes('.com')){
+        formattedMessage.push(
+        <Text>
+          {tempString}
+        </Text>
+        )
+
+        tempString = ""
+        if (text.includes('http://') || text.includes('https://')){
+          formattedMessage.push(
+            <Text style={styles.hyperlink}
+              onPress={() => Linking.openURL(text)}>
+              {" " + text}
+            </Text>)
+        } else {
+          formattedMessage.push(
+            <Text style={styles.hyperlink}
+              onPress={() => Linking.openURL('http://' + text)}>
+              {" " + text}
+            </Text>)
+        }
+      }
+      else {
+        tempString = tempString + " " + text
+      }
+    })
+    return formattedMessage
+  }
+
   handleModalState = () => {
     this.setState({ isModal: !this.state.isModal })
   }
@@ -134,13 +170,15 @@ export default class Message extends Component {
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
                 {message.body.toLowerCase().includes(".com") ?
-                  (<Text style={[styles.messageTextLeft, styles.hyperlink, (otherSender ? styles.selfToLeft : styles.selfToRight)]}
-                    onPress={() => Linking.openURL(message.body.toLowerCase())}>
-                    {message.body || ' '}
-                  </Text>) :
-                  (<Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
-                    {message.body || ' '}
-                  </Text>)}
+                (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
+                  <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                  {this.hyperlink(message.body)}
+                  </Text>
+                </View>) :
+                (<Text style={[styles.messageTextLeft, styles.selfToLeft]}>
+                  {message.body || ' '}
+                </Text>)
+              }
                 </View>
                 <View style={styles.timeStampLeftContainer}>
                   <Text style={styles.dateSentLeft}>
@@ -163,10 +201,11 @@ export default class Message extends Component {
                 <View>
                   <View style={[styles.message, styles.messageToRight]}>
                     {message.body.toLowerCase().includes(".com") ?
-                    (<Text style={[styles.messageTextRight, styles.selfToRight, styles.hyperlink]}
-                      onPress={() => Linking.openURL(message.body.toLowerCase())}>
-                      {message.body || ' '}
-                    </Text>) :
+                    (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
+                      <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                      {this.hyperlink(message.body)}
+                      </Text>
+                    </View>) :
                     (<Text style={[styles.messageTextRight, styles.selfToRight]}>
                       {message.body || ' '}
                     </Text>)
