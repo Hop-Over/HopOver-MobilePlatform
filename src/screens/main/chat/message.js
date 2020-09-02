@@ -92,13 +92,13 @@ export default class Message extends Component {
         formattedMessage.push(
           <Text style={styles.hyperlink}
             onPress={() => Linking.openURL('http://' + text)}>
-            {text}
+            {text + " "}
           </Text>
         )}
 
       else {
         formattedMessage.push(
-          <Text> {text} </Text>
+          <Text>{text} </Text>
       )}
     })
 
