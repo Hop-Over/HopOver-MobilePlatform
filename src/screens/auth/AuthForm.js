@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
 	buttonContainer: {
 		height: 50,
 		borderRadius: 25,
-		backgroundColor: '#75C6FF',
+		backgroundColor: '#1897F8',
 		marginHorizontal: 20,
 		marginVertical: 10,
 		alignItems: 'center',

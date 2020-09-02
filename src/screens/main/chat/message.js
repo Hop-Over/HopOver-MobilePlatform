@@ -58,39 +58,50 @@ export default class Message extends Component {
     )
   }
 
+  isLink = (msg) => {
+    if (msg.toLowerCase().includes('.')){
+      return true
+    }
+    return false
+  }
+
+  validURL = (str) => {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+
   hyperlink = (msg) => {
     const msgArray = msg.split(' ')
     var formattedMessage = [];
-    var tempString = ""
 
     msgArray.forEach(text => {
-      text = text.toLowerCase()
-      if (text.includes('.com')){
+      var containsLink = this.validURL(text)
+      if (containsLink && (text.includes('http://') || text.includes('https://'))){
         formattedMessage.push(
-        <Text>
-          {tempString}
-        </Text>
-        )
+          <Text style={styles.hyperlink}
+            onPress={() => Linking.openURL(text)}>
+            {text}
+          </Text>)
+      }
+      else if (containsLink) {
+        formattedMessage.push(
+          <Text style={styles.hyperlink}
+            onPress={() => Linking.openURL('http://' + text)}>
+            {text}
+          </Text>
+        )}
 
-        tempString = ""
-        if (text.includes('http://') || text.includes('https://')){
-          formattedMessage.push(
-            <Text style={styles.hyperlink}
-              onPress={() => Linking.openURL(text)}>
-              {" " + text}
-            </Text>)
-        } else {
-          formattedMessage.push(
-            <Text style={styles.hyperlink}
-              onPress={() => Linking.openURL('http://' + text)}>
-              {" " + text}
-            </Text>)
-        }
-      }
       else {
-        tempString = tempString + " " + text
-      }
+        formattedMessage.push(
+          <Text> {text} </Text>
+      )}
     })
+
     return formattedMessage
   }
 
@@ -169,7 +180,7 @@ export default class Message extends Component {
               ):(
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
-                {message.body.toLowerCase().includes(".com") ?
+                {this.isLink(message.body)?
                 (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
                   <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
                   {this.hyperlink(message.body)}
@@ -200,7 +211,7 @@ export default class Message extends Component {
               ):(
                 <View>
                   <View style={[styles.message, styles.messageToRight]}>
-                    {message.body.toLowerCase().includes(".com") ?
+                    {this.isLink(message.body)?
                     (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
                       <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
                       {this.hyperlink(message.body)}
