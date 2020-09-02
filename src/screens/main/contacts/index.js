@@ -124,9 +124,21 @@ class Contacts extends PureComponent {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
+
+  searchUsers = () => {
+    const { keyword } = this.state
+    this.setState({updateContacts: true})
+    let str = keyword.trim()
+    if (str.length > 2) {
+        this.getFriends(str)
+    } else {
+        showAlert('Enter more than 3 characters')
+    }
+  }
+
   getFriends = async (str) => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
+      if (this.state.updateContacts){
+        await ContactService.fetchContactList()
         .then((response) => {
           let friends = []
           let pending = []
@@ -141,27 +153,17 @@ class Contacts extends PureComponent {
             }
           })
         var friendIds=friends.map(Number)
-        console.log(friends)
         this.searchFunc(str, friends)
         this.setState({friendId: friends})
         this.setState({pendingId: pending})
       })
-      this.setState({updateContacts: false})
-      await UserService.getOccupants(this.state.friendId)
+    //   this.setState({updateContacts: false})
       this.setState({isLoader: false})
     }
   }
 
 
-  searchUsers = () => {
-    const { keyword } = this.state
-    let str = keyword.trim()
-    if (str.length > 2) {
-        this.getFriends(str)
-    } else {
-        showAlert('Enter more than 3 characters')
-    }
-  }
+  
 
   searchFunc = (str, friends) => {
     const dialog = this.props.navigation.getParam('dialog', false)
@@ -169,8 +171,14 @@ class Contacts extends PureComponent {
     UsersService.listContactUsersByFullName(str, friends, dialog?.occupants_ids)
       .then(users => {
         this.listUsers = users
-        this.userNotFound = false
+        if(users.length === 0){
+            this.userNotFound = true
+            
+        }else{
+           this.userNotFound = false
+        }
         this.setState({ isLoader: false })
+        this.updateSearch()
       })
       .catch(() => {
         this.userNotFound = true
