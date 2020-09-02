@@ -13,13 +13,13 @@ export default class MessageSendState extends PureComponent {
 
     switch (send_state) {
       case STATUS_PENDING:
-        return (<Icon name="query-builder" size={12} color="white" />)
+        return (<Icon name="query-builder" size={12} color="#50555C" />)
       case STATUS_SENT:
-        return (<Icon name="done" size={12} color="white" />)
+        return (<Icon name="done" size={12} color="wh#50555Cite" />)
       case STATUS_DELIVERED:
-        return (<Icon name="done-all" size={12} color="white" />)
+        return (<Icon name="done-all" size={12} color="#50555C" />)
       case STATUS_READ:
-        return (<Icon name="done-all" size={12} color="#ffeb3b" />)
+        return (<Icon name="done-all" size={12} color="#50555C" />)
     }
 
     return (null)

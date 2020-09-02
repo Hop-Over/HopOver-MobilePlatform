@@ -111,8 +111,9 @@ class People extends Component {
               pending.push(elem)
             }
           })
-        var friendIds=friends.map(Number)
+        var friendIds = friends.map(Number)
         console.log("friends: " + friends)
+
           this.setState({friendId: friends})
           this.setState({pendingId: pending})
       })
@@ -192,7 +193,7 @@ class People extends Component {
                 ContactService.deleteContact(item.id)
                 this.setState({updateContacts: true})
               }}>
-              <Icon name="close" size={30} color="black"/>
+              <Icon name="delete" size={25} color="black"/>
             </TouchableOpacity>
           </View>
         </View>

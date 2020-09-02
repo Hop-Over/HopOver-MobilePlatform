@@ -31,7 +31,7 @@ export class Chat extends PureComponent {
     }
   }
 
-  
+
   needToGetMoreMessage = null
 
 
@@ -50,18 +50,24 @@ export class Chat extends PureComponent {
       dialogPhoto = dialog.photo
     }
     return {
+      headerStyle: {borderBottomWidth: 0},
       headerTitle: (
-        <Text numberOfLines={3} style={{ fontSize: 22, color: 'black' }}>
-          {navigation.state.params.dialog.name}
-        </Text>
+        <View style={styles.headerContainer}>
+          <View style={styles.navBarContainer}>
+            <Avatar
+              photo={dialogPhoto}
+              name={navigation.state.params.dialog.name}
+              iconSize="small"
+            />
+            <Text numberOfLines={3} style={{ fontSize: 14, color: '#323232', fontWeight: "bold" }}>
+              {navigation.state.params.dialog.name}
+            </Text>
+          </View>
+      </View>
       ),
       headerRight: (
-        <TouchableOpacity onPress={() => this.goToDetailsScreen(navigation)}>
-          <Avatar
-            photo={dialogPhoto}
-            name={navigation.state.params.dialog.name}
-            iconSize="small"
-          />
+        <TouchableOpacity style={styles.settings} onPress={() => this.goToDetailsScreen(navigation)}>
+          <Icon name="add" size={30} color="#007AFF" />
         </TouchableOpacity>
       )
     }
@@ -113,7 +119,7 @@ export class Chat extends PureComponent {
         await ChatService.sendMessage(dialog, messageText)
         this.setState({ messageText: '' })
   }
-  
+
   sendAttachment = async () => {
     const { dialog } = this.props.navigation.state.params
     const img = await this.onPickImage()
@@ -148,7 +154,7 @@ export class Chat extends PureComponent {
     //console.log(this.props.navigation.state.params.dialog)
     return (
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: 'white' }}
+        style={{ flex: 1, backgroundColor: 'white', paddingTop: 20 }}
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 100}
       >
@@ -170,22 +176,24 @@ export class Chat extends PureComponent {
         />
         <View style={styles.container}>
           <View style={styles.inputContainer}>
+            <View>
+              <TouchableOpacity onPress={this.sendAttachment} style={styles.attachment}>
+                <Icon name="add" size={40} color="white" />
+              </TouchableOpacity>
+            </View>
             <AutoGrowingTextInput
               style={styles.textInput}
-              placeholder="Type a message..."
-              placeholderTextColor="grey"
+              placeholder="Message"
+              placeholderTextColor="#d1d1d1"
               value={messageText}
               onChangeText={this.onTypeMessage}
               maxHeight={170}
               minHeight={50}
               enableScrollToCaret
             />
-            <TouchableOpacity style={styles.attachment}>
-              <AttachmentIcon name="attachment" size={22} color="#8c8c8c" onPress={this.sendAttachment} />
-            </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.button}>
-            <Icon name="send" size={32} color="blue" onPress={this.sendMessage} />
+            <Icon name="arrow-upward" type="MaterialIcons" size={32} color="white" onPress={this.sendMessage} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -201,7 +209,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'lightgrey',
     paddingVertical: 12,
-    paddingHorizontal: 35
+    paddingHorizontal: 35,
+    backgroundColor: "#e3e3e3",
   },
   activityIndicator: {
     position: 'absolute',
@@ -210,7 +219,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '300',
     color: '#8c8c8c',
     borderRadius: 25,
@@ -218,23 +227,24 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 14 : 10,
     paddingBottom: Platform.OS === 'ios' ? 14 : 10,
     paddingRight: 35,
-    backgroundColor: 'whitesmoke',
+    backgroundColor: '#FFFFFF',
   },
   button: {
-    width: 40,
+    width: 50,
     height: 50,
     marginBottom: Platform.OS === 'ios' ? 15 : 0,
-    marginLeft: 12,
+    marginLeft: -50,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: "#1897F8",
+    borderRadius: 25
   },
   attachment: {
-    width: 40,
+    width: 50,
     height: 50,
     position: 'absolute',
-    right: 5,
+    right: 0,
     bottom: 0,
-    marginLeft: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -247,7 +257,24 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: Platform.OS === 'ios' ? 15 : 0,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginLeft: 20,
+  },
+  settings:{
+    marginRight: 5,
+  },
+  navBarContainer: {
+    flex: 1,
+    flexDirection: "column",
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  headerContainer:{
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 

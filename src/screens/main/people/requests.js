@@ -129,7 +129,7 @@ class Requests extends Component {
                   ContactService.deleteContact(item.id)
                   this.setState({updateContacts: true})
                 }}>
-                <Icon name="close" size={30} color="black"/>
+                <Icon name="delete" size={25} color="black"/>
               </TouchableOpacity>
             </View>
           </View>

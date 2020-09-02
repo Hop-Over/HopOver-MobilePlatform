@@ -10,7 +10,7 @@ export default function CreateBtn({ goToScreen, type }) {
   let renderIcon
   switch (type) {
     case BTN_TYPE.DIALOG: {
-      renderIcon = <Icon name="add" size={30} color='white' />
+      renderIcon = <Icon name="add" size={40} color='white' />
       break
     }
     case BTN_TYPE.CONTACTS: {
@@ -38,7 +38,15 @@ const styles = StyleSheet.create({
   createDialog: {
     position: 'absolute',
     bottom: 120,
-    marginLeft: SIZE_SCREEN.width/2 - 55/2
+    marginLeft: SIZE_SCREEN.width/2 - 55/2,
+    shadowColor: "#267DC929",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity:0.15,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   gradient:{
     alignItems: 'center',
