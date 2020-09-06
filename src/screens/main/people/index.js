@@ -99,7 +99,6 @@ class People extends Component {
     if (this.state.updateContacts){
       await ContactService.fetchContactList()
         .then((response) => {
-          console.log(response)
           let friends = []
           let pending = []
           keys = Object.keys(response)
@@ -113,7 +112,8 @@ class People extends Component {
             }
           })
         var friendIds = friends.map(Number)
-        console.log(friends)
+        console.log("friends: " + friends)
+
           this.setState({friendId: friends})
           this.setState({pendingId: pending})
       })

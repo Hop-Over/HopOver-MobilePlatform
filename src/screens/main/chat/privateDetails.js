@@ -211,19 +211,42 @@ export default class PrivateDetails extends Component {
 	}else{
 	this.handleCancel()
 	const dialog = this.props.navigation.getParam('dialog', false)
-	var result = []
-	ChatService.search(dialog.id, phrase)
-		.then(response => {
-			if(response.messages.length == 0){
-				alert("No search results with \"" + phrase + "\" were found :(")
-			}else{
-				const searchResponse = response.messages
-				searchResponse.sort(function(a, b){
-					return b.date_sent - a.date_sent;
-				});
-				this.goToSearchScreen(searchResponse)
-			}
-		})
+    var messages = ChatService.getMessagesByDialogId(dialog.id)
+    var messageArr = []
+    for (let i = 0; i < messages.length; i++) {
+        if(messages[i].body.includes(phrase)){
+            var currObj = {
+                "_id": messages[i].dialog_id,
+                "chat_dialog_id": messages[i].dialog_id,
+                "date_sent": messages[i].date_sent,
+                "message": messages[i].body,
+                "sender_id": messages[i].sender_id,
+            }
+            messageArr.push(currObj)     
+        }   
+    }
+    var result = {"messages": messageArr}
+    if(result.length == 0){
+        alert("No search results with \"" + phrase + "\" were found :(")
+    }else{
+        const searchResponse = result.messages
+        searchResponse.sort(function(a, b){
+            return b.date_sent - a.date_sent;
+        });
+        this.goToSearchScreen(searchResponse)
+    }
+	// ChatService.search(dialog.id, phrase)
+	// 	.then(response => {
+	// 		if(response.messages.length == 0){
+	// 			alert("No search results with \"" + phrase + "\" were found :(")
+	// 		}else{
+	// 			const searchResponse = response.messages
+	// 			searchResponse.sort(function(a, b){
+	// 				return b.date_sent - a.date_sent;
+	// 			});
+	// 			this.goToSearchScreen(searchResponse)
+	// 		}
+	// 	})
 	}
   }
 

@@ -222,6 +222,8 @@ export default class GroupDetails extends Component {
 	var result = []
 	ChatService.search(dialog.id, phrase)
 		.then(response => {
+            console.log('response')
+            console.log(response.users)
 			if(response.messages.length == 0){
 				alert("No search results with \"" + phrase + "\" were found :(")
 			}else{
