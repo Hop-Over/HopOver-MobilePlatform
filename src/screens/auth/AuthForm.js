@@ -50,12 +50,22 @@ export default class AuthForm extends Component {
 				})
 		} else {
 			AuthService.signUp(dataUser)
-				.then(() => {
-					this.setState({ isLoader: false })
+				.then( async () => {
+					// TODO: change link to be the image we want
+					image = {
+						height: 400,
+						name: name,
+						path: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcT4JMXVymKKgetkPIWVvWZ1_tdoC7LME3apbg&usqp=CAU",
+						size: 4000,
+						mime:  "image/jpeg",
+						width: 400,
+					}
+					await AuthService.setDefaultPicture(image)
 					ChatService.setUpListeners()
 					ContactService.setUpListeners()
-					showAlert('Account successfully registered')
+					//showAlert('Account successfully registered')
 					navigation.navigate('Dialogs')
+					this.setState({ isLoader: false })
 				})
 				.catch(error => {
 					this.setState({ isLoader: false })

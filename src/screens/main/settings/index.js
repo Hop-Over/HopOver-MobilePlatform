@@ -44,7 +44,6 @@ export default class Settings extends Component {
     if (Object.keys(newData).length === 0) {
       return
     }
-    console.log(newData.image)
     this.setState({ isLoader: true })
     AuthService.updateCurrentUser(newData)
       .then(() => {

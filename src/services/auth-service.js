@@ -7,7 +7,7 @@ import User from '../models/user'
 import store from '../store'
 import { LogOut } from '../reducers/index'
 import { setCurrentUser, updateCurrentUser } from '../actions/currentUser'
-import { preparationUploadImg, getImageLinkFromUID } from '../helpers/file'
+import { preparationUploadImg, preparationProfilePicture, getImageLinkFromUID } from '../helpers/file'
 
 class AuthService {
   static CURRENT_USER_SESSION_KEY = 'CURRENT_USER_SESSION_KEY'
@@ -16,6 +16,19 @@ class AuthService {
   async init() {
     await ConnectyCube.init(...appConfig.connectyCubeConfig)
     return this.autologin()
+  }
+
+  async setDefaultPicture(image){
+    const updateData = {}
+    const file = preparationProfilePicture(image)
+    const resultUploadImg = await ConnectyCube.storage.createAndUpload({ file })
+    updateData.avatar = resultUploadImg.uid
+    const responseUpdateUser = await ConnectyCube.users.update(updateData)
+    const prewSession = await this.getUserSession()
+    responseUpdateUser.user.avatar = getImageLinkFromUID(responseUpdateUser.user.avatar)
+    const newSession = Object.assign(JSON.parse(prewSession), responseUpdateUser.user)
+    await this.setUserSession(newSession)
+    store.dispatch(updateCurrentUser(responseUpdateUser.user))
   }
 
   async updateCurrentUser({ image, full_name, login }) {
@@ -32,6 +45,7 @@ class AuthService {
       const resultUploadImg = await ConnectyCube.storage.createAndUpload({ file })
       updateData.avatar = resultUploadImg.uid
     }
+    console.log(updateData)
     const responseUpdateUser = await ConnectyCube.users.update(updateData)
     const prewSession = await this.getUserSession()
     responseUpdateUser.user.avatar = getImageLinkFromUID(responseUpdateUser.user.avatar)
