@@ -50,7 +50,7 @@ export default class AuthForm extends Component {
 				})
 		} else {
 			AuthService.signUp(dataUser)
-				.then(() => {
+				.then( async () => {
 					// TODO: change link to be the image we want
 					image = {
 						height: 400,
@@ -60,12 +60,12 @@ export default class AuthForm extends Component {
 						mime:  "image/jpeg",
 						width: 400,
 					}
-					AuthService.setDefaultPicture(image)
-					this.setState({ isLoader: false })
+					await AuthService.setDefaultPicture(image)
 					ChatService.setUpListeners()
 					ContactService.setUpListeners()
-					showAlert('Account successfully registered')
+					//showAlert('Account successfully registered')
 					navigation.navigate('Dialogs')
+					this.setState({ isLoader: false })
 				})
 				.catch(error => {
 					this.setState({ isLoader: false })
