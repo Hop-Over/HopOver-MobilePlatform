@@ -197,6 +197,8 @@ class Contacts extends PureComponent {
     navigation.push('CreateDialog', { users: this.selectedUsers })
   }
 
+  
+
   render() {
     const { isLoader, dialogType } = this.state
     return (

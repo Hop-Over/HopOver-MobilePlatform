@@ -95,6 +95,16 @@ class People extends Component {
     props.push('Settings', { user: People.currentUserInfo })
   }
 
+  deleteConversation(userId){
+    ConnectyCube.chat.dialog.list()
+        .then(dialogs => {
+            console.log(dialogs)
+        })
+        .catch(error => {
+            console.log(error)
+        });
+  }
+
   getFriends = async () => {
     if (this.state.updateContacts){
       await ContactService.fetchContactList()
