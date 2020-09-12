@@ -57,9 +57,9 @@ export class Chat extends PureComponent {
             <Avatar
               photo={dialogPhoto}
               name={navigation.state.params.dialog.name}
-              iconSize="small"
+              iconSize="medium"
             />
-            <Text numberOfLines={3} style={{ fontSize: 14, color: '#323232', fontWeight: "bold" }}>
+            <Text numberOfLines={3} style={{ fontSize: 14, color: '#323232', fontWeight: "bold", marginTop: -5}}>
               {navigation.state.params.dialog.name}
             </Text>
           </View>
@@ -268,7 +268,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingTop: 30,
   },
   headerContainer:{
     flex: 1,

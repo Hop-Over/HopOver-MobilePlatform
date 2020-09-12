@@ -53,9 +53,6 @@ class ChatService {
     let privatChatIdsUser = []
 
     const dialogs = dialogsFromServer.items.map(elem => {
-      if (elem.description === null){
-        console.log("DESCRIPTION: "+ elem.description)
-      }
       if (elem.type === DIALOG_TYPE.PRIVATE && elem.description === 'private_event'){
         elem.occupants_ids.forEach(elem => {
           elem != currentUserId.id && privatChatIdsUser.push(elem)
@@ -64,6 +61,7 @@ class ChatService {
       }
     })
     return []
+
     if (privatChatIdsUser.length !== 0) {
       const usersInfo = await this.getUsersList(privatChatIdsUser)
       store.dispatch(fetchUsers(usersInfo))

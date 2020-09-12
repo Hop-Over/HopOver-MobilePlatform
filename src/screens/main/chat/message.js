@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image,Linking } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer'
 import store from '../../../store'
 import Avatar from '../../components/avatar'
@@ -56,6 +56,53 @@ export default class Message extends Component {
         }
       </TouchableOpacity>
     )
+  }
+
+  isLink = (msg) => {
+    if (msg.toLowerCase().includes('.')){
+      return true
+    }
+    return false
+  }
+
+  validURL = (str) => {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+
+  hyperlink = (msg) => {
+    const msgArray = msg.split(' ')
+    var formattedMessage = [];
+
+    msgArray.forEach(text => {
+      var containsLink = this.validURL(text)
+      if (containsLink && (text.includes('http://') || text.includes('https://'))){
+        formattedMessage.push(
+          <Text style={styles.hyperlink}
+            onPress={() => Linking.openURL(text)}>
+            {text}
+          </Text>)
+      }
+      else if (containsLink) {
+        formattedMessage.push(
+          <Text style={styles.hyperlink}
+            onPress={() => Linking.openURL('http://' + text)}>
+            {text + " "}
+          </Text>
+        )}
+
+      else {
+        formattedMessage.push(
+          <Text>{text} </Text>
+      )}
+    })
+
+    return formattedMessage
   }
 
   handleModalState = () => {
@@ -133,9 +180,16 @@ export default class Message extends Component {
               ):(
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
+                {this.isLink(message.body)?
+                (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
                   <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
-                    {message.body || ' '}
+                  {this.hyperlink(message.body)}
                   </Text>
+                </View>) :
+                (<Text style={[styles.messageTextLeft, styles.selfToLeft]}>
+                  {message.body || ' '}
+                </Text>)
+              }
                 </View>
                 <View style={styles.timeStampLeftContainer}>
                   <Text style={styles.dateSentLeft}>
@@ -157,9 +211,16 @@ export default class Message extends Component {
               ):(
                 <View>
                   <View style={[styles.message, styles.messageToRight]}>
-                    <Text style={[styles.messageTextRight, styles.selfToRight]}>
+                    {this.isLink(message.body)?
+                    (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
+                      <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                      {this.hyperlink(message.body)}
+                      </Text>
+                    </View>) :
+                    (<Text style={[styles.messageTextRight, styles.selfToRight]}>
                       {message.body || ' '}
-                    </Text>
+                    </Text>)
+                  }
                   </View>
                   <View style={styles.timeStampRightContainer}>
                     <Text style={styles.dateSentRight}>
@@ -264,25 +325,29 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   dateSentLeft: {
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     fontSize: 10,
     color: '#50555C'
   },
   dateSentRight: {
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     fontSize: 10,
     color: '#50555C',
   },
   timeStampRightContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    marginRight: 20
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight: 10
   },
   timeStampLeftContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     paddingVertical: 3,
+    marginLeft: 10
+  },
+  hyperlink: {
+    textDecorationLine: 'underline'
   }
 })

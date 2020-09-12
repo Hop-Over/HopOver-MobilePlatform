@@ -9,8 +9,8 @@ class FirebaseService{
     isSharing: false
   }
 
-  getLocations = async (chatId) => {
-    const fetchUrl = config.firebaseConfig.firebaseUrl + chatId + "/locations.json"
+  getLocations = async (dialogId) => {
+    const fetchUrl = config.firebaseConfig.firebaseUrl + dialogId + "/locations.json"
     const response = await fetch(fetchUrl)
     const data = await response.json()
     return data
@@ -53,6 +53,25 @@ class FirebaseService{
       method: 'DELETE'
     })
     .catch(err => console.log(err))
+  }
+
+  setChatColor = (dialogId, color) => {
+    const postUrl = config.firebaseConfig.firebaseUrl + dialogId + ".json"
+
+    fetch(postUrl,{
+      method: 'PATCH',
+      body: JSON.stringify({
+        chatColor: color
+      })
+    })
+    .catch(err => console.log(err))
+  }
+
+  getChatColor = async (dialogId) => {
+    const fetchUrl = config.firebaseConfig.firebaseUrl + dialogId + "/chatColor.json"
+    const response = await fetch(fetchUrl)
+    const data = await response.json()
+    return data
   }
 }
 

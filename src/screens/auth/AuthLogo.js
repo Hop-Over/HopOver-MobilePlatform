@@ -4,7 +4,7 @@ import { StyleSheet, View, Image } from 'react-native'
 export default AuthLogo = () => {
 	return (
 		<View style={styles.container}>
-			<Image style={styles.imageSize} source={require('../../../assets/image/logo_with_text.png')} />
+			<Image style={styles.imageSize} source={require('../../../assets/image/full_logo_red_transparent_large.png')} />
 		</View>
 	)
 }
