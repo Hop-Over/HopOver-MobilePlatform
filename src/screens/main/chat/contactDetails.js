@@ -7,6 +7,8 @@ import Indicator from '../../components/indicator'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
 import { showAlert } from '../../../helpers/alert'
+import { SIZE_SCREEN } from '../../../helpers/constants'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export default class ContactDetails extends Component {
   state = {
@@ -121,7 +123,10 @@ export default class ContactDetails extends Component {
         </View>
         <TouchableOpacity onPress={this.gotToChat}>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonLabel}>Start a dialog</Text>
+            <View style={styles.iconContainer}>
+              <Icon name="chat" size={30} color='black' />
+            </View>
+            <Text style={styles.buttonLabel}>Message</Text>
           </View>
         </TouchableOpacity>
         {chatDialog.type === 2 && this.isGroupCreator() ?
@@ -130,7 +135,10 @@ export default class ContactDetails extends Component {
                 this.removeAdmin()
                 : this.addAdmin()}}>
                 <View style={styles.buttonContainer}>
-                  <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
+                  <View style={styles.iconContainer}>
+                    <Icon name="account-tie" size={30} color='black' />
+                  </View>
+                  <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Make Admin"} </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => this.removeParticipant([dialog])}>
@@ -162,28 +170,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   nameContainer: {
-    marginTop: 20,
-    marginBottom: 70,
-    borderBottomWidth: 2,
     width: '50%',
+    marginBottom: 100
   },
   name: {
     fontSize: 24,
     textAlign: 'center',
     padding: 5,
+    fontWeight: '700'
   },
 
   buttonContainer: {
+    flexDirection: 'row',
     height: 50,
     width: 200,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'black',
+    borderRadius: 16,
+    backgroundColor: 'white',
     marginHorizontal: 20,
     marginVertical: 10,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   disabledContainer: {
     height: 50,
@@ -198,8 +212,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   buttonLabel: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: '700'
+    color: 'black',
+    fontSize: 14,
+    fontWeight: '400'
   },
+  leaveButton:{
+    backgroundColor: "red",
+    justifyContent: 'center',
+    width: SIZE_SCREEN.width/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/4,
+    borderRadius: 16,
+    marginTop: 50,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  iconContainer:{
+    marginRight: 10
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
+  }
 })
