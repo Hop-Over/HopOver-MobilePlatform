@@ -359,14 +359,12 @@ export default class GroupDetails extends Component {
     </View>
   </TouchableOpacity>
 
-
-  <Text style={styles.labelTitle}> More actions </Text>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.leaveGroup}>
+  <TouchableOpacity style={[styles.renderHeaderContainer, styles.leaveButton]} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
-		<Icon name="exit-to-app" size={35} color='black' style={{ marginRight: 15 }} />
+		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.nameTitle}>Exit group</Text>
+		<Text style={styles.leaveTitle}>Leave group</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
@@ -495,7 +493,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		borderColor: 'grey',
 		alignItems: 'center',
-		paddingVertical: 7
+		paddingVertical: 7,
 	},
 	renderAvatar: {
 		flexDirection: 'row',
@@ -523,5 +521,28 @@ const styles = StyleSheet.create({
 	},
   searchContainer : {
     paddingBottom: 10,
+  },
+  leaveButton:{
+    backgroundColor: "red",
+    justifyContent: 'center',
+    width: SIZE_SCREEN.width/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/4,
+    borderRadius: 16,
+    marginTop: 50,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
   }
 })
