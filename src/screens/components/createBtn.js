@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
   gradient:{
     alignItems: 'center',
     justifyContent: 'center',
-    width: 55,
-    height: 55,
-    borderRadius: 30,
-    backgroundColor: "#2E86FB"
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#75C6FF"
   }
 })
