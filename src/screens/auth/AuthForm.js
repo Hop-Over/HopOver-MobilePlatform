@@ -5,7 +5,6 @@ import AuthService from '../../services/auth-service'
 import Indicator from '../components/indicator'
 import ChatService from '../../services/chat-service'
 import ContactService from '../../services/contacts-service'
-import RNFS from 'react-native-fs'
 
 export default class AuthForm extends Component {
 	state = {

@@ -71,6 +71,12 @@ class FirebaseService{
     const fetchUrl = config.firebaseConfig.firebaseUrl + dialogId + "/chatColor.json"
     const response = await fetch(fetchUrl)
     const data = await response.json()
+
+    if (data == null){
+      this.setChatColor(dialogId, '#1897F8')
+      return '#1897F8'
+    }
+
     return data
   }
 }
