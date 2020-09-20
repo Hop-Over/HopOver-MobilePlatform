@@ -1,11 +1,11 @@
 import React from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { BTN_TYPE } from '../../helpers/constants'
 import { SIZE_SCREEN } from '../../helpers/constants'
 
 
-export default function CreateBtn({ goToScreen, type }) {
+export default function CreateBtn({ goToScreen, type, isFirst }) {
   let renderIcon
   switch (type) {
     case BTN_TYPE.DIALOG: {
@@ -25,8 +25,8 @@ export default function CreateBtn({ goToScreen, type }) {
   return (
     <View style={styles.createDialog}>
       <TouchableOpacity onPress={goToScreen}>
-        <View style={styles.gradient}>
-        {renderIcon}
+        <View style={!isFirst ? styles.gradient: styles.firstDialog}>
+        {!isFirst ? renderIcon : <Text style={{ fontSize: 14, color: 'white', fontWeight: '800' }}> Create a Dialog</Text>}
         </View>
       </TouchableOpacity>
     </View>
@@ -34,12 +34,27 @@ export default function CreateBtn({ goToScreen, type }) {
 }
 
 const styles = StyleSheet.create({
-  createDialog: {
-    flex: 2,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
+  firstDialog: {
     alignItems: 'center',
-    bottom: -20
+    justifyContent: 'center',
+    width: 150,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#75C6FF",
+  },
+  createDialog: {
+    paddingTop: 20,
+    position: 'absolute',
+    bottom: 120,
+    marginLeft: SIZE_SCREEN.width/2 - 55/2,
+    shadowColor: "#267DC929",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity:0.15,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   gradient:{
     alignItems: 'center',
