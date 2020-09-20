@@ -18,7 +18,7 @@
       android:theme="@style/AppTheme">
 
         <meta-data  android:name="com.google.android.geo.API_KEY"
-                    android:value="AIzaSyD0bbB3BNlmIwGYV3qCyTW0IlMWyqcx5lQ"/>
+                    android:value="AIzaSyCKXoIYSfTMhrYorpWu2siLnPfGxEhnbdU"/>
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_name"
                     android:value="YOUR NOTIFICATION CHANNEL NAME"/>
         <meta-data  android:name="com.dieam.reactnativepushnotification.notification_channel_description"
