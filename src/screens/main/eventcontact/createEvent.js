@@ -10,7 +10,7 @@ import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
-export default class CreateDialog extends PureComponent {
+export default class CreateEvent extends PureComponent {
 
   state = {
     keyword: '',
@@ -33,7 +33,7 @@ export default class CreateDialog extends PureComponent {
     )
   }
 
-  createDialog = () => {
+  createEvent = () => {
     const users = this.props.navigation.getParam('users')
     let str = this.state.keyword.trim()
     if (str.length < 3) {
@@ -43,11 +43,10 @@ export default class CreateDialog extends PureComponent {
     const occupants_ids = users.map(elem => {
       return elem.id
     })
-    ChatService.createPublicDialog(occupants_ids, str, this.state.isPickImage)
-      .then((newDialog) => {
+    ChatService.createPrivateEvent(occupants_ids, str, this.state.isPickImage)
+      .then((newEvent) => {
         this.setState({ isLoader: false })
-        this.props.navigation.dispatch(popToTop)
-        this.props.navigation.push('Chat', { dialog: newDialog, isNeedFetchUsers: true })
+        this.props.navigation.push('Events', { dialog: newEvent, isNeedFetchUsers: true })
       })
   }
 
@@ -69,7 +68,6 @@ export default class CreateDialog extends PureComponent {
 
     return (
       <View style={styles.container}>
-          <Text>Hello</Text>
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
@@ -106,7 +104,7 @@ export default class CreateDialog extends PureComponent {
           })
           }
         </View>
-        <CreateBtn goToScreen={this.createDialog} type={BTN_TYPE.CREATE_GROUP} />
+        <CreateBtn goToScreen={this.createEvent} type={BTN_TYPE.CREATE_GROUP} />
       </View>
     )
   }

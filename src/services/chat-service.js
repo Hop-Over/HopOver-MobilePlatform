@@ -1,7 +1,7 @@
 import ConnectyCube from 'react-native-connectycube'
 import Dialog from '../models/dialogs'
 import { AppState } from 'react-native'
-import { fetchDialogs, sortDialogs, updateDialog, addNewDialog, deleteDialog } from '../actions/dialogs'
+import { fetchDialogs, fetchEvents, sortDialogs, updateDialog, addNewDialog, deleteDialog } from '../actions/dialogs'
 import { pushMessage, fetchMessages, lazyFetchMessages, updateMessages, deleteAllMessages } from '../actions/messages'
 import { selectDialog, unselectDialog } from '../actions/selectedDialog'
 import { fetchUsers } from '../actions/users'
@@ -31,36 +31,15 @@ class ChatService {
     let privatChatIdsUser = []
 
     const dialogs = dialogsFromServer.items.map(elem => {
-      if (elem.type === DIALOG_TYPE.PRIVATE && elem.description === null) {
-        elem.occupants_ids.forEach(elem => {
-          elem != currentUserId.id && privatChatIdsUser.push(elem)
-        })
-      }
-      return new Dialog(elem)
+        console.log(elem)
+        if (elem.type === DIALOG_TYPE.PRIVATE) {
+          console.log(elem.description)
+          elem.occupants_ids.forEach(elem => {
+            elem != currentUserId.id && privatChatIdsUser.push(elem)
+          })
+        }
+        return new Dialog(elem)
     })
-
-    if (privatChatIdsUser.length !== 0) {
-      const usersInfo = await this.getUsersList(privatChatIdsUser)
-      store.dispatch(fetchUsers(usersInfo))
-    }
-
-    store.dispatch(fetchDialogs(dialogs))
-  }
-
-  async fetchEventsFromServer() {
-    const dialogsFromServer = await ConnectyCube.chat.dialog.list()
-    const currentUserId = this.currentUser
-    let privatChatIdsUser = []
-
-    const dialogs = dialogsFromServer.items.map(elem => {
-      if (elem.type === DIALOG_TYPE.PRIVATE && elem.description === 'private_event'){
-        elem.occupants_ids.forEach(elem => {
-          elem != currentUserId.id && privatChatIdsUser.push(elem)
-        })
-      return new Dialog(elem)
-      }
-    })
-    return []
 
     if (privatChatIdsUser.length !== 0) {
       const usersInfo = await this.getUsersList(privatChatIdsUser)
@@ -351,6 +330,28 @@ class ChatService {
       type: DIALOG_TYPE.GROUP,
       occupants_ids,
       name: groupName,
+    }
+
+    const image = img ? await this.uploadPhoto(img) : null
+    if (image) {
+      params.photo = image.uid
+    }
+
+    const dialog = await ConnectyCube.chat.dialog.create(params)
+    const newDialog = new Dialog(dialog)
+    store.dispatch(addNewDialog(newDialog))
+    return newDialog
+  }
+
+  async createPrivateEvent(occupants_ids, groupName, img) {
+    const currentUser = this.currentUser
+    occupants_ids.unshift(currentUser.id)
+
+    const params = {
+      type: DIALOG_TYPE.GROUP,
+      occupants_ids,
+      name: groupName,
+      description: 'private_event'
     }
 
     const image = img ? await this.uploadPhoto(img) : null
