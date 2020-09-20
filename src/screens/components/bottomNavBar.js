@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    paddingBottom: 0,
     height: SIZE_SCREEN.height/10,
   },
   footerElement:{
