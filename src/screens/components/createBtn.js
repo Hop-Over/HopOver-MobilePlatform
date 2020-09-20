@@ -35,17 +35,11 @@ export default function CreateBtn({ goToScreen, type }) {
 
 const styles = StyleSheet.create({
   createDialog: {
-    position: 'absolute',
-    bottom: 120,
-    marginLeft: SIZE_SCREEN.width/2 - 55/2,
-    shadowColor: "#267DC929",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity:0.15,
-    shadowRadius: 3.84,
-    elevation: 5,
+    flex: 2,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    bottom: -20
   },
   gradient:{
     alignItems: 'center',
