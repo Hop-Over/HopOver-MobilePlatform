@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { StyleSheet,View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Dialog from './elements/dialog'
@@ -91,27 +91,9 @@ class Dialogs extends Component {
     )
   }
 
-  goToChatScreen = () => {
-    const navigation = this.props.navigation
-    const resetAction = StackActions.reset({
-        index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'Dialogs' })],
-    });
-    navigation.dispatch(resetAction);
-  }
-
   goToContactsScreen = () => {
     const { navigation } = this.props
     navigation.push('Contacts')
-  }
-
-  goToPeopleScreen = () => {
-    const navigation = this.props.navigation
-    const resetAction = StackActions.reset({
-        index: 0,
-        actions: [NavigationActions.navigate({ routeName: 'People' })],
-    });
-    navigation.dispatch(resetAction);
   }
 
   getChatColor = async (dialog) => {
@@ -145,11 +127,15 @@ class Dialogs extends Component {
           (
             <Indicator color={'red'} size={40} />
           ) : this.dialogs.length === 0 ?
-            (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SIZE_SCREEN.height/6}}>
               <Text style={{ fontSize: 19 }}>No chats yet</Text>
+              <View style={styles.noChatButton}>
+                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={true} />
+              </View>
             </View>
             ) :
             (
+              <View>
               <View>
                 <FlatList
                   data={this.dialogs}
@@ -158,10 +144,11 @@ class Dialogs extends Component {
                   ListFooterComponent={this.lastElement}
                 />
               </View>
+                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
+              </View>
             )
         }
-          <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} />
-          <BottomNavBar navigation={this.props.navigation}/>
+         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
   }
@@ -172,6 +159,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 20,
     height: SIZE_SCREEN.height
+  },
+  noChatButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  spacing: {
+    backgroundColor: 'blue'
   },
   navBarContainer: {
     flex: 1,
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
   },
   lastElement: {
     paddingBottom: SIZE_SCREEN.height/5
-  }
+  },
 })
 
 
