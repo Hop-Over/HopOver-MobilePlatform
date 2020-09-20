@@ -77,11 +77,11 @@ class UsersService {
     indexArr = []
     let searchContacts = []
     for (var i=0; i < contacts.length; i++) {
-        if (contacts[i].full_name.includes(name)) {
+        if (contacts[i].full_name.toLowerCase().includes(name.toLowerCase())) {
             indexArr.push(i);
         }
     }
-    indexArr.forEach(ind => 
+    indexArr.forEach(ind =>
         searchContacts.push(contacts[ind]))
     return searchContacts
   }

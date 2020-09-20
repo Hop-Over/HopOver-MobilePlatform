@@ -216,7 +216,7 @@
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 7FN8T8KP47;
+						DevelopmentTeam = H4PK44TY39;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -396,8 +396,8 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = 7FN8T8KP47;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = H4PK44TY39;
 				INFOPLIST_FILE = Rnchat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -405,7 +405,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.connectycube.chat.sample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.connectycube.chat.sample.hopover;
 				PRODUCT_NAME = RNChat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -421,7 +421,8 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 7FN8T8KP47;
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = H4PK44TY39;
 				INFOPLIST_FILE = Rnchat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -429,7 +430,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.connectycube.chat.sample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.connectycube.chat.sample.hopover;
 				PRODUCT_NAME = RNChat;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";

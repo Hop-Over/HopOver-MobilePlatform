@@ -40,12 +40,12 @@ export default class GroupDetails extends Component {
 	  occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids),
 	  isDialogVisible: false,
 	  searchKeyword: '',
-    showUsers: false
+    showUsers: false,
+    dialog: this.props.navigation.getParam('dialog', false)
 	}
   }
 
   componentDidMount() {
-
     this.props.navigation.addListener(
     'didFocus',
     payload => {
@@ -53,7 +53,7 @@ export default class GroupDetails extends Component {
       this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
     });
 
-  	const dialog = this.props.navigation.getParam('dialog', false)
+  	const dialog = this.state.dialog
   	const isNeedFetchUsers = this.props.navigation.getParam('isNeedFetchUsers', false)
 
   	if (isNeedFetchUsers) {
@@ -78,7 +78,7 @@ export default class GroupDetails extends Component {
   }
 
   updateDialog = () => {
-	const dialog = this.props.navigation.getParam('dialog', false)
+	const dialog = this.state.dialog
 	const { dialogName, isPickImage } = this.state
 	const updateInfo = {}
 	if (dialogName !== dialog.name) {
@@ -134,13 +134,13 @@ export default class GroupDetails extends Component {
   }
 
   isGroupCreator = () => {
-	const dialog = this.props.navigation.getParam('dialog', false)
+	const dialog = this.state.dialog
 	return ChatService.isGroupCreator(dialog.user_id)
   }
 
 
   isAdmin = () => {
-    const dialog = this.props.navigation.getParam('dialog', false)
+    const dialog = this.state.dialog
     const admins = dialog.admins_ids
     const userId = this.currentUser()
     console.log(admins)
@@ -164,7 +164,7 @@ export default class GroupDetails extends Component {
     navigation.push('SharedMedia', {dialog})
   }
 
-  goToChatMap= () => {
+  goToChatMap = () => {
     const { navigation } = this.props
     const dialog = this.props.navigation.getParam('dialog',false)
     navigation.push('ChatMap', {dialog})
@@ -183,7 +183,7 @@ export default class GroupDetails extends Component {
   addParticipant = (participants) => {
   	{ console.log('participants') }
   	{ console.log(participants) }
-  	const dialog = this.props.navigation.getParam('dialog', false)
+  	const dialog = this.state.dialog
   	this.setState({ isLoader: true })
   	ChatService.addOccupantsToDialog(dialog.id, participants)
   	  .then(dialog => {
@@ -218,7 +218,7 @@ export default class GroupDetails extends Component {
 		alert("Please enter a keyword with 4 letters or more")
 	}else{
 	this.handleCancel()
-	const dialog = this.props.navigation.getParam('dialog', false)
+	const dialog = this.state.dialog
 	var result = []
 	ChatService.search(dialog.id, phrase)
 		.then(response => {
@@ -291,7 +291,7 @@ export default class GroupDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Group </Text>
-      <ModalTester dialog={ChatService.getSelectedDialog()}>
+      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation}>
       </ModalTester>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
@@ -359,22 +359,19 @@ export default class GroupDetails extends Component {
     </View>
   </TouchableOpacity>
 
-
-  <Text style={styles.labelTitle}> More actions </Text>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.leaveGroup}>
+  <TouchableOpacity style={[styles.renderHeaderContainer, styles.leaveButton]} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
-		<Icon name="exit-to-app" size={35} color='black' style={{ marginRight: 15 }} />
+		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.nameTitle}>Exit group</Text>
+		<Text style={styles.leaveTitle}>Leave group</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
   )}
 
   render() {
-    const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
-    const dialog = this.props.navigation.getParam('dialog', false)
+    const { dialogName, dialogPhoto, isLoader, occupantsInfo, dialog } = this.state
     //console.log(this.currentUser())
     //console.log(this.isAdmin())
     //console.log(this.state.showUsers)
@@ -496,7 +493,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		borderColor: 'grey',
 		alignItems: 'center',
-		paddingVertical: 7
+		paddingVertical: 7,
 	},
 	renderAvatar: {
 		flexDirection: 'row',
@@ -524,5 +521,28 @@ const styles = StyleSheet.create({
 	},
   searchContainer : {
     paddingBottom: 10,
+  },
+  leaveButton:{
+    backgroundColor: "red",
+    justifyContent: 'center',
+    width: SIZE_SCREEN.width/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/4,
+    borderRadius: 16,
+    marginTop: 50,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
   }
 })

@@ -23,6 +23,7 @@ import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
+import ModalTester from './elements/colorSelect'
 
 export default class PrivateDetails extends Component {
 
@@ -38,7 +39,8 @@ export default class PrivateDetails extends Component {
 	  occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids),
 	  isDialogVisible: false,
 	  searchKeyword: '',
-    showUsers: false
+    showUsers: false,
+    dialog: this.props.navigation.getParam('dialog', false)
 	}
   }
 
@@ -69,7 +71,7 @@ export default class PrivateDetails extends Component {
 	this.setState({ isPickImage: image })
   this.updateDialog()
   }
-  
+
   goToSharedMediaScreen = () => {
     const { navigation } = this.props
     const dialog = this.props.navigation.getParam('dialog',false)
@@ -222,8 +224,8 @@ export default class PrivateDetails extends Component {
                 "message": messages[i].body,
                 "sender_id": messages[i].sender_id,
             }
-            messageArr.push(currObj)     
-        }   
+            messageArr.push(currObj)
+        }
     }
     var result = {"messages": messageArr}
     if(result.length == 0){
@@ -277,6 +279,8 @@ export default class PrivateDetails extends Component {
   _renderFlatListFooter = () => {
 	return(
   <View>
+    <ModalTester dialog={this.state.dialog} navigation={this.props.navigation}>
+    </ModalTester>
     <Text style={styles.labelTitle}> Media</Text>
     <View style={styles.searchContainer}>
     <TextInput style={styles.searchInput}

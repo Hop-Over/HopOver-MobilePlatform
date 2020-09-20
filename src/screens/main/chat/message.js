@@ -20,17 +20,24 @@ export default class Message extends Component {
     super(props)
     this.state = {
       isModal: false,
-      send_state: props.message.send_state
+      send_state: props.message.send_state,
+      color: props.color
     }
     this.isAtachment = props.message.attachment
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    //console.log("NEXT PROPS:" + nextProps.color)
+    //console.log("NEXT STATE: " + nextState.color)
     if (nextProps.message.send_state != nextState.send_state ||
       nextState.isModal !== this.state.isModal
     ) {
       return true
-    } else {
+    } else if (nextProps.color != this.state.color){
+      this.setState({color: nextProps.color})
+      return true
+    }
+    else {
       return false
     }
   }
@@ -116,7 +123,8 @@ export default class Message extends Component {
   }
 
   render() {
-    const { message, otherSender } = this.props
+    const { message, otherSender} = this.props
+    //console.log(this.state.color)
     if(this.isAtachment){ console.log(message.attachment[0]) }
     const { isModal } = this.state
     const user = otherSender ? store.getState().users[message.sender_id] : '.'
@@ -210,7 +218,7 @@ export default class Message extends Component {
                 </View>
               ):(
                 <View>
-                  <View style={[styles.message, styles.messageToRight]}>
+                  <View style={[styles.message, styles.messageToRight, {backgroundColor: this.state.color}]}>
                     {this.isLink(message.body)?
                     (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
                       <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
@@ -298,7 +306,6 @@ const styles = StyleSheet.create({
   },
   messageToRight: {
     maxWidth: fullWidth - 55,
-    backgroundColor: '#1897F8',
     shadowColor: "#267DC9",
     shadowOffset: {
       width: 0,

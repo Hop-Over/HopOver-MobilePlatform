@@ -10,6 +10,7 @@ import BottomNavBar from '../../components/bottomNavBar'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
+import FirebaseService from '../../../services/firebase-service'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SIZE_SCREEN } from '../../../helpers/constants'
@@ -77,6 +78,7 @@ class Dialogs extends Component {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
       this.dialogs = dialogs
+      this.appendChatColors()
       this.setState({ isLoader: false })
     }
   }
@@ -112,6 +114,21 @@ class Dialogs extends Component {
     navigation.dispatch(resetAction);
   }
 
+  getChatColor = async (dialog) => {
+    var response = await FirebaseService.getChatColor(dialog)
+    return response
+  }
+
+  appendChatColors = () => {
+    console.log("Updating Colors")
+    if (this.dialogs.length  > 0){
+      this.dialogs.forEach(async (chat, i) => {
+        let color = await this.getChatColor(chat.id)
+        this.dialogs[i].color = color
+      })
+    }
+  }
+
   lastElement = () => {
     return (
       <View style={styles.lastElement}>
@@ -121,7 +138,6 @@ class Dialogs extends Component {
 
   render() {
     const { isLoader } = this.state
-    console.log(this.dialogs)
     return (
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>

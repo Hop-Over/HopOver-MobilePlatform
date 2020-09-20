@@ -27,10 +27,9 @@ export class Chat extends PureComponent {
     this.state = {
       activeIndicator: true,
       messageText: '',
-      uniqueValue: 1
+      uniqueValue: 1,
     }
   }
-
 
   needToGetMoreMessage = null
 
@@ -67,7 +66,7 @@ export class Chat extends PureComponent {
       ),
       headerRight: (
         <TouchableOpacity style={styles.settings} onPress={() => this.goToDetailsScreen(navigation)}>
-          <Icon name="add" size={30} color="#007AFF" />
+          <Icon name="add" size={30} color={dialog.color} />
         </TouchableOpacity>
       )
     }
@@ -76,9 +75,9 @@ export class Chat extends PureComponent {
   static goToDetailsScreen = (props) => {
     const isNeedFetchUsers = props.getParam('isNeedFetchUsers', false)
     if (props.state.params.dialog.type === DIALOG_TYPE.PRIVATE) {
-      props.push('PrivateDetails', { dialog: props.state.params.dialog })
+      props.push('PrivateDetails', {dialog: props.state.params.dialog })
     } else {
-      props.push('GroupDetails', { dialog: props.state.params.dialog, isNeedFetchUsers })
+      props.push('GroupDetails', {dialog: props.state.params.dialog, isNeedFetchUsers })
     }
   }
 
@@ -96,7 +95,6 @@ export class Chat extends PureComponent {
   componentWillUnmount() {
     ChatService.resetSelectedDialogs()
   }
-
 
   getMoreMessages = () => {
     const { dialog } = this.props.navigation.state.params
@@ -142,16 +140,18 @@ export class Chat extends PureComponent {
 
   _renderMessageItem(message) {
     const { user } = this.props.currentUser
+    const { dialog } = this.props.navigation.state.params
     const isOtherSender = message.sender_id !== user.id ? true : false
     return (
-      <Message otherSender={isOtherSender} message={message} key={message.id} />
+      <Message otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} />
     )
   }
 
   render() {
     const { history } = this.props
     const { messageText, activeIndicator } = this.state
-    //console.log(this.props.navigation.state.params.dialog)
+    const { dialog } = this.props.navigation.state.params
+    //console.log(this.props.navigation.state.params.dialog.color)
     return (
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: 'white', paddingTop: 20 }}
@@ -192,7 +192,7 @@ export class Chat extends PureComponent {
               enableScrollToCaret
             />
           </View>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={[styles.button,{backgroundColor: dialog.color}]}>
             <Icon name="arrow-upward" type="MaterialIcons" size={32} color="white" onPress={this.sendMessage} />
           </TouchableOpacity>
         </View>
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     marginLeft: -50,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: "#1897F8",
+    //backgroundColor: "#1897F8",
     borderRadius: 25
   },
   attachment: {
