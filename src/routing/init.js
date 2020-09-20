@@ -13,6 +13,7 @@ import Chat from '../screens/main/chat/index'
 import Contacts from '../screens/main/contacts/index'
 import EventContacts from '../screens/main/eventcontact/index'
 import CreateDialog from '../screens/main/contacts/createDialog'
+import CreateEvent from '../screens/main/eventcontact/createEvent'
 import GroupDetails from '../screens/main/chat/groupDetails'
 import PrivateDetails from '../screens/main/chat/privateDetails'
 import ContactDetails from '../screens/main/chat/contactDetails'
@@ -68,6 +69,12 @@ export default createAppContainer(createSwitchNavigator(
           headerTitle: 'Event Contacts'
         }
       },
+      CreateEvent: {
+        screen: CreateEvent,
+        navigationOptions: {
+          headerTitle: 'New Group'
+        }
+      },
       SharedMedia: {
         screen: SharedMedia,
         navigationOptions: {
@@ -80,7 +87,6 @@ export default createAppContainer(createSwitchNavigator(
           headerTitle: 'Map'
         }
       },
-
       CreateDialog: {
         screen: CreateDialog,
         navigationOptions: {

@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import IconGroup from 'react-native-vector-icons/FontAwesome'
 import UsersService from '../../../services/users-service'
+import UserService from '../../../services/users-service'
+import ContactService from '../../../services/contacts-service'
 // import Friends from '../../../screens/main/contact/index'
 import Indicator from '../../components/indicator'
 import User from './renderUser'
@@ -13,6 +15,7 @@ import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
 import { popToTop } from '../../../routing/init'
+// import { fetchUsers } from '../actions/users'
 
 class EventContacts extends PureComponent {
   isGroupDetails = false
@@ -24,10 +27,11 @@ class EventContacts extends PureComponent {
     this.state = {
       keyword: '',
       isLoader: false,
-      isUpdate: false,
       dialogType: true,
-      friends: []
-    }
+      isUpdate: false,
+      friendId: [],
+      pendingId: [],
+      updateContacts: true,    }
   }
 
   listUsers = null
@@ -119,51 +123,69 @@ class EventContacts extends PureComponent {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
-  getFriends = async () => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
+
+  searchUsers = () => {
+    const { keyword } = this.state
+    this.setState({updateContacts: true})
+    let str = keyword.trim()
+    if (str.length > 2) {
+        this.getFriends(str)
+    } else {
+        showAlert('Enter more than 3 characters')
+    }
+  }
+
+  getFriends = async (str) => {
+      if (this.state.updateContacts){
+        await ContactService.fetchContactList()
         .then((response) => {
-          this.friends = []
+          let friends = []
           let pending = []
           keys = Object.keys(response)
           keys.forEach(elem => {
             // Make sure that they are friends and not just a request
             let contact = response[elem]
-            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
-              this.friends.push(elem)
+            if(contact["subscription"] === "both" || contact["subscription"] === "from" || contact["subscription"] === "to"){
+              friends.push(elem)
             } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
               pending.push(elem)
             }
           })
-        var friendIds=this.friends.map(Number)
+        var friendIds=friends.map(Number)
+        this.searchFunc(str, friends)
+        this.setState({friendId: friends})
+        this.setState({pendingId: pending})
       })
+    //   this.setState({updateContacts: false})
+      this.setState({isLoader: false})
     }
   }
 
 
-  searchUsers = () => {
+
+
+  searchFunc = (str, friends) => {
     const dialog = this.props.navigation.getParam('dialog', false)
-    const { keyword } = this.state
-    let str = keyword.trim()
-    this.getFriends()
-    if (str.length > 2) {
-      this.setState({ isLoader: true })
-      UsersService.listContactUsersByFullName(str, this.friends, dialog?.occupants_ids)
-        .then(users => {
-          this.listUsers = users
-          this.userNotFound = false
-          this.setState({ isLoader: false })
-        })
-        .catch(() => {
-          this.userNotFound = true
-          this.setState({ isLoader: false })
-        })
-    } else {
-      showAlert('Enter more than 3 characters')
-    }
+    this.setState({ isLoader: true })
+    UsersService.listContactUsersByFullName(str, friends, dialog?.occupants_ids)
+      .then(users => {
+        this.listUsers = users
+        if(users.length === 0){
+            this.userNotFound = true
+
+        }else{
+           this.userNotFound = false
+        }
+        this.setState({ isLoader: false })
+        this.updateSearch()
+      })
+      .catch(() => {
+        this.userNotFound = true
+        this.setState({ isLoader: false })
+      })
   }
 
-  goToCreateDialogScreen = () => {
+  goToCreateEventScreen = () => {
     const { navigation } = this.props
     if (this.isGroupDetails) {
       const addParticipant = this.props.navigation.getParam('addParticipant', false)
@@ -171,12 +193,11 @@ class EventContacts extends PureComponent {
       addParticipant(this.selectedUsers)
       return
     }
-    navigation.push('CreateDialog', { users: this.selectedUsers })
+    navigation.push('CreateEvent', { users: this.selectedUsers })
   }
 
   render() {
     const { isLoader, dialogType } = this.state
-    console.log(dialogType)
     return (
       <View style={styles.container}>
         {isLoader && (
@@ -192,6 +213,8 @@ class EventContacts extends PureComponent {
             onSubmitEditing={this.searchUsers}
             value={this.state.search}
           />
+        </View>
+        <View style={styles.dialogTypeContainer}>
         </View>
         <View style={this.selectedUsers.length > 0 && styles.containerCeletedUsers}>
           <FlatList
@@ -214,7 +237,7 @@ class EventContacts extends PureComponent {
           )
         }
         {this.selectedUsers.length > 0 && (
-          <CreateBtn goToScreen={this.goToCreateDialogScreen} type={BTN_TYPE.CONTACTS} />
+          <CreateBtn goToScreen={this.goToCreateEventScreen} type={BTN_TYPE.CONTACTS} />
         )}
       </View>
     )

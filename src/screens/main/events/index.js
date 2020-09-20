@@ -12,6 +12,7 @@ import Avatar from '../../components/avatar'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SIZE_SCREEN } from '../../../helpers/constants'
 
 class Events extends Component {
   static currentUserInfo = ''
@@ -54,7 +55,7 @@ class Events extends Component {
   }
 
   componentDidMount() {
-    ChatService.fetchEventsFromServer()
+    ChatService.fetchDialogsFromServer()
       .then(() => {
         PushNotificationService.init(this.props.navigation)
       })
@@ -71,16 +72,28 @@ class Events extends Component {
     props.push('Settings', { user: Events.currentUserInfo })
   }
 
-  static goToEventContactsScreen = (props) => {
-    props.push('EventContacts')
+  goToCreateEventScreen = (props) => {
+    console.log(navigation)
+    const { navigation } = this.props
+    navigation.push('EventContacts')
   }
 
   componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = dialogs
+      this.dialogs = this.removeDialogsFromEvents(dialogs)
       this.setState({ isLoader: false })
     }
+  }
+
+  removeDialogsFromEvents = (dialogs) => {
+    cleanedEvents= []
+    dialogs.forEach((event) => {
+      if (event.description === 'private_event'){
+        cleanedEvents.push(event)
+      }
+    })
+    return cleanedEvents
   }
 
   keyExtractor = (item, index) => index.toString()
@@ -93,7 +106,6 @@ class Events extends Component {
 
   render() {
     const { isLoader } = this.state
-    console.log(this.dialogs)
     return (
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" translucent={false} backgroundColor='white'/>
@@ -101,22 +113,28 @@ class Events extends Component {
           (
             <Indicator color={'red'} size={40} />
           ) : this.dialogs.length === 0 ?
-            (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 19 }}>No Events yet</Text>
+            (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SIZE_SCREEN.height/6}}>
+              <Text style={{ fontSize: 19 }}>No chats yet</Text>
+              <View style={styles.noChatButton}>
+                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={true} />
+              </View>
             </View>
             ) :
             (
+              <View>
               <View>
                 <FlatList
                   data={this.dialogs}
                   keyExtractor={this.keyExtractor}
                   renderItem={(item) => this._renderDialog(item)}
+                  ListFooterComponent={this.lastElement}
                 />
+              </View>
+                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
               </View>
             )
         }
-        <CreateBtn goToScreen={this.goToEventContactsScreen} type={BTN_TYPE.DIALOG} />
-        <BottomNavBar navigation={this.props.navigation}/>
+         <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
   }
@@ -125,6 +143,16 @@ class Events extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 20,
+    height: SIZE_SCREEN.height
+  },
+  noChatButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  spacing: {
+    backgroundColor: 'blue'
   },
   navBarContainer: {
     flex: 1,
@@ -140,6 +168,9 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontSize: 100,
     paddingLeft: 20,
+  },
+  lastElement: {
+    paddingBottom: SIZE_SCREEN.height/5
   },
 })
 

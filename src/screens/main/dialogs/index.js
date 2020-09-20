@@ -77,10 +77,21 @@ class Dialogs extends Component {
   componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = dialogs
+      this.dialogs = this.removeEventsFromDialogs(dialogs)
       this.appendChatColors()
       this.setState({ isLoader: false })
     }
+  }
+
+  removeEventsFromDialogs = (dialogs) => {
+    cleanedDialogs = []
+    dialogs.forEach((dialog) => {
+      console.log(dialog.description)
+      if (dialog.description === null || dialog.description === ''){
+        cleanedDialogs.push(dialog)
+      }
+    })
+    return cleanedDialogs
   }
 
   keyExtractor = (item, index) => index.toString()
