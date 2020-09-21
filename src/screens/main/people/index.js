@@ -122,7 +122,6 @@ class People extends Component {
             }
           })
         var friendIds = friends.map(Number)
-        console.log("friends: " + friends)
 
           this.setState({friendId: friends})
           this.setState({pendingId: pending})
@@ -187,7 +186,6 @@ class People extends Component {
     return (
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :
-      // Why is this happening
       item !== undefined ?
       <View style={styles.renderContainer}>
         <View style={styles.renderAvatar}>
@@ -208,8 +206,7 @@ class People extends Component {
           </View>
         </View>
       </View> :
-      <View>
-      </View>
+      null
     )
   }
 

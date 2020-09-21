@@ -33,18 +33,18 @@ export default class Nav extends Component {
     navigation = this.props.navigation
     return (
       <View style={styles.topMenu}>
-        <TouchableOpacity onPress={() => this.goToFriends()}>
-          <View style={styles.topMenuElement}>
-            <Text style={navigation.state.routeName === "People" ? styles.topMenuCurrentText : styles.topMenuText}> Friends </Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.space}>
+        <View style={{flexDirection: 'row', backgroundColor: "#E9E9E9", borderRadius: 70}}>
+          <TouchableOpacity onPress={() => this.goToFriends()}>
+            <View style={navigation.state.routeName === 'People' ? styles.selected: styles.tab}>
+              <Text style={navigation.state.routeName === 'People' ? styles.selectedText: styles.topMenuText}> Friends </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.goToRequests()}>
+            <View style={navigation.state.routeName === 'Requests' ? styles.selected: styles.tab}>
+              <Text style={navigation.state.routeName === 'Requests' ? styles.selectedText: styles.topMenuText}> Requests </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => this.goToRequests()}>
-          <View style={styles.topMenuElement}>
-            <Text style={navigation.state.routeName === "Requests" ? styles.topMenuCurrentText : styles.topMenuText}> Requests </Text>
-          </View>
-        </TouchableOpacity>
       </View>
     )
   }
@@ -54,36 +54,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  space: {
-    paddingRight: 40,
-  },
   topMenu: {
-    flexDirection: 'row',
     width: '100%',
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    top: 30,
+    marginTop: 30,
   },
-  topMenuElement:{
-    paddingLeft: 10,
-    paddingRight: 10,
+  tab:{
+    paddingLeft: 5,
+    paddingRight: 5,
     paddingTop: 10,
     paddingBottom: 10,
-    borderRadius: 70,
-    backgroundColor: '#EAEAEA',
+    borderRadius: 70
   },
-  topMenuCurrentText:{
-    color: 'black',
-    fontSize: 14,
-    paddingLeft: 30,
-    paddingRight: 30,
-    fontWeight: "bold",
+  selected: {
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 10,
+    paddingBottom: 10,
+    backgroundColor: '#2E86FB',
+    borderRadius: 70,
+    fontWeight: '700',
+    color: 'white'
   },
   topMenuText:{
-    color: 'black',
     fontSize: 14,
     paddingLeft: 30,
     paddingRight: 30,
+  },
+  selectedText:{
+    fontSize: 14,
+    paddingLeft: 30,
+    paddingRight: 30,
+    fontWeight: '700',
+    color: 'white'
+
   }
 })

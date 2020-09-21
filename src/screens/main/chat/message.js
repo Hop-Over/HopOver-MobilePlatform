@@ -156,10 +156,8 @@ export default class Message extends Component {
                 (
                 <View style={styles.background}>
                     <VideoPlayer source={{uri: message.attachment[0].url}}   // Can be a URL or a local file.
-                    ref={(ref) => {
-                    this.player = ref
-                    }}                                      // Store reference
-                    onBuffer={this.onBuffer}                // Callback when remote video is buffering
+                    // Store reference
+                    // Callback when remote video is buffering
                     onError={this.videoError}               // Callback when video cannot be loaded
                     // controls={true}
                     onBack={this.handleModalState}

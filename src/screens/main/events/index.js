@@ -116,7 +116,7 @@ class Events extends Component {
             (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SIZE_SCREEN.height/6}}>
               <Text style={{ fontSize: 19 }}>No chats yet</Text>
               <View style={styles.noChatButton}>
-                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={true} />
+                <CreateBtn goToScreen={this.goToCreateEventScreen} type={BTN_TYPE.DIALOG} isFirst={true} />
               </View>
             </View>
             ) :
@@ -130,7 +130,7 @@ class Events extends Component {
                   ListFooterComponent={this.lastElement}
                 />
               </View>
-                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
+                <CreateBtn goToScreen={this.goToCreateEventScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
               </View>
             )
         }
