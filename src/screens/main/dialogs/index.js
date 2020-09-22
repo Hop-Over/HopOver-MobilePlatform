@@ -140,13 +140,9 @@ class Dialogs extends Component {
           ) : this.dialogs.length === 0 ?
             (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SIZE_SCREEN.height/6}}>
               <Text style={{ fontSize: 19 }}>No chats yet</Text>
-              <View style={styles.noChatButton}>
-                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={true} />
-              </View>
             </View>
             ) :
             (
-              <View>
               <View>
                 <FlatList
                   data={this.dialogs}
@@ -155,11 +151,10 @@ class Dialogs extends Component {
                   ListFooterComponent={this.lastElement}
                 />
               </View>
-                <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
-              </View>
             )
         }
-         <BottomNavBar navigation={this.props.navigation}/>
+          <CreateBtn goToScreen={this.goToContactsScreen} type={BTN_TYPE.DIALOG} isFirst={false} />
+          <BottomNavBar navigation={this.props.navigation}/>
       </View>
     )
   }
@@ -170,6 +165,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 20,
     height: SIZE_SCREEN.height
+  },
+  bottomContainer:{
+    flex: 1
   },
   noChatButton: {
     flex: 1,
