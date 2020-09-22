@@ -103,34 +103,35 @@ class Requests extends Component {
       <Indicator color={'blue'} size={40} /> :
       // Why is this happening
       item !== undefined ?
-      <View style={styles.renderContainer}>
-        <View style={styles.renderAvatar}>
-          <Avatar
-            photo={item.avatar}
-            name={item.full_name}
-            iconSize="medium"
-          />
-          <Text style={styles.nameTitle}>{item.full_name}</Text>
-          <View style={styles.buttonContainer}>
+      <View style={styles.card}>
+        <View style={styles.renderContainer}>
+          <View style={styles.renderAvatar}>
+            <Avatar
+              photo={item.avatar}
+              name={item.full_name}
+              iconSize="medium"
+            />
+            <Text style={styles.nameTitle}>{item.full_name}</Text>
+            <View style={styles.buttonContainer}>
             <View style={styles.iconContainer}>
-              <TouchableOpacity style={styles.iconButtons}
-                onPress={() => {
-                  ContactService.acceptRequest(item.id)
-                  this.setState({updateContacts: true})
-                }}>
-                <Icon name="check" size={30} color="black"/>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.iconContainer}>
-              <TouchableOpacity style={styles.iconButtons}
+              <TouchableOpacity style={styles.deleteIcon}
                 onPress={() => {
                   ContactService.rejectRequest(item.id)
                   ContactService.deleteContact(item.id)
                   this.setState({updateContacts: true})
                 }}>
-                <Icon name="delete" size={25} color="black"/>
+                <Icon name="close" size={25} color="white"/>
               </TouchableOpacity>
+            </View>
+              <View style={styles.iconContainer}>
+                <TouchableOpacity style={styles.acceptIcon}
+                  onPress={() => {
+                    ContactService.acceptRequest(item.id)
+                    this.setState({updateContacts: true})
+                  }}>
+                  <Icon name="check" size={30} color="white"/>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -206,6 +207,7 @@ const styles = StyleSheet.create({
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 5
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.8,
@@ -216,19 +218,32 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   renderContainer: {
-    width: SIZE_SCREEN.width - 30,
-    borderBottomWidth: 0.5,
-    borderColor: 'grey',
+    width: SIZE_SCREEN.width - 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 7,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderWidth:2,
+    borderColor: '#00000014',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderRadius: 15,
+    marginBottom: 10,
+    marginTop: 5
   },
   listRequest: {
     marginTop: 80,
-    marginLeft: 20,
     flex: 1,
     flexGrow: 1,
+    alignItems: 'center'
   },
   listPending: {
     marginLeft: 20,
@@ -238,13 +253,22 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     paddingRight: 6,
   },
-  iconButtons: {
+  deleteIcon: {
     width: 35,
     height: 35,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: '#B5B5B5',
+    alignSelf: 'flex-end'
+  },
+  acceptIcon: {
+    width: 35,
+    height: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    backgroundColor: '#92E989',
     alignSelf: 'flex-end'
   },
   buttonContainer: {

@@ -114,36 +114,38 @@ class Search extends Component {
       <Indicator color={'blue'} size={40} /> :
       // Why is this happening
       item !== undefined ?
-      <View style={styles.renderContainer}>
-        <View style={styles.renderAvatar}>
-          <Avatar
-            photo={item.avatar}
-            name={item.full_name}
-            iconSize="medium"
-          />
-          <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
-          <View style={styles.buttonContainer}>
-            {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
-            (<TouchableOpacity style={styles.iconButtons}
-              onPress={() => {
-                if (this.state.friendId.includes(item.id.toString())){
-                  ContactService.rejectRequest(item.id)
-                  ContactService.deleteContact(item.id)
-                  let index = this.state.friendId.indexOf(item.id.toString())
-                  this.state.friendId.splice(index, 1)
-                  this.searchUsers()
+      <View style={styles.card}>
+        <View style={styles.renderContainer}>
+          <View style={styles.renderAvatar}>
+            <Avatar
+              photo={item.avatar}
+              name={item.full_name}
+              iconSize="medium"
+            />
+            <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
+            <View style={styles.buttonContainer}>
+              {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
+              (<TouchableOpacity style={styles.iconButtons}
+                onPress={() => {
+                  if (this.state.friendId.includes(item.id.toString())){
+                    ContactService.rejectRequest(item.id)
+                    ContactService.deleteContact(item.id)
+                    let index = this.state.friendId.indexOf(item.id.toString())
+                    this.state.friendId.splice(index, 1)
+                    this.searchUsers()
 
-                } else if (!this.state.pendingId.includes(item.id.toString())) {
-                  ContactService.sendRequest(item.id)
-                  this.state.pendingId.push(item.id.toString())
-                  this.searchUsers()
-                }
-              }}>
-              <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="black"/>
-            </TouchableOpacity>) :
-            (<View style={styles.pendingButton}>
-              <Text style={styles.pendingText}> Pending </Text>
-            </View>)}
+                  } else if (!this.state.pendingId.includes(item.id.toString())) {
+                    ContactService.sendRequest(item.id)
+                    this.state.pendingId.push(item.id.toString())
+                    this.searchUsers()
+                  }
+                }}>
+                <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="white"/>
+              </TouchableOpacity>) :
+              (<View style={styles.pendingButton}>
+                <Text style={styles.pendingText}> Pending </Text>
+              </View>)}
+            </View>
           </View>
         </View>
       </View> :
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   pendingText: {
-    color: "grey",
+    color: "white",
     fontSize: 15,
   },
   pendingButton: {
@@ -252,25 +254,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: '#B5B5B5',
     alignSelf: 'flex-end',
   },
   listUsers: {
-    marginLeft: 20,
-    flex: 1
+    flex: 1,
+    alignItems: 'center'
   },
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 5
   },
   renderContainer: {
-    width: SIZE_SCREEN.width - 30,
-    borderBottomWidth: 0.5,
-    borderColor: 'grey',
+    width: SIZE_SCREEN.width - 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 7,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderWidth:2,
+    borderColor: '#00000014',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderRadius: 15,
+    marginBottom: 10,
+    marginTop: 5
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.5,
@@ -286,7 +302,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
-    backgroundColor: '#EAEAEA',
+    backgroundColor: '#B5B5B5',
     alignSelf: 'flex-end'
   },
   buttonContainer: {
