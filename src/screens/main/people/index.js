@@ -32,7 +32,7 @@ class People extends Component {
       isUpdate: false,
       friendId: [],
       pendingId: [],
-      updateContacts: true,
+      updateContacts: false,
     }
   }
 
@@ -91,6 +91,19 @@ class People extends Component {
     } return null
   }
 
+  componentDidMount(){
+    this.getContacts()
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if (nextState.updateContacts !== this.state.updateContacts){
+      this.getContacts()
+      this.setState({updateContacts: false})
+      return true
+    }
+    return true
+  }
+
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: People.currentUserInfo })
   }
@@ -105,31 +118,28 @@ class People extends Component {
         });
   }
 
-  getFriends = async () => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
-        .then((response) => {
-          let friends = []
-          let pending = []
-          keys = Object.keys(response)
-          keys.forEach(elem => {
-            // Make sure that they are friends and not just a request
-            let contact = response[elem]
-            if(contact["subscription"] === "both" || contact["subscription"] === "from" || contact["subscription"] === "to"){
-              friends.push(elem)
-            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
-              pending.push(elem)
-            }
-          })
-        var friendIds = friends.map(Number)
+  getContacts = async () => {
+    await ContactService.fetchContactList()
+      .then((response) => {
+        let friends = []
+        let pending = []
+        keys = Object.keys(response)
+        keys.forEach(elem => {
+          // Make sure that they are friends and not just a request
+          let contact = response[elem]
+          if(contact["subscription"] === "both" || contact["subscription"] === "from" || contact["subscription"] === "to"){
+            friends.push(elem)
+          } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
+            pending.push(elem)
+          }
+        })
+      var friendIds = friends.map(Number)
 
-          this.setState({friendId: friends})
-          this.setState({pendingId: pending})
-      })
-      this.setState({updateContacts: false})
-      await UserService.getOccupants(this.state.friendId)
-      this.setState({isLoader: false})
-    }
+        this.setState({friendId: friends})
+        this.setState({pendingId: pending})
+    })
+    await UserService.getOccupants(this.state.friendId)
+    this.setState({isLoader: false})
   }
 
   _renderUser = ({ item }) => {
@@ -200,6 +210,7 @@ class People extends Component {
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
                   ContactService.deleteContact(item.id)
+                  this.deleteConversation(item.id)
                   this.setState({updateContacts: true})
                 }}>
                 <Icon name="close" size={25} color="white"/>
@@ -218,8 +229,7 @@ class People extends Component {
   render() {
     const navigation = this.props.navigation
     const { isLoader, friendId, pendingId, keyword } = this.state
-    this.getFriends()
-    data = UserService.getUsersInfoFromRedux(this.state.friendId)
+    data = UserService.getUsersInfoFromRedux(friendId)
 
     return (
       <View style={styles.container}>
