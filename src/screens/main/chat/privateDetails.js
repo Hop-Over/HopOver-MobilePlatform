@@ -157,6 +157,12 @@ export default class PrivateDetails extends Component {
     }
   }
 
+  goToChatMap = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ChatMap', {dialog})
+  }
+
   goToContactDeteailsScreen = (dialog) => {
     const { navigation } = this.props
     const chatDialog = this.props.navigation.getParam('dialog',false)
@@ -303,14 +309,23 @@ export default class PrivateDetails extends Component {
     </View>
   </TouchableOpacity>
 
+  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => this.goToChatMap()}>
+    <View style={styles.renderAvatar}>
+    <Icon name="room" size={35} color='black' style={{ marginRight: 15 }} />
+    </View>
+    <View>
+    <Text style={styles.nameTitle}>Chat Map</Text>
+    </View>
+  </TouchableOpacity>
+
 
   <Text style={styles.labelTitle}> More actions </Text>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.leaveGroup}>
+  <TouchableOpacity style={[styles.renderHeaderContainer, styles.leaveButton]} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
-		<Icon name="delete" size={35} color='black' style={{ marginRight: 15 }} />
+		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.nameTitle}>Delete Chat</Text>
+		<Text style={styles.leaveTitle}>Delete Chat</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
@@ -412,12 +427,12 @@ const styles = StyleSheet.create({
 		paddingVertical: 7,
     marginLeft: 30,
 	},
-	renderHeaderContainer: {
+  renderHeaderContainer: {
 		width: SIZE_SCREEN.width - 30,
 		flexDirection: 'row',
 		borderColor: 'grey',
 		alignItems: 'center',
-		paddingVertical: 7
+		paddingVertical: 7,
 	},
 	renderAvatar: {
 		flexDirection: 'row',
@@ -445,5 +460,27 @@ const styles = StyleSheet.create({
 	},
   searchContainer : {
     paddingBottom: 10,
+  },
+  leaveButton:{
+    backgroundColor: "red",
+    justifyContent: 'center',
+    width: SIZE_SCREEN.width/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/4,
+    borderRadius: 16,
+    marginTop: 50,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
   }
 })
