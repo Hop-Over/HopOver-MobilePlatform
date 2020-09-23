@@ -27,7 +27,7 @@ class Requests extends Component {
     this.state = {
       isLoader: props.dialogs.length === 0 && true,
       requestId: [],
-      updateContacts: true,
+      updateContacts: false,
       isLoader: true
     }
   }
@@ -69,6 +69,19 @@ class Requests extends Component {
     } return null
   }
 
+  componentDidMount(){
+    this.getContacts()
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if (nextState.updateContacts !== this.state.updateContacts){
+      this.getContacts()
+      this.setState({updateContacts: false})
+      return true
+    }
+    return true
+  }
+
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: Requests.currentUserInfo })
   }
@@ -76,25 +89,21 @@ class Requests extends Component {
   keyExtractor = (item, index) => index.toString()
 
   getContacts = async () => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
-        .then((response) => {
-          let requests = []
-          keys = Object.keys(response)
-          keys.forEach(elem => {
-            // Make sure that they are requesting and not friends
-            let contact = response[elem]
-
-            if (contact["subscription"] === "none" && contact["ask"] === null && elem !== "NaN"){
-              requests.push(elem)
-            }
-          })
-          this.setState({requestId: requests})
-      })
-      this.setState({updateContacts: false})
-      await UserService.getOccupants(this.state.requestId)
-      this.setState({isLoader: false})
-    }
+    await ContactService.fetchContactList()
+      .then((response) => {
+        let requests = []
+        keys = Object.keys(response)
+        keys.forEach(elem => {
+          // Make sure that they are requesting and not friends
+          let contact = response[elem]
+          if (contact["subscription"] === "none" && contact["ask"] === null && elem !== "NaN"){
+            requests.push(elem)
+          }
+        })
+        this.setState({requestId: requests})
+    })
+    await UserService.getOccupants(this.state.requestId)
+    this.setState({isLoader: false})
   }
 
   _renderRequest= ({ item }) => {
@@ -143,8 +152,7 @@ class Requests extends Component {
 
   render() {
     const { isLoader, requestId, pendingId, updateContacts } = this.state
-    this.getContacts()
-    request = UserService.getUsersInfoFromRedux(this.state.requestId)
+    request = UserService.getUsersInfoFromRedux(requestId)
     return (
       <View style={styles.container}>
         <StatusBar barStyle={'dark-content'} />
