@@ -108,7 +108,7 @@ class People extends Component {
     props.push('Settings', { user: People.currentUserInfo })
   }
 
-  deleteConversation(userId){
+  deleteConversation = (userId) => {
     ConnectyCube.chat.dialog.list()
         .then(dialogs => {
             console.log(dialogs)
@@ -210,7 +210,6 @@ class People extends Component {
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
                   ContactService.deleteContact(item.id)
-                  this.deleteConversation(item.id)
                   this.setState({updateContacts: true})
                 }}>
                 <Icon name="close" size={25} color="white"/>
@@ -239,7 +238,7 @@ class People extends Component {
         <View style={styles.searchUser}>
           <TextInput style={styles.searchInput}
             autoCapitalize="none"
-            placeholder="Search users..."
+            placeholder="Search"
             placeholderTextColor="grey"
             returnKeyType="search"
             onChangeText={this.updateSearch}
