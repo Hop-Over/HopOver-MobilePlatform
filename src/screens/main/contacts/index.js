@@ -28,7 +28,7 @@ class Contacts extends PureComponent {
     this.state = {
       keyword: '',
       isLoader: false,
-      dialogType: this.isGroupDetails,
+      dialogType: true,
       isUpdate: false,
       friendId: [],
       pendingId: [],
@@ -92,19 +92,21 @@ class Contacts extends PureComponent {
     )
   }
 
+  goToPrivateChat = (user) => {
+    const dialog = this.props.navigation.getParam('dialog', false)
+    const str = dialog ? dialog.occupants_ids.length : 1
+    return ChatService.createPrivateDialog(user.id)
+      .then((newDialog) => {
+        this.props.navigation.dispatch(popToTop)
+        this.props.navigation.push('Chat', { dialog: newDialog })
+      })
+  }
+
   selectUsers = (user) => {
     const dialog = this.props.navigation.getParam('dialog', false)
     const str = dialog ? dialog.occupants_ids.length : 1
-    // False - Private dialog 
-    if (!this.state.dialogType) {
-      return ChatService.createPrivateDialog(user.id)
-        .then((newDialog) => {
-          this.props.navigation.dispatch(popToTop)
-          this.props.navigation.push('Chat', { dialog: newDialog })
-        })
-    }
 
-    // True - Publick dialog 
+    // True - Publick dialog
     const userSelect = this.selectedUsers.find(elem => elem.id === user.id)
     if (userSelect) {
       let newArr = []
@@ -162,9 +164,6 @@ class Contacts extends PureComponent {
     }
   }
 
-
-  
-
   searchFunc = (str, friends) => {
     const dialog = this.props.navigation.getParam('dialog', false)
     this.setState({ isLoader: true })
@@ -173,7 +172,7 @@ class Contacts extends PureComponent {
         this.listUsers = users
         if(users.length === 0){
             this.userNotFound = true
-            
+
         }else{
            this.userNotFound = false
         }
@@ -194,10 +193,14 @@ class Contacts extends PureComponent {
       addParticipant(this.selectedUsers)
       return
     }
+    else if (this.selectedUsers.length === 1){
+      this.goToPrivateChat(this.selectedUsers[0])
+      return
+    }
     navigation.push('CreateDialog', { users: this.selectedUsers })
   }
 
-  
+
 
   render() {
     const { isLoader, dialogType } = this.state
@@ -218,14 +221,6 @@ class Contacts extends PureComponent {
           />
         </View>
         <View style={styles.dialogTypeContainer}>
-          {!this.isGroupDetails &&
-            <TouchableOpacity style={styles.dialogType} onPress={this.changeTypeDialog}>
-              {dialogType ? <IconGroup name="group" size={25} color='#48A6E3' /> :
-                <IconGroup name="user" size={25} color='#48A6E3' />
-              }
-              <Text style={styles.dialogTypeText}>{dialogType ? `Create private chat` : `Create group chat`}</Text>
-            </TouchableOpacity>
-          }
         </View>
         <View style={this.selectedUsers.length > 0 && styles.containerCeletedUsers}>
           <FlatList
