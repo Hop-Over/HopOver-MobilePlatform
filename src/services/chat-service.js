@@ -31,9 +31,7 @@ class ChatService {
     let privatChatIdsUser = []
 
     const dialogs = dialogsFromServer.items.map(elem => {
-        console.log(elem)
         if (elem.type === DIALOG_TYPE.PRIVATE) {
-          console.log(elem.description)
           elem.occupants_ids.forEach(elem => {
             elem != currentUserId.id && privatChatIdsUser.push(elem)
           })
@@ -107,10 +105,7 @@ class ChatService {
     store.dispatch(pushMessage(message, dialog.id))
 
     // create real data for attachment
-    console.log('attachments')
-    console.log(attachments)
     attachments = {"height": 697, "mime": "image/jpeg", "modificationDate": "1596669030000", "path": "https://i.imgur.com/Xpl5hCJ.jpeg", "size": 51404, "width": 526}
-    console.log(attachments)
     const response = await this.uploadPhoto(attachments)
     const updateAttach = preparationAttachment(attachments, response.uid)
     msg.extension.attachments = [updateAttach]
@@ -221,15 +216,12 @@ class ChatService {
         }
     }else if(highLow === 0){
         var lastMessageDate = currentMessages[0]
-        {console.log('body: ' + lastMessageDate.body)}
         var filter = {
           chat_dialog_id: dialog.id,
           date_sent: { lte: lastMessageDate.date_sent },
           sort_desc: 'date_sent'
         }
     }
-
-    {console.log(lastMessageDate.body)}
     const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
     const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
     const messages = moreHistoryFromServer.items.map(elem => new Message(elem))
@@ -382,8 +374,6 @@ class ChatService {
   }
 
   async uploadPhoto(params) {
-    console.log('params')
-    console.log(params)
     const file = preparationUploadImg(params)
     return ConnectyCube.storage.createAndUpload({ file })
   }
@@ -410,7 +400,6 @@ class ChatService {
 
   async addOccupantsToDialog(dialog_id, occupants) {
     const participantIds = occupants.map(elem => elem.id)
-    { console.log('part: ' + participantIds) }
     const params = {
       push_all: { occupants_ids: participantIds }
     }
@@ -428,8 +417,6 @@ class ChatService {
       pull_all: { occupants_ids: participantIds }
     }
     const response = await ConnectyCube.chat.dialog.update(dialog_id, params)
-    { console.log('response') }
-    { console.log(response) }
     const updateData = new Dialog(response)
     store.dispatch(fetchUsers(occupants))
     store.dispatch(updateDialog(updateData))

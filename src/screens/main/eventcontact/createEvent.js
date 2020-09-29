@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import { SIZE_SCREEN } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
+import EventService from '../../../services/event-service'
+import FirebaseService from '../../../services/firebase-service'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
@@ -45,9 +47,11 @@ export default class CreateEvent extends PureComponent {
     })
     ChatService.createPrivateEvent(occupants_ids, str, this.state.isPickImage)
       .then((newEvent) => {
+        FirebaseService.setChatColor(newEvent.id, "#1897F8")
         this.setState({ isLoader: false })
         this.props.navigation.push('Events', { dialog: newEvent, isNeedFetchUsers: true })
       })
+
   }
 
   onPickImage = () => {

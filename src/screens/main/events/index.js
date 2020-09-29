@@ -9,6 +9,7 @@ import CreateBtn from '../../components/createBtn'
 import BottomNavBar from '../../components/bottomNavBar'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Avatar from '../../components/avatar'
+import FirebaseService from '../../../services/firebase-service'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -81,7 +82,22 @@ class Events extends Component {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
       this.dialogs = this.removeDialogsFromEvents(dialogs)
+      this.appendChatColors()
       this.setState({ isLoader: false })
+    }
+  }
+  getChatColor = async (dialog) => {
+    var response = await FirebaseService.getChatColor(dialog)
+    return response
+  }
+
+  appendChatColors = () => {
+    console.log("Updating Colors")
+    if (this.dialogs.length  > 0){
+      this.dialogs.forEach(async (chat, i) => {
+        let color = await this.getChatColor(chat.id)
+        this.dialogs[i].color = color
+      })
     }
   }
 
@@ -93,6 +109,13 @@ class Events extends Component {
       }
     })
     return cleanedEvents
+  }
+
+  lastElement = () => {
+    return (
+      <View style={styles.lastElement}>
+      </View>
+    )
   }
 
   keyExtractor = (item, index) => index.toString()

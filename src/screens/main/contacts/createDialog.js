@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import { SIZE_SCREEN } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
+import FirebaseService from '../../../services/firebase-service'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
@@ -45,6 +46,7 @@ export default class CreateDialog extends PureComponent {
     })
     ChatService.createPublicDialog(occupants_ids, str, this.state.isPickImage)
       .then((newDialog) => {
+        FirebaseService.setChatColor(newDialog.id, "#1897F8")
         this.setState({ isLoader: false })
         this.props.navigation.dispatch(popToTop)
         this.props.navigation.push('Chat', { dialog: newDialog, isNeedFetchUsers: true })
