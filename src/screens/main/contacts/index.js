@@ -15,11 +15,11 @@ import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
 import { popToTop } from '../../../routing/init'
+import { SIZE_SCREEN } from '../../../helpers/constants'
 // import { fetchUsers } from '../actions/users'
 
 
 class Contacts extends PureComponent {
-  isGroupDetails = false
 
   constructor(props) {
     super(props)
@@ -84,10 +84,10 @@ class Contacts extends PureComponent {
             iconSize="medium"
           />
           <View style={{ position: 'absolute', bottom: 7, right: 7, backgroundColor: 'white', width: 20, height: 20, borderRadius: 10 }}>
-            <Icon name="cancel" size={20} color='grey' />
+            <Icon name="cancel" size={20} color='#EB2F30' />
           </View>
         </View>
-        <Text numberOfLines={2} style={{ textAlign: 'center' }}>{item.full_name}</Text>
+        <Text numberOfLines={2} style={{ textAlign: 'center' }}>{item.full_name.split(" ")[0]}</Text>
       </TouchableOpacity >
     )
   }
@@ -220,8 +220,6 @@ class Contacts extends PureComponent {
             value={this.state.search}
           />
         </View>
-        <View style={styles.dialogTypeContainer}>
-        </View>
         <View style={this.selectedUsers.length > 0 && styles.containerCeletedUsers}>
           <FlatList
             data={this.selectedUsers}
@@ -240,11 +238,10 @@ class Contacts extends PureComponent {
                 renderItem={(item) => this._renderUser(item)}
               />
             </View>
-          )
-        }
-        {this.selectedUsers.length > 0 && (
-          <CreateBtn goToScreen={this.goToCreateDialogScreen} type={BTN_TYPE.CONTACTS} />
-        )}
+          )}
+          {this.selectedUsers.length === 0  && this.listUsers === null?
+          (<Text style={styles.noneSelected}> No one selected </Text>):
+          (<CreateBtn goToScreen={this.goToCreateDialogScreen} type={BTN_TYPE.CONTACTS} />)}
       </View>
     )
   }
@@ -266,10 +263,6 @@ const styles = StyleSheet.create({
     color: 'black',
     padding: 10,
   },
-  dialogTypeContainer: {
-    marginHorizontal: 12,
-    paddingVertical: 10
-  },
   dialogType: {
     flexDirection: 'row',
     alignItems: 'center'
@@ -279,9 +272,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   containerCeletedUsers: {
-    borderBottomWidth: 0.5,
-    borderColor: 'grey',
-    margin: 10
+    marginBottom: 10
   },
   selectedUser: {
     width: 70,
@@ -291,6 +282,11 @@ const styles = StyleSheet.create({
   userNotFound: {
     fontSize: 17,
     marginTop: 20,
+    textAlign: 'center'
+  },
+  noneSelected: {
+    fontSize: 17,
+    marginBottom: SIZE_SCREEN.height/2,
     textAlign: 'center'
   }
 })

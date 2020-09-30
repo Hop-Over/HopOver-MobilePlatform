@@ -13,7 +13,7 @@ export default function CreateBtn({ goToScreen, type, isFirst }) {
       break
     }
     case BTN_TYPE.CONTACTS: {
-      renderIcon = <Icon name="add" size={40} color="white" />
+      renderIcon = <Icon name="arrow-forward" size={24} color="white" />
       break
     }
     case BTN_TYPE.CREATE_GROUP: {
@@ -23,12 +23,21 @@ export default function CreateBtn({ goToScreen, type, isFirst }) {
   }
 
   return (
-    <View style={styles.createDialog}>
-      <TouchableOpacity onPress={goToScreen}>
-        <View style={styles.gradient}>
+    <View style={type === BTN_TYPE.CONTACTS ? styles.nextContainer : styles.createDialog}>
+    {type === BTN_TYPE.CONTACTS ?
+    (<TouchableOpacity onPress={goToScreen}>
+      <View style={styles.nextButton}>
         {renderIcon}
-        </View>
-      </TouchableOpacity>
+        <Text style={styles.nextText}> Next </Text>
+      </View>
+    </TouchableOpacity>):
+
+    (<TouchableOpacity onPress={goToScreen}>
+      <View style={styles.gradient}>
+      {renderIcon}
+      </View>
+    </TouchableOpacity>)
+    }
     </View>
   )
 }
@@ -39,6 +48,11 @@ const styles = StyleSheet.create({
     marginLeft: SIZE_SCREEN.width/2 - 50/2,
     bottom: SIZE_SCREEN.height/7
   },
+  nextContainer: {
+    position: 'absolute',
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/3/2,
+    bottom: SIZE_SCREEN.height/7
+  },
   gradient:{
     alignItems: 'center',
     justifyContent: 'center',
@@ -46,5 +60,27 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: "#75C6FF"
+  },
+  nextButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "#1897F8",
+    width: SIZE_SCREEN.width/3,
+    height: 50,
+    borderRadius: 14,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  nextText: {
+    fontSize: 18,
+    color: 'white',
   }
 })
