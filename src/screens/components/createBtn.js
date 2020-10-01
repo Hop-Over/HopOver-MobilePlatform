@@ -17,7 +17,7 @@ export default function CreateBtn({ goToScreen, type, isFirst }) {
       break
     }
     case BTN_TYPE.CREATE_GROUP: {
-      renderIcon = <Icon name="check" size={40} color="white" />
+      renderIcon = <Icon name="exit-to-app" size={24} color="white" />
       break
     }
   }
@@ -31,13 +31,21 @@ export default function CreateBtn({ goToScreen, type, isFirst }) {
         <Text style={styles.nextText}> Next </Text>
       </View>
     </TouchableOpacity>):
-
+    <View>
+    {type === BTN_TYPE.CREATE_GROUP?
+    (<TouchableOpacity onPress={goToScreen}>
+      <View style={styles.nextButton}>
+        {renderIcon}
+        <Text style={styles.nextText}> Create Group </Text>
+      </View>
+    </TouchableOpacity>):
     (<TouchableOpacity onPress={goToScreen}>
       <View style={styles.gradient}>
       {renderIcon}
       </View>
-    </TouchableOpacity>)
-    }
+    </TouchableOpacity>)}
+    </View>
+  }
     </View>
   )
 }
@@ -67,8 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: "#1897F8",
-    width: SIZE_SCREEN.width/3,
-    height: 50,
+    width: SIZE_SCREEN.width/2,
+    height: 55,
     borderRadius: 14,
     shadowColor: "#000",
     shadowOffset: {
