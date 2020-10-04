@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   nextContainer: {
     position: 'absolute',
-    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/3/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/2/2,
     bottom: SIZE_SCREEN.height/7
   },
   gradient:{
