@@ -15,10 +15,11 @@ import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
 import { popToTop } from '../../../routing/init'
+import { SIZE_SCREEN } from '../../../helpers/constants'
 // import { fetchUsers } from '../actions/users'
 
-class EventContacts extends PureComponent {
-  isGroupDetails = false
+
+class Contacts extends PureComponent {
 
   constructor(props) {
     super(props)
@@ -83,10 +84,10 @@ class EventContacts extends PureComponent {
             iconSize="medium"
           />
           <View style={{ position: 'absolute', bottom: 7, right: 7, backgroundColor: 'white', width: 20, height: 20, borderRadius: 10 }}>
-            <Icon name="cancel" size={20} color='grey' />
+            <Icon name="cancel" size={20} color='#EB2F30' />
           </View>
         </View>
-        <Text numberOfLines={2} style={{ textAlign: 'center' }}>{item.full_name}</Text>
+        <Text numberOfLines={2} style={{ textAlign: 'center' }}>{item.full_name.split(" ")[0]}</Text>
       </TouchableOpacity >
     )
   }
@@ -94,14 +95,6 @@ class EventContacts extends PureComponent {
   selectUsers = (user) => {
     const dialog = this.props.navigation.getParam('dialog', false)
     const str = dialog ? dialog.occupants_ids.length : 1
-    // False - Private dialog
-    if (!this.state.dialogType) {
-      return ChatService.createPrivateDialog(user.id)
-        .then((newDialog) => {
-          this.props.navigation.dispatch(popToTop)
-          this.props.navigation.push('Chat', { dialog: newDialog })
-        })
-    }
 
     // True - Publick dialog
     const userSelect = this.selectedUsers.find(elem => elem.id === user.id)
@@ -161,9 +154,6 @@ class EventContacts extends PureComponent {
     }
   }
 
-
-
-
   searchFunc = (str, friends) => {
     const dialog = this.props.navigation.getParam('dialog', false)
     this.setState({ isLoader: true })
@@ -196,6 +186,8 @@ class EventContacts extends PureComponent {
     navigation.push('CreateEvent', { users: this.selectedUsers })
   }
 
+
+
   render() {
     const { isLoader, dialogType } = this.state
     return (
@@ -213,8 +205,6 @@ class EventContacts extends PureComponent {
             onSubmitEditing={this.searchUsers}
             value={this.state.search}
           />
-        </View>
-        <View style={styles.dialogTypeContainer}>
         </View>
         <View style={this.selectedUsers.length > 0 && styles.containerCeletedUsers}>
           <FlatList
@@ -234,11 +224,10 @@ class EventContacts extends PureComponent {
                 renderItem={(item) => this._renderUser(item)}
               />
             </View>
-          )
-        }
-        {this.selectedUsers.length > 0 && (
-          <CreateBtn goToScreen={this.goToCreateEventScreen} type={BTN_TYPE.CONTACTS} />
-        )}
+          )}
+          {this.selectedUsers.length === 0  && this.listUsers === null?
+          (<Text style={styles.noneSelected}> No one selected </Text>):
+          (<CreateBtn goToScreen={this.goToCreateEventScreen} type={BTN_TYPE.CONTACTS} />)}
       </View>
     )
   }
@@ -260,10 +249,6 @@ const styles = StyleSheet.create({
     color: 'black',
     padding: 10,
   },
-  dialogTypeContainer: {
-    marginHorizontal: 12,
-    paddingVertical: 10
-  },
   dialogType: {
     flexDirection: 'row',
     alignItems: 'center'
@@ -273,9 +258,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   containerCeletedUsers: {
-    borderBottomWidth: 0.5,
-    borderColor: 'grey',
-    margin: 10
+    marginBottom: 10
   },
   selectedUser: {
     width: 70,
@@ -286,6 +269,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginTop: 20,
     textAlign: 'center'
+  },
+  noneSelected: {
+    fontSize: 17,
+    marginBottom: SIZE_SCREEN.height/2,
+    textAlign: 'center'
   }
 })
 
@@ -293,4 +281,4 @@ const mapStateToProps = ({ dialogs }) => ({
   dialogs
 })
 
-export default connect(mapStateToProps)(EventContacts)
+export default connect(mapStateToProps)(Contacts)

@@ -36,7 +36,7 @@ export default function CreateBtn({ goToScreen, type, isFirst }) {
     (<TouchableOpacity onPress={goToScreen}>
       <View style={styles.nextButton}>
         {renderIcon}
-        <Text style={styles.nextText}> Create Group </Text>
+        <Text style={styles.nextText}> Create </Text>
       </View>
     </TouchableOpacity>):
     (<TouchableOpacity onPress={goToScreen}>
@@ -90,5 +90,6 @@ const styles = StyleSheet.create({
   nextText: {
     fontSize: 18,
     color: 'white',
+    paddingHorizontal: 15,
   }
 })
