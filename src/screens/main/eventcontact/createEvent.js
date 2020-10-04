@@ -13,6 +13,7 @@ import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import Modal from 'react-native-modal';
 import ColorModal from './elements/colorSelect'
+import AddressModal from './elements/addressSelect'
 
 export default class CreateEvent extends PureComponent {
 
@@ -117,6 +118,10 @@ export default class CreateEvent extends PureComponent {
     await this.setState({color: color})
   }
 
+  setLocationState = async (location) => {
+    await this.setState({location: location})
+  }
+
   render() {
     const { isPickImage, isLoader } = this.state
     const users = this.props.navigation.getParam('users')
@@ -159,6 +164,8 @@ export default class CreateEvent extends PureComponent {
         </View>
           <ColorModal colorHandler={this.setColorState.bind(this)}>
           </ColorModal>
+          <AddressModal locationHandler={this.setLocationState.bind(this)}>
+          </AddressModal>
           <FlatList
             data={users}
             ListHeaderComponent={this._renderFlatListHeader}

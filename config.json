@@ -24,5 +24,8 @@
     },
   "eventConfig": {
     "eventUrl": "https://hopprivate.firebaseio.com/"
+  },
+  "placesKey": {
+    "key": "AIzaSyBxS-ZneuI6SyiPkFAuxYZ91xviCY_066Q"
   }
 }
