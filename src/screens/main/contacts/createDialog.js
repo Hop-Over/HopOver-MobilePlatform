@@ -11,6 +11,8 @@ import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
+import Modal from 'react-native-modal';
+import ModalTester from './elements/colorSelect'
 export default class CreateDialog extends PureComponent {
 
   state = {
@@ -18,6 +20,7 @@ export default class CreateDialog extends PureComponent {
     isPickImage: null,
     isLoader: false,
     showUsers: false,
+    color: "#1897F8"
   }
 
   renderParticipant = (item) => {
@@ -47,7 +50,7 @@ export default class CreateDialog extends PureComponent {
     })
     ChatService.createPublicDialog(occupants_ids, str, this.state.isPickImage)
       .then((newDialog) => {
-        FirebaseService.setChatColor(newDialog.id, "#1897F8")
+        FirebaseService.setChatColor(newDialog.id, this.state.color)
         this.setState({ isLoader: false })
         this.props.navigation.dispatch(popToTop)
         this.props.navigation.push('Chat', { dialog: newDialog, isNeedFetchUsers: true })
@@ -109,6 +112,11 @@ export default class CreateDialog extends PureComponent {
 
   updateSearch = keyword => this.setState({ keyword })
 
+  setColorState = async (color) => {
+    await this.setState({color: color})
+    console.log(this.state.color)
+  }
+
   render() {
     const { isPickImage, isLoader } = this.state
     const users = this.props.navigation.getParam('users')
@@ -149,7 +157,8 @@ export default class CreateDialog extends PureComponent {
             <Text style={styles.descriptionText}>Change Group Name</Text>
           </View>
         </View>
-        <View style={styles.listUsers}>
+          <ModalTester colorHandler={this.setColorState.bind(this)}>
+          </ModalTester>
           <FlatList
             data={users}
             ListHeaderComponent={this._renderFlatListHeader}
@@ -158,7 +167,6 @@ export default class CreateDialog extends PureComponent {
             keyExtractor={this.keyExtractor}
             extraData={this.state}
           />
-        </View>
         <CreateBtn goToScreen={this.createDialog} type={BTN_TYPE.CREATE_GROUP} />
       </View>
     )
@@ -170,15 +178,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  listUsers: {
-    marginVertical: 10,
-    flex: 1
-  },
   header: {
     marginVertical: 20,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   icon: {
     position: 'absolute',
@@ -233,7 +237,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderColor: 'grey',
     alignItems: 'center',
-    paddingVertical: 7,
   },
   renderAvatar: {
     flexDirection: 'row',
