@@ -12,7 +12,7 @@ import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import Modal from 'react-native-modal';
-import ModalTester from './elements/colorSelect'
+import ColorModal from './elements/colorSelect'
 export default class CreateDialog extends PureComponent {
 
   state = {
@@ -114,7 +114,6 @@ export default class CreateDialog extends PureComponent {
 
   setColorState = async (color) => {
     await this.setState({color: color})
-    console.log(this.state.color)
   }
 
   render() {
@@ -157,8 +156,8 @@ export default class CreateDialog extends PureComponent {
             <Text style={styles.descriptionText}>Change Group Name</Text>
           </View>
         </View>
-          <ModalTester colorHandler={this.setColorState.bind(this)}>
-          </ModalTester>
+          <ColorModal colorHandler={this.setColorState.bind(this)}>
+          </ColorModal>
           <FlatList
             data={users}
             ListHeaderComponent={this._renderFlatListHeader}

@@ -11,6 +11,8 @@ import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
+import Modal from 'react-native-modal';
+import ColorModal from './elements/colorSelect'
 
 export default class CreateEvent extends PureComponent {
 
@@ -19,6 +21,7 @@ export default class CreateEvent extends PureComponent {
     isPickImage: null,
     isLoader: false,
     showUsers: false,
+    color: "#1897F8"
   }
 
   renderParticipant = (item) => {
@@ -48,7 +51,7 @@ export default class CreateEvent extends PureComponent {
     })
     ChatService.createPrivateEvent(occupants_ids, str, this.state.isPickImage)
       .then((newEvent) => {
-        FirebaseService.setChatColor(newEvent.id, "#1897F8")
+        FirebaseService.setChatColor(newEvent.id, this.state.color)
         this.setState({ isLoader: false })
         this.props.navigation.push('Events', { dialog: newEvent, isNeedFetchUsers: true })
       })
@@ -110,6 +113,10 @@ export default class CreateEvent extends PureComponent {
 
   updateSearch = keyword => this.setState({ keyword })
 
+  setColorState = async (color) => {
+    await this.setState({color: color})
+  }
+
   render() {
     const { isPickImage, isLoader } = this.state
     const users = this.props.navigation.getParam('users')
@@ -150,7 +157,8 @@ export default class CreateEvent extends PureComponent {
             <Text style={styles.descriptionText}>Change Group Name</Text>
           </View>
         </View>
-        <View style={styles.listUsers}>
+          <ColorModal colorHandler={this.setColorState.bind(this)}>
+          </ColorModal>
           <FlatList
             data={users}
             ListHeaderComponent={this._renderFlatListHeader}
@@ -159,7 +167,6 @@ export default class CreateEvent extends PureComponent {
             keyExtractor={this.keyExtractor}
             extraData={this.state}
           />
-        </View>
         <CreateBtn goToScreen={this.createEvent} type={BTN_TYPE.CREATE_GROUP} />
       </View>
     )
