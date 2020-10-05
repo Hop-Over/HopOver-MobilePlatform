@@ -4,17 +4,16 @@ import Modal from 'react-native-modal';
 import { SIZE_SCREEN } from '../../../../helpers/constants'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import FirebaseService from '../../../../services/firebase-service'
-import config from '../../../../../config'
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-export default class AddressModal extends Component {
+
+export default class DateSelect extends Component {
   constructor(props) {
   super(props)
 
   this.state = {
       isModalVisible: false,
-      keyword: '',
-      placesData: [],
-      displayLabel: "Location"
+      displayLabel: 'Date',
     };
   }
 
@@ -22,27 +21,11 @@ export default class AddressModal extends Component {
     this.setState({isModalVisible: !this.state.isModalVisible});
   }
 
-  onDonePress = () => {
-    this.setState({displayLabel: this.state.keyword.split(',')[0]})
-    this.props.locationHandler(this.state.keyword)
+  onDonePress = (date) => {
+    var dateArray = date.toString().split(" ")
+    this.setState({displayLabel: dateArray.slice(0,3).join(' ') + ', ' + dateArray[3] })
+    this.props.dateHandler(date)
     this.toggleModal()
-  }
-
-  selectSuggestion = (suggestion) => {
-    this.setState({keyword: suggestion})
-  }
-
-  updateSearch = async (keyword) => {
-    this.setState({ keyword })
-    const placesUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?key=" + config.placesKey.key +
-    "&input=" + keyword
-    const result = await fetch(placesUrl)
-    const placesJson = await result.json()
-    var placesArray = []
-    placesJson.predictions.forEach(pred => {
-      placesArray.push(pred.description)
-    })
-    this.setState({placesData: placesArray})
   }
 
   _renderSuggestion = ( {item} ) => {
@@ -64,44 +47,20 @@ export default class AddressModal extends Component {
       <View style={styles.modal}>
         <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleModal}>
           <View style={styles.renderAvatar}>
-            <Icon name="location-on" size={35} color={"black"} style={{ marginRight: 15 }} />
+            <Icon name="event" size={35} color={"black"} style={{ marginRight: 15 }} />
           </View>
           <View>
             <Text style={styles.nameTitle}>{this.state.displayLabel}</Text>
           </View>
         </TouchableOpacity>
-
-        <Modal isVisible={this.state.isModalVisible}>
-          <View style={styles.content}>
-            <View style={styles.description}>
-              <TextInput
-                style={styles.searchInput}
-                autoCapitalize="none"
-                placeholder=""
-                returnKeyType="search"
-                onChangeText={this.updateSearch}
-                placeholderTextColor="grey"
-                value={this.state.keyword}
-                maxLength={255}
-              />
-            </View>
-            <FlatList
-              data={this.state.placesData}
-              renderItem={this._renderSuggestion}
-              keyExtractor={this._keyExtractor}
-            />
-            <View>
-              {this.state.keyword.length > 0 ?
-                <TouchableOpacity onPress={this.onDonePress}>
-                  <Text style={styles.contentTitle}> Done </Text>
-                </TouchableOpacity> :
-                <TouchableOpacity onPress={this.toggleModal}>
-                  <Text style={styles.contentTitle}> Cancel </Text>
-                </TouchableOpacity>
-            }
-            </View>
-          </View>
-        </Modal>
+        <View>
+          <DateTimePickerModal
+            isVisible={this.state.isModalVisible}
+            mode="date"
+            onConfirm={this.onDonePress}
+            onCancel={this.toggleModal}
+          />
+        </View>
       </View>
     );
   }

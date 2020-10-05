@@ -14,6 +14,8 @@ import { popToTop } from '../../../routing/init'
 import Modal from 'react-native-modal';
 import ColorModal from './elements/colorSelect'
 import AddressModal from './elements/addressSelect'
+import DateModal from './elements/dateSelect'
+import TimeModal from './elements/timeSelect'
 
 export default class CreateEvent extends PureComponent {
 
@@ -22,22 +24,10 @@ export default class CreateEvent extends PureComponent {
     isPickImage: null,
     isLoader: false,
     showUsers: false,
-    color: "#1897F8"
-  }
-
-  renderParticipant = (item) => {
-    return (
-      <View style={styles.participant} key={item.id}>
-        <View style={{ paddingLeft: 10 }}>
-          <Avatar
-            photo={item.avatar}
-            name={item.full_name}
-            iconSize="medium"
-          />
-        </View>
-        <Text numberOfLines={2} style={{ textAlign: 'center' }}>{item.full_name}</Text>
-      </View>
-    )
+    color: "#1897F8",
+    location: "TBD",
+    startDate: "TBD",
+    startTime: "TBD"
   }
 
   createEvent = () => {
@@ -97,21 +87,6 @@ export default class CreateEvent extends PureComponent {
     )
   }
 
-  _renderFlatListHeader = () => {
-  const {searchKeyword, showUsers} = this.state
-  return (
-  <View>
-    <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
-        <View style={styles.renderAvatar}>
-          <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
-        </View>
-        <View>
-          <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
-        </View>
-    </TouchableOpacity>
-    </View>
-  )}
-
   updateSearch = keyword => this.setState({ keyword })
 
   setColorState = async (color) => {
@@ -120,6 +95,14 @@ export default class CreateEvent extends PureComponent {
 
   setLocationState = async (location) => {
     await this.setState({location: location})
+  }
+
+  setDateState = async (startDate) => {
+    await this.setState({startDate: startDate})
+  }
+
+  setTimeState = async (startTime) => {
+    await this.setState({startTime: startTime})
   }
 
   render() {
@@ -134,7 +117,7 @@ export default class CreateEvent extends PureComponent {
           <TouchableOpacity onPress={this.onPickImage}>
             {isPickImage ? (
               <Image
-                style={styles.imgPicker}
+                style={styles.iconPicker}
                 source={{ uri: isPickImage.path }}
               />
             ) :
@@ -166,14 +149,10 @@ export default class CreateEvent extends PureComponent {
           </ColorModal>
           <AddressModal locationHandler={this.setLocationState.bind(this)}>
           </AddressModal>
-          <FlatList
-            data={users}
-            ListHeaderComponent={this._renderFlatListHeader}
-            ListFooterComponent={this._renderFlatListFooter}
-            renderItem={this._renderUser}
-            keyExtractor={this.keyExtractor}
-            extraData={this.state}
-          />
+          <DateModal dateHandler={this.setDateState.bind(this)}>
+          </DateModal>
+          <TimeModal timeHandler={this.setTimeState.bind(this)}>
+          </TimeModal>
         <CreateBtn goToScreen={this.createEvent} type={BTN_TYPE.CREATE_GROUP} />
       </View>
     )

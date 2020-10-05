@@ -128,7 +128,7 @@ export default class CreateDialog extends PureComponent {
           <TouchableOpacity onPress={this.onPickImage}>
             {isPickImage ? (
               <Image
-                style={styles.imgPicker}
+                style={styles.iconPicker}
                 source={{ uri: isPickImage.path }}
               />
             ) :

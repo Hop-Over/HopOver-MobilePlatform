@@ -245,8 +245,12 @@ PODS:
     - React
   - RNCAsyncStorage (1.6.1):
     - React
+  - RNCPicker (1.8.0):
+    - React-Core
   - RNCPushNotificationIOS (1.0.5):
     - React
+  - RNDateTimePicker (3.0.3):
+    - React-Core
   - RNDeviceInfo (5.5.1):
     - React
   - RNFastImage (7.0.2):
@@ -311,7 +315,9 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeAutogrowTextinput (from `../node_modules/react-native-autogrow-textinput`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
+  - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
   - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
+  - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -394,8 +400,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-autogrow-textinput"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
+  RNCPicker:
+    :path: "../node_modules/@react-native-community/picker"
   RNCPushNotificationIOS:
     :path: "../node_modules/@react-native-community/push-notification-ios"
+  RNDateTimePicker:
+    :path: "../node_modules/@react-native-community/datetimepicker"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFastImage:
@@ -448,7 +458,9 @@ SPEC CHECKSUMS:
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   ReactNativeAutogrowTextinput: edd7318a312c0d0ab34c959fa8a613cbda08261f
   RNCAsyncStorage: 621bad7a889b5bf1583a52547f2dcd3a4d1ff15e
+  RNCPicker: a724b3aa22b182697c190a8fd7b060b66119e136
   RNCPushNotificationIOS: 30ed75aa2981a4ee00b8a2c46599ff18a9c7fcf6
+  RNDateTimePicker: e9fcd5ecdc0c5b018871e0d178d6040dca11973c
   RNDeviceInfo: 6812ed7e578d4344bf4e77102f014b5adf0b5c28
   RNFastImage: 9b0c22643872bb7494c8d87bbbb66cc4c0d9e7a2
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff

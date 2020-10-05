@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "1.6.1",
+    "@react-native-community/datetimepicker": "^3.0.3",
     "@react-native-community/geolocation": "^2.0.2",
+    "@react-native-community/picker": "^1.8.0",
     "@react-native-community/push-notification-ios": "1.0.5",
     "connectycube": "^3.6.0",
     "react": "^16.9.0",
@@ -36,6 +38,7 @@
     "react-native-image-zoom-viewer": "2.2.27",
     "react-native-maps": "^0.27.1",
     "react-native-modal": "^11.5.6",
+    "react-native-modal-datetime-picker": "^9.0.0",
     "react-native-push-notification": "3.1.9",
     "react-native-reanimated": "1.4.0",
     "react-native-restart": "0.0.17",
