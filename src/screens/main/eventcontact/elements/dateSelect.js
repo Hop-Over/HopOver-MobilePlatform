@@ -23,8 +23,9 @@ export default class DateSelect extends Component {
 
   onDonePress = (date) => {
     var dateArray = date.toString().split(" ")
-    this.setState({displayLabel: dateArray.slice(0,3).join(' ') + ', ' + dateArray[3] })
-    this.props.dateHandler(date)
+    var dateStr = dateArray.slice(0,3).join(' ') + ', ' + dateArray[3]
+    this.setState({displayLabel: dateStr })
+    this.props.dateHandler(dateStr)
     this.toggleModal()
   }
 

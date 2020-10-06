@@ -38,7 +38,7 @@ export default class TimeSelect extends Component {
   onDonePress = (time) => {
     var timeStr = this.timeToString(time)
     this.setState({displayLabel: timeStr})
-    this.props.timeHandler(time)
+    this.props.timeHandler(timeStr)
     this.toggleModal()
   }
 
