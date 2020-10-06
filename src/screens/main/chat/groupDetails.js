@@ -502,7 +502,6 @@ const styles = StyleSheet.create({
 	nameTitle: {
 		fontSize: 17
 	},
-
   labelTitle : {
     fontSize: 14,
     fontWeight: "bold",

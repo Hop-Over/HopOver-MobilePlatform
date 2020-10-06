@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { StyleSheet, View, FlatList, Text, SafeAreaView, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SIZE_SCREEN } from '../../../../helpers/constants'
 import EventService from '../../../../services/event-service'
 import ChatService from '../../../../services/chat-service'
+import Participants from './participants'
+import Modal from 'react-native-modal'
+import Avatar from '../../../components/avatar'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default class ParticipantsBar extends Component {
   constructor(props) {
@@ -19,7 +23,10 @@ export default class ParticipantsBar extends Component {
         going: [],
         maybe: [],
         cantGo: []
-      }
+      },
+      isModalVisible: false,
+      modalTitle: '',
+      modalData: []
     };
   }
 
@@ -114,22 +121,83 @@ export default class ParticipantsBar extends Component {
     }
   }
 
+
+  openModal = async (touchableName, userArray) => {
+    if (userArray.length > 0){
+      var userInfo = await ChatService.getUsersList(userArray)
+    } else {
+      var userInfo = []
+    }
+    this.setState({isModalVisible: true})
+    this.setState({modalData: userInfo})
+    this.setState({modalTitle: touchableName})
+  }
+
+  closeModal = () => {
+    this.setState({isModalVisible: false})
+    this.setState({modalData: []})
+    this.setState({modalTitle: ''})
+  };
+
+  _renderUser = ( {item} ) => {
+    return (
+      <View>
+        <TouchableOpacity>
+          <View style={styles.renderContainer}>
+          <View style={styles.renderAvatar}>
+            <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+            />
+            <Text style={styles.nameTitle}>{item.full_name}</Text>
+          </View>
+        </View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   render(){
     navigation = this.props.navigation
     return (
-      <View style={styles.topMenu}>
-        <TouchableOpacity style={styles.tab} onPress={this.onGoingClicked}>
-          <Text style={styles.title}> Going </Text>
-          <Text style={styles.subTitle}> {this.state.going} Going </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tabCenter} onPress={this.onMaybeClicked}>
-          <Text style={styles.title}> Maybe </Text>
-          <Text style={styles.subTitle}> {this.state.maybe} Maybe </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.tab} onPress={this.onCantGoClicked}>
-          <Text style={styles.title}> Can't Go </Text>
-          <Text style={styles.subTitle}> {this.state.cantGo} Can't Go </Text>
-        </TouchableOpacity>
+      <View>
+        <View style={styles.topMenu}>
+          <TouchableOpacity style={styles.tab} onPress={this.onGoingClicked} onLongPress={() => {this.openModal('Going', this.state.participantData.going)}}>
+            <Text style={styles.title}> Going </Text>
+            <Text style={styles.subTitle}> {this.state.going} Going </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tabCenter} onPress={this.onMaybeClicked} onLongPress={() => {this.openModal('Maybe', this.state.participantData.maybe)}}>
+            <Text style={styles.title}> Maybe </Text>
+            <Text style={styles.subTitle}> {this.state.maybe} Maybe </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.tab} onPress={this.onCantGoClicked} onLongPress={() => {this.openModal("Can't Go", this.state.participantData.cantGo)}}>
+            <Text style={styles.title}> Can't Go </Text>
+            <Text style={styles.subTitle}> {this.state.cantGo} Can't Go </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.modal}>
+          <Modal isVisible={this.state.isModalVisible}>
+            <View style={styles.content}>
+              <Text style={styles.modalTitle}> {this.state.modalTitle} </Text>
+              <View>
+              {this.state.modalData.length > 0 ?
+              <SafeAreaView style={styles.listUsers}>
+                <FlatList
+                  data={this.state.modalData}
+                  renderItem={this._renderUser}
+                />
+              </SafeAreaView>:
+              <View style={styles.noUserContainer}>
+              <Text style={styles.noUsersTitle}> Empty</Text>
+              </View>}
+              </View>
+              <TouchableOpacity onPress={this.closeModal}>
+                <Text style={styles.contentTitle}> Done </Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </View>
       </View>
     )
   }
@@ -143,6 +211,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: SIZE_SCREEN.height/20,
+    borderBottomWidth: 1,
+    borderColor: '#EAEAEA'
   },
   tab: {
     paddingHorizontal: 45,
@@ -152,8 +222,6 @@ const styles = StyleSheet.create({
   },
   tabCenter: {
     paddingHorizontal: 45,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center'
@@ -165,5 +233,55 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600'
+  },
+  modalTitle: {
+    paddingVertical: 20,
+    fontSize: 26,
+    fontWeight: '600',
+    alignSelf: 'center'
+  },
+  modal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    textAlign: 'center'
+  },
+  content: {
+    backgroundColor: 'white',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    height: SIZE_SCREEN.height/2
+  },
+  contentTitle: {
+    fontSize: 20,
+    bottom: 0,
+    alignSelf: 'center'
+  },
+  noUsersTitle: {
+    fontSize: 40,
+    paddingVertical: 100,
+    color: "grey"
+  },
+  renderContainer: {
+		width: SIZE_SCREEN.width - 60,
+		borderColor: 'grey',
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingVertical: 7,
+    marginLeft: 30,
+  },
+  renderAvatar: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+  nameTitle: {
+    fontSize: 17
+  },
+  listUsers: {
+    height: SIZE_SCREEN.height/3,
+  },
+  noUserContainer: {
+    alignSelf: 'center'
   }
 })
