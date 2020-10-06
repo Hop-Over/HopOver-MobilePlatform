@@ -16,10 +16,12 @@ import AttachmentIcon from 'react-native-vector-icons/Entypo'
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput'
 import ChatService from '../../../services/chat-service'
 import UsersService from '../../../services/users-service'
-import Message from './message'
+import Post from './message'
 import Avatar from '../../components/avatar'
 import ImagePicker from 'react-native-image-crop-picker'
+import ParticipantsBar from './elements/participantsBar'
 import { DIALOG_TYPE } from '../../../helpers/constants'
+
 
 export class Event extends PureComponent {
   constructor(props) {
@@ -77,7 +79,7 @@ export class Event extends PureComponent {
     props.push('EventDetails', {dialog: props.state.params.dialog, isNeedFetchUsers })
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dialog } = this.props.navigation.state.params
     ChatService.getMessages(dialog)
       .catch(e => alert(`Error.\n\n${JSON.stringify(e)}`))
@@ -162,6 +164,8 @@ export class Event extends PureComponent {
             </View>
           )
         }
+        <ParticipantsBar dialog={this.props.navigation.state.params.dialog}>
+        </ParticipantsBar>
         <FlatList
           inverted
           data={history}
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });
 
 const mapStateToProps = (state, props) => ({

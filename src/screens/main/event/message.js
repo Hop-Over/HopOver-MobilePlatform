@@ -9,6 +9,7 @@ import ChatImage from '../../components/chatImage'
 import Icon from 'react-native-vector-icons/AntDesign'
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
+import { SIZE_SCREEN } from '../../../helpers/constants'
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
@@ -56,7 +57,7 @@ export default class Post extends Component {
         <ChatImage photo={message.attachment[0].url} width={200} height={150} />
         {message.attachment[0].type.includes("video") ?
         (
-            <Icon name="caretright" size={60} style={styles.playIcon}/>
+          <Icon name="caretright" size={60} style={styles.playIcon}/>
         )
         :
         (null)
