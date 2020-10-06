@@ -47,8 +47,8 @@ export default class AddressModal extends Component {
 
   _renderSuggestion = ( {item} ) => {
     return (
-      <View>
-        <TouchableOpacity style={styles.suggestionContainer} onPress = {() => {
+      <View style={styles.suggestionContainer}>
+        <TouchableOpacity onPress = {() => {
           this.selectSuggestion(item)
           }}>
           <Text style={styles.suggestion}>{item}</Text>
@@ -85,11 +85,11 @@ export default class AddressModal extends Component {
                 maxLength={255}
               />
             </View>
-            <FlatList
-              data={this.state.placesData}
-              renderItem={this._renderSuggestion}
-              keyExtractor={this._keyExtractor}
-            />
+              <FlatList
+                data={this.state.placesData}
+                renderItem={this._renderSuggestion}
+                keyExtractor={this._keyExtractor}
+              />
             <View>
               {this.state.keyword.length > 0 ?
                 <TouchableOpacity onPress={this.onDonePress}>
@@ -164,6 +164,9 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   suggestionContainer:{
-    paddingVertical: 10
+    width: SIZE_SCREEN.width - 30,
+    padding: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   }
 })
