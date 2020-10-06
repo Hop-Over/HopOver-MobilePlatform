@@ -107,7 +107,7 @@ export default class EventDetails extends Component {
 	const { navigation } = this.props
 	const dialog = navigation.getParam('dialog', false)
 	Alert.alert(
-	  'Are you sure you want to leave the group chat?',
+	  'Are you sure you want to leave the event?',
 	  '',
 	  [
 		{
@@ -290,15 +290,15 @@ export default class EventDetails extends Component {
 	return this.isGroupCreator() || this.isAdmin() ?
 	  (
 		<View>
-      <Text style={styles.labelTitle}> Group </Text>
-      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation}>
+      <Text style={styles.labelTitle}> Event </Text>
+      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Event Color"}>
       </ModalTester>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
             <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />
           </View>
           <View>
-            <Text style={styles.nameTitle}>Add member</Text>
+            <Text style={styles.nameTitle}>Invite</Text>
           </View>
       </TouchableOpacity>
 
@@ -307,7 +307,7 @@ export default class EventDetails extends Component {
             <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
           </View>
           <View>
-            <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
+            <Text style={styles.nameTitle}>{!showUsers ? "View Invitees": "Hide Invitees"}</Text>
           </View>
       </TouchableOpacity>
 		</View>
@@ -332,7 +332,7 @@ export default class EventDetails extends Component {
     <View style={styles.searchContainer}>
     <TextInput style={styles.searchInput}
     autoCapitalize="none"
-    placeholder="Search Chat..."
+    placeholder="Search Event..."
     placeholderTextColor="grey"
     clearButtonMode = "while-editing"
     returnKeyType = "search"
@@ -355,7 +355,7 @@ export default class EventDetails extends Component {
     <Icon name="room" size={35} color='black' style={{ marginRight: 15 }} />
     </View>
     <View>
-    <Text style={styles.nameTitle}>Chat Map</Text>
+    <Text style={styles.nameTitle}>Location Sharing</Text>
     </View>
   </TouchableOpacity>
 
@@ -364,7 +364,7 @@ export default class EventDetails extends Component {
 		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.leaveTitle}>Leave group</Text>
+		<Text style={styles.leaveTitle}>Leave Event</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
@@ -387,7 +387,7 @@ export default class EventDetails extends Component {
               style={styles.input}
               ref="input"
               autoCapitalize="none"
-              placeholder="Change group name ..."
+              placeholder="Change Event Name"
               placeholderTextColor="grey"
               onChangeText={this.updateName}
               value={dialogName}
@@ -395,7 +395,7 @@ export default class EventDetails extends Component {
               onSubmitEditing = {() => this.updateDialog()}
             />
             <View style={styles.subtitleWrap}>
-              <Text style={styles.subtitleInpu}>Change group name</Text>
+              <Text style={styles.subtitleInpu}>Change event name</Text>
             </View>
           </View>) :
           <Text style={styles.dialogName}>{dialogName}</Text>

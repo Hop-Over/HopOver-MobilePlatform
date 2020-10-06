@@ -285,7 +285,7 @@ export default class PrivateDetails extends Component {
   _renderFlatListFooter = () => {
 	return(
   <View>
-    <ModalTester dialog={this.state.dialog} navigation={this.props.navigation}>
+    <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Chat Color"}>
     </ModalTester>
     <Text style={styles.labelTitle}> Media</Text>
     <View style={styles.searchContainer}>

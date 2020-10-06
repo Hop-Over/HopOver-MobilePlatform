@@ -291,7 +291,7 @@ export default class GroupDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Group </Text>
-      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation}>
+      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Chat Color"}>
       </ModalTester>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>

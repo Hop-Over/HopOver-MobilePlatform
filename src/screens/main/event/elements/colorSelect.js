@@ -38,7 +38,7 @@ export default class ModalTester extends Component {
             <Icon name="lens" size={35} color={this.state.color} style={{ marginRight: 15 }} />
           </View>
           <View>
-            <Text style={styles.nameTitle}>Chat Color</Text>
+            <Text style={styles.nameTitle}>Event Color</Text>
           </View>
         </TouchableOpacity>
 
