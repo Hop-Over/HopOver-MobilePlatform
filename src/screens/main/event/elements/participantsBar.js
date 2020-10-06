@@ -4,7 +4,6 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import { SIZE_SCREEN } from '../../../../helpers/constants'
 import EventService from '../../../../services/event-service'
 import ChatService from '../../../../services/chat-service'
-import Participants from './participants'
 import Modal from 'react-native-modal'
 import Avatar from '../../../components/avatar'
 import Icon from 'react-native-vector-icons/MaterialIcons'
