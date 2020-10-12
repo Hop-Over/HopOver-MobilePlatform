@@ -21,7 +21,9 @@ export default class Message extends Component {
     this.state = {
       isModal: false,
       send_state: props.message.send_state,
-      color: props.color
+      color: props.color,
+      showDate: props.showDate,
+      isMessagePress: false,
     }
     this.isAtachment = props.message.attachment
   }
@@ -30,7 +32,8 @@ export default class Message extends Component {
     //console.log("NEXT PROPS:" + nextProps.color)
     //console.log("NEXT STATE: " + nextState.color)
     if (nextProps.message.send_state != nextState.send_state ||
-      nextState.isModal !== this.state.isModal
+      nextState.isModal !== this.state.isModal || 
+      nextState.isMessagePress !== this.state.isMessagePress
     ) {
       return true
     } else if (nextProps.color != this.state.color){
@@ -116,6 +119,10 @@ export default class Message extends Component {
     this.setState({ isModal: !this.state.isModal })
   }
 
+  handleMessagePress = () =>{
+    this.setState({ isMessagePress: ! this.state.isMessagePress})
+  }
+
   renderHeader = () => {
     return <View style={[{ margin: Platform.OS === 'ios' ? 35 : 15 }, { position: 'absolute', zIndex: 10 }]}>
       <Icon name="close" size={30} color='white' onPress={this.handleModalState} />
@@ -184,6 +191,7 @@ export default class Message extends Component {
                 }
               </View>
               ):(
+              <TouchableOpacity onPress={this.handleMessagePress}>
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
                 {this.isLink(message.body)?
@@ -199,10 +207,11 @@ export default class Message extends Component {
                 </View>
                 <View style={styles.timeStampLeftContainer}>
                   <Text style={styles.dateSentLeft}>
-                    {getTime(message.date_sent)}
+                    {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent):null}
                   </Text>
                   </View>
               </View>
+              </TouchableOpacity>
               )}
             </View>
           ) :
@@ -215,6 +224,7 @@ export default class Message extends Component {
                   }
                 </View>
               ):(
+                <TouchableOpacity onPress={this.handleMessagePress}>
                 <View>
                   <View style={[styles.message, styles.messageToRight, {backgroundColor: this.state.color}]}>
                     {this.isLink(message.body)?
@@ -230,11 +240,12 @@ export default class Message extends Component {
                   </View>
                   <View style={styles.timeStampRightContainer}>
                     <Text style={styles.dateSentRight}>
-                      {getTime(message.date_sent)}
+                      {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent):null}
                     </Text>
                     <MessageSendState send_state={message.send_state} />
                   </View>
                 </View>
+                </TouchableOpacity>
               )}
             </View>
           )

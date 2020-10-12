@@ -138,12 +138,26 @@ export class Chat extends PureComponent {
 
   _keyExtractor = (item, index) => index.toString()
 
-  _renderMessageItem(message) {
+  _renderMessageItem = (message, index) => {
     const { user } = this.props.currentUser
     const { dialog } = this.props.navigation.state.params
+    const { history } = this.props
     const isOtherSender = message.sender_id !== user.id ? true : false
+
+    let showDate = false
+    let historyLength = history.length - 1
+
+    if(index === historyLength){
+      showDate = true
+    }
+    if(index < historyLength){
+      let dateDiff = message.date_sent - history[index+1].date_sent
+      //console.log("Index:" + index + " Date diff:" + dateDiff)
+      showDate = dateDiff > 120 ? true:false
+    }
+  
     return (
-      <Message otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} />
+      <Message otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} showDate={showDate} />
     )
   }
 
@@ -170,7 +184,7 @@ export class Chat extends PureComponent {
           inverted
           data={history}
           keyExtractor={this._keyExtractor}
-          renderItem={({ item }) => this._renderMessageItem(item)}
+          renderItem={({ item, index }) => this._renderMessageItem(item, index)}
           onEndReachedThreshold={5}
           onEndReached={this.getMoreMessages}
         />
