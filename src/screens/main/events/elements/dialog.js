@@ -1,13 +1,17 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import Avatar from '../../../components/avatar'
 import DialogTitles from './dialogTitles'
 import DialogLastDate from './dialogLastDate'
 import DialogUnreadCounter from './dialogUnreadCounter'
 import UsersService from '../../../../services/users-service'
+import EventService from '../../../../services/event-service'
 import { DIALOG_TYPE } from '../../../../helpers/constants'
+import { SIZE_SCREEN } from '../../../../helpers/constants'
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default class Dialog extends Component {
+
   getOccupants = async () => {
     const { dialog } = this.props
     const { navigate } = this.props.navigation
@@ -31,30 +35,26 @@ export default class Dialog extends Component {
     return (
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
-      <View style={styles.container}>
+      <View style={[styles.container, {backgroundColor: dialog.color}]}>
           <View style={styles.border} >
             <DialogTitles
               name={dialog.name}
-              message={dialog.last_message}
+              description={dialog.event_description}
             />
             <View style={styles.infoContainer}>
-              <DialogLastDate
-                lastDate={dialog.last_message_date_sent}
-                updatedDate={dialog.updated_date}
-              />
-              <DialogUnreadCounter
-                unreadMessagesCount={dialog.unread_messages_count}
-              />
+              <View style={styles.infoElement}>
+                <Icon name="access-time" size={30} color={"#FFFFFF"} />
+                <Text style={styles.infoText}> {dialog.startDate} at {dialog.startTime}</Text>
+              </View>
+              <View style={styles.infoElement}>
+                <Icon name="location-on" size={30} color={"#FFFFFF"} />
+                <Text style={styles.infoText}> {dialog.location} </Text>
+              </View>
+              <View style={styles.infoElement}>
+                <Icon name="people" size={30} color={"#FFFFFF"} />
+                <Text style={styles.infoText}> {dialog.going} going | {dialog.occupants_ids.length} invited </Text>
+              </View>
             </View>
-          </View>
-        </View>
-        <View style={styles.avatarContainer}>
-          <View>
-            <Avatar
-              photo={dialogPhoto}
-              name={dialog.name}
-              iconSize="large"
-            />
           </View>
         </View>
       </View>
@@ -71,32 +71,39 @@ const styles = StyleSheet.create({
   },
   totalContainer:{
     paddingHorizontal: 15,
-    paddingVertical: 5,
+    paddingVertical: 10,
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
   container: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    backgroundColor: "#F1F1F1",
-    maxWidth: 360
+    width: SIZE_SCREEN.width - 30,
   },
   border: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
   },
   infoContainer: {
-    maxWidth: 75,
-    height: 75,
+    height: 120,
+  },
+  infoElement:{
+    paddingTop: 5,
+    flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingVertical: 20,
-    marginRight: 35,
+    alignItems: 'center',
+    width: SIZE_SCREEN.width - 120
+  },
+  infoText:{
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontWeight: "700"
   }
 })

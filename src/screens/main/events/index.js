@@ -10,6 +10,7 @@ import BottomNavBar from '../../components/bottomNavBar'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Avatar from '../../components/avatar'
 import FirebaseService from '../../../services/firebase-service'
+import EventService from '../../../services/event-service'
 import PushNotificationService from '../../../services/push-notification'
 import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -55,7 +56,7 @@ class Events extends Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     ChatService.fetchDialogsFromServer()
       .then(() => {
         PushNotificationService.init(this.props.navigation)
@@ -78,12 +79,13 @@ class Events extends Component {
     navigation.push('EventContacts')
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
       this.dialogs = this.removeDialogsFromEvents(dialogs)
-      this.appendChatColors()
-      this.setState({ isLoader: false })
+      await this.appendChatColors()
+      await this.appendEventInfo()
+      await this.setState({ isLoader: false })
     }
   }
   getChatColor = async (dialog) => {
@@ -91,13 +93,43 @@ class Events extends Component {
     return response
   }
 
-  appendChatColors = () => {
-    console.log("Updating Colors")
+  getCustomData = async (eventId) => {
+    const participantData = await EventService.getParticipantsData(eventId)
+    const eventInfo = await EventService.getEventInfo(eventId)
+    if (participantData == null || participantData.going == null){
+      var going = 0
+    }
+    else {
+      var going = participantData.going.length
+    }
+    return {
+      going: going,
+      startTime: eventInfo.startTime,
+      startDate: eventInfo.startDate,
+      location: eventInfo.location,
+      event_description: eventInfo.event_description
+    }
+  }
+
+  appendChatColors = async () => {
     if (this.dialogs.length  > 0){
-      this.dialogs.forEach(async (chat, i) => {
-        let color = await this.getChatColor(chat.id)
-        this.dialogs[i].color = color
-      })
+      for (index in this.dialogs){
+        let color = await this.getChatColor(this.dialogs[index].id)
+        this.dialogs[index].color = color
+      }
+    }
+  }
+
+  appendEventInfo = async () => {
+    if (this.dialogs.length  > 0){
+      for (index in this.dialogs){
+        let eventInfo = await this.getCustomData(this.dialogs[index].id)
+        this.dialogs[index].location = eventInfo.location
+        this.dialogs[index].going = eventInfo.going
+        this.dialogs[index].startTime = eventInfo.startTime
+        this.dialogs[index].startDate = eventInfo.startDate
+        this.dialogs[index].event_description = eventInfo.event_description
+      }
     }
   }
 
@@ -136,7 +168,7 @@ class Events extends Component {
             <Indicator color={'red'} size={40} />
           ) : this.dialogs.length === 0 ?
             (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SIZE_SCREEN.height/6}}>
-              <Text style={{ fontSize: 19 }}>No chats yet</Text>
+              <Text style={{ fontSize: 19 }}>No events yet</Text>
             </View>
             ) :
             (

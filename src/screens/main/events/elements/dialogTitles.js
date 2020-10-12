@@ -1,11 +1,11 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-export default function DialogTitles({ name, message }) {
+export default function DialogTitles({ name, description }) {
   return (
     <View style={styles.container}>
       <Text style={styles.name} numberOfLines={1}>{name}</Text>
-      <Text style={styles.message} numberOfLines={1}>{message}</Text>
+      <Text style={styles.description} numberOfLines={1}>{description}</Text>
     </View>
   )
 }
@@ -18,15 +18,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   name: {
+    marginTop: 10,
+    marginLeft: 10,
     height: 30,
     lineHeight: 30,
-    fontSize: 18,
-    fontWeight: '700'
+    fontSize: 27,
+    fontWeight: '600',
+    color: "#FFFFFF"
   },
-  message: {
-    height: 15,
-    lineHeight: 15,
-    fontSize: 15,
-    fontWeight: '400'
-  }
+  description: {
+    marginLeft: 10,
+    height: 30,
+    lineHeight: 30,
+    fontSize: 14,
+    fontWeight: '300',
+    color: "#FFFFFF"
+
+  },
 })

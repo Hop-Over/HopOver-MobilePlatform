@@ -53,6 +53,7 @@ export default class ParticipantsBar extends Component {
       const currentUser = ChatService.currentUser.id
       this.setState({going: this.state.going + 1})
       this.state.participantData.going.push(currentUser)
+      this.props.dialog.going = this.state.going
       if (this.state.userStatus !== null){
         this.removePreviousStatus()
       }
@@ -66,6 +67,7 @@ export default class ParticipantsBar extends Component {
       const currentUser = ChatService.currentUser.id
       this.setState({maybe: this.state.maybe + 1})
       this.state.participantData.maybe.push(currentUser)
+      this.props.dialog.going = this.state.going
       if (this.state.userStatus !== null){
         this.removePreviousStatus()
       }
@@ -79,6 +81,7 @@ export default class ParticipantsBar extends Component {
       const currentUser = ChatService.currentUser.id
       this.setState({cantGo: this.state.cantGo + 1})
       this.state.participantData.cantGo.push(currentUser)
+      this.props.dialog.going = this.state.going
       if (this.state.userStatus !== null){
         this.removePreviousStatus()
       }

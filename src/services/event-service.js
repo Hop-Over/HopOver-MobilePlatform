@@ -16,6 +16,13 @@ class EventService{
     return data
   }
 
+  getEventInfo = async (eventId) => {
+    const fetchUrl = config.eventConfig.eventUrl + eventId +  ".json"
+    const response = await fetch(fetchUrl)
+    const data = await response.json()
+    return data
+  }
+
   updateParticipantData = (eventId, participantData) => {
     const postUrl = config.eventConfig.eventUrl + eventId +  ".json"
 
