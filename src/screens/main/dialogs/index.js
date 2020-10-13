@@ -74,11 +74,11 @@ class Dialogs extends Component {
     props.push('Settings', { user: Dialogs.currentUserInfo })
   }
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
       this.dialogs = this.removeEventsFromDialogs(dialogs)
-      this.appendChatColors()
+      await this.appendChatColors()
       this.setState({ isLoader: false })
     }
   }
@@ -112,13 +112,13 @@ class Dialogs extends Component {
     return response
   }
 
-  appendChatColors = () => {
+  appendChatColors = async () => {
     console.log("Updating Colors")
     if (this.dialogs.length  > 0){
-      this.dialogs.forEach(async (chat, i) => {
-        let color = await this.getChatColor(chat.id)
-        this.dialogs[i].color = color
-      })
+      for (index in this.dialogs){
+        let color = await this.getChatColor(this.dialogs[index].id)
+        this.dialogs[index].color = color
+      }
     }
   }
 

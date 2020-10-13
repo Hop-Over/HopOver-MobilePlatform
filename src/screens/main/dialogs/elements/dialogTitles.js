@@ -1,11 +1,11 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 
-export default function DialogTitles({ name, message }) {
+export default function DialogTitles({ name, message, isUnread }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.name} numberOfLines={1}>{name}</Text>
-      <Text style={styles.message} numberOfLines={1}>{message}</Text>
+      <Text style={isUnread ? [styles.name, {color: "#FFFFFF"}]: styles.name} numberOfLines={1}>{name}</Text>
+      <Text style={isUnread ? [styles.message, {color: "#FFFFFF"}]: styles.message} numberOfLines={1}>{message}</Text>
     </View>
   )
 }

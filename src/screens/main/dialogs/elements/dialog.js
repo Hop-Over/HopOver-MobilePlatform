@@ -20,7 +20,7 @@ export default class Dialog extends Component {
   }
 
   render() {
-    const { dialog } = this.props
+    const {dialog} = this.props
     let dialogPhoto = ''
     if (dialog.type === DIALOG_TYPE.PRIVATE) {
       dialogPhoto = this.getUsersAvatar(dialog.occupants_ids)
@@ -31,23 +31,42 @@ export default class Dialog extends Component {
     return (
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
-      <View style={styles.container}>
-          <View style={styles.border} >
-            <DialogTitles
-              name={dialog.name}
-              message={dialog.last_message}
-            />
-            <View style={styles.infoContainer}>
-              <DialogLastDate
-                lastDate={dialog.last_message_date_sent}
-                updatedDate={dialog.updated_date}
+      {dialog.unread_messages_count > 0 ?
+        <View style={[styles.container,{backgroundColor: dialog.color}]}>
+            <View style={styles.border} >
+              <DialogTitles
+                name={dialog.name}
+                message={dialog.last_message}
+                isUnread={dialog.unread_messages_count > 0}
               />
-              <DialogUnreadCounter
-                unreadMessagesCount={dialog.unread_messages_count}
-              />
+              <View style={styles.infoContainer}>
+                <DialogLastDate
+                  lastDate={dialog.last_message_date_sent}
+                  updatedDate={dialog.updated_date}
+                  isUnread={dialog.unread_messages_count > 0}
+                />
+              </View>
             </View>
           </View>
-        </View>
+          :
+        <View style={[styles.container,{backgroundColor: "#F1F1F1"}]}>
+            <View style={styles.border} >
+              <DialogTitles
+                name={dialog.name}
+                message={dialog.last_message}
+              />
+              <View style={styles.infoContainer}>
+                <DialogLastDate
+                  lastDate={dialog.last_message_date_sent}
+                  updatedDate={dialog.updated_date}
+                />
+                <DialogUnreadCounter
+                  unreadMessagesCount={dialog.unread_messages_count}
+                />
+              </View>
+            </View>
+          </View>
+      }
         <View style={styles.avatarContainer}>
           <View>
             <Avatar
@@ -84,7 +103,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingHorizontal: 10,
     borderRadius: 20,
-    backgroundColor: "#F1F1F1",
     maxWidth: 360
   },
   border: {

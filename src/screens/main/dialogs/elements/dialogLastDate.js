@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, StyleSheet } from 'react-native'
 
-export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
+export default function DialogLastDate({ lastDate, lastMessage, updatedDate, isUnread }) {
   function getTime() {
     const monthes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -31,12 +31,11 @@ export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
     }
   }
 
-  return <Text style={styles.time} numberOfLines={1}>{getTime()}</Text>
+  return <Text style={isUnread ? [styles.time, {color: "#FFFFFF", fontWeight: '600'}, ] : [styles.time, {color: "grey"}]} numberOfLines={1}>{getTime()}</Text>
 }
 
 const styles = StyleSheet.create({
   time: {
-    color: 'grey',
     lineHeight: 25,
     fontSize: 12,
     fontWeight: '200'
