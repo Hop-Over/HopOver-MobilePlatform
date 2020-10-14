@@ -37,7 +37,7 @@ export default class Dialog extends Component {
               <DialogTitles
                 name={dialog.name}
                 message={dialog.last_message}
-                isUnread={dialog.unread_messages_count > 0}
+                unreadMessagesCount={dialog.unread_messages_count}
               />
               <View style={styles.infoContainer}>
                 <DialogLastDate

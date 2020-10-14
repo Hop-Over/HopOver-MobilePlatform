@@ -31,7 +31,7 @@ export default function DialogLastDate({ lastDate, lastMessage, updatedDate, isU
     }
   }
 
-  return <Text style={isUnread ? [styles.time, {color: "#FFFFFF", fontWeight: '600'}, ] : [styles.time, {color: "grey"}]} numberOfLines={1}>{getTime()}</Text>
+  return <Text style={isUnread ? [styles.time, {color: "#FFFFFF", fontWeight: '500'}, ] : [styles.time, {color: "grey"}]} numberOfLines={1}>{getTime()}</Text>
 }
 
 const styles = StyleSheet.create({
