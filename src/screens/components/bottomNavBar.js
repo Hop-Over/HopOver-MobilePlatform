@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: SIZE_SCREEN.height/10,
     marginLeft: (SIZE_SCREEN.width/2) - (SIZE_SCREEN.width * 0.9/2),
-    backgroundColor: 'red'
   },
   footer: {
     flexDirection: 'row',
