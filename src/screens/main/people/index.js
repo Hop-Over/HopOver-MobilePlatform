@@ -215,7 +215,6 @@ class People extends Component {
   }
 
   _renderFriend = ({ item }) => {
-      console.log(item)
     return (
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :

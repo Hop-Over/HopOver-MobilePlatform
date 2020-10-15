@@ -9,11 +9,12 @@ import ChatImage from '../../components/chatImage'
 import Icon from 'react-native-vector-icons/AntDesign'
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
+import { SIZE_SCREEN } from '../../../helpers/constants'
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
 
-export default class Message extends Component {
+export default class Post extends Component {
   isAtachment = null
 
   constructor(props) {
@@ -21,9 +22,7 @@ export default class Message extends Component {
     this.state = {
       isModal: false,
       send_state: props.message.send_state,
-      color: props.color,
-      showDate: props.showDate,
-      isMessagePress: false,
+      color: props.color
     }
     this.isAtachment = props.message.attachment
   }
@@ -32,8 +31,7 @@ export default class Message extends Component {
     //console.log("NEXT PROPS:" + nextProps.color)
     //console.log("NEXT STATE: " + nextState.color)
     if (nextProps.message.send_state != nextState.send_state ||
-      nextState.isModal !== this.state.isModal || 
-      nextState.isMessagePress !== this.state.isMessagePress
+      nextState.isModal !== this.state.isModal
     ) {
       return true
     } else if (nextProps.color != this.state.color){
@@ -59,7 +57,7 @@ export default class Message extends Component {
         <ChatImage photo={message.attachment[0].url} width={200} height={150} />
         {message.attachment[0].type.includes("video") ?
         (
-            <Icon name="caretright" size={60} style={styles.playIcon}/>
+          <Icon name="caretright" size={60} style={styles.playIcon}/>
         )
         :
         (null)
@@ -117,10 +115,6 @@ export default class Message extends Component {
 
   handleModalState = () => {
     this.setState({ isModal: !this.state.isModal })
-  }
-
-  handleMessagePress = () =>{
-    this.setState({ isMessagePress: ! this.state.isMessagePress})
   }
 
   renderHeader = () => {
@@ -191,7 +185,6 @@ export default class Message extends Component {
                 }
               </View>
               ):(
-              <TouchableOpacity onPress={this.handleMessagePress}>
               <View>
                 <View style={[styles.message, styles.messageToLeft]}>
                 {this.isLink(message.body)?
@@ -207,11 +200,10 @@ export default class Message extends Component {
                 </View>
                 <View style={styles.timeStampLeftContainer}>
                   <Text style={styles.dateSentLeft}>
-                    {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent):null}
+                    {getTime(message.date_sent)}
                   </Text>
                   </View>
               </View>
-              </TouchableOpacity>
               )}
             </View>
           ) :
@@ -224,7 +216,6 @@ export default class Message extends Component {
                   }
                 </View>
               ):(
-                <TouchableOpacity onPress={this.handleMessagePress}>
                 <View>
                   <View style={[styles.message, styles.messageToRight, {backgroundColor: this.state.color}]}>
                     {this.isLink(message.body)?
@@ -240,12 +231,11 @@ export default class Message extends Component {
                   </View>
                   <View style={styles.timeStampRightContainer}>
                     <Text style={styles.dateSentRight}>
-                      {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent):null}
+                      {getTime(message.date_sent)}
                     </Text>
                     <MessageSendState send_state={message.send_state} />
                   </View>
                 </View>
-                </TouchableOpacity>
               )}
             </View>
           )

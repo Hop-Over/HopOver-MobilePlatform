@@ -12,7 +12,7 @@ export default class Dialog extends Component {
     const { dialog } = this.props
     const { navigate } = this.props.navigation
     await UsersService.getOccupants(dialog.occupants_ids)
-    navigate('Chat', { dialog })
+    navigate('Event', { dialog })
   }
 
   getUsersAvatar = (ids) => {

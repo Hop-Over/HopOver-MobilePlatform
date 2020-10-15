@@ -23,9 +23,10 @@ import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
-import ModalTester from './elements/colorSelect'
+import Modal from 'react-native-modal';
+import ModalTester from '../chat/elements/colorSelect'
 
-export default class PrivateDetails extends Component {
+export default class EventDetails extends Component {
 
   constructor(props) {
 	super(props)
@@ -45,7 +46,6 @@ export default class PrivateDetails extends Component {
   }
 
   componentDidMount() {
-
     this.props.navigation.addListener(
     'didFocus',
     payload => {
@@ -53,7 +53,7 @@ export default class PrivateDetails extends Component {
       this.setState({ isLoader: false, occupantsInfo: updateArrUsers })
     });
 
-  	const dialog = this.props.navigation.getParam('dialog', false)
+  	const dialog = this.state.dialog
   	const isNeedFetchUsers = this.props.navigation.getParam('isNeedFetchUsers', false)
 
   	if (isNeedFetchUsers) {
@@ -72,19 +72,13 @@ export default class PrivateDetails extends Component {
   this.updateDialog()
   }
 
-  goToSharedMediaScreen = () => {
-    const { navigation } = this.props
-    const dialog = this.props.navigation.getParam('dialog',false)
-    navigation.push('SharedMedia', {dialog})
-  }
-
   updateSearch = (searchKeyword) => {
 	  this.setState({searchKeyword})
 	  {console.log('Search ' + this.state.searchKeyword )}
   }
 
   updateDialog = () => {
-	const dialog = this.props.navigation.getParam('dialog', false)
+	const dialog = this.state.dialog
 	const { dialogName, isPickImage } = this.state
 	const updateInfo = {}
 	if (dialogName !== dialog.name) {
@@ -113,7 +107,7 @@ export default class PrivateDetails extends Component {
 	const { navigation } = this.props
 	const dialog = navigation.getParam('dialog', false)
 	Alert.alert(
-	  'Are you sure you want to delete the chat?',
+	  'Are you sure you want to leave the event?',
 	  '',
 	  [
 		{
@@ -140,13 +134,13 @@ export default class PrivateDetails extends Component {
   }
 
   isGroupCreator = () => {
-	const dialog = this.props.navigation.getParam('dialog', false)
+	const dialog = this.state.dialog
 	return ChatService.isGroupCreator(dialog.user_id)
   }
 
 
   isAdmin = () => {
-    const dialog = this.props.navigation.getParam('dialog', false)
+    const dialog = this.state.dialog
     const admins = dialog.admins_ids
     const userId = this.currentUser()
     console.log(admins)
@@ -157,17 +151,23 @@ export default class PrivateDetails extends Component {
     }
   }
 
-  goToChatMap = () => {
-    const { navigation } = this.props
-    const dialog = this.props.navigation.getParam('dialog',false)
-    navigation.push('ChatMap', {dialog})
-  }
-
   goToContactDeteailsScreen = (dialog) => {
     const { navigation } = this.props
     const chatDialog = this.props.navigation.getParam('dialog',false)
     navigation.push('ContactDetails', {dialog, chatDialog: chatDialog })
 
+  }
+
+  goToSharedMediaScreen = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('SharedMedia', {dialog})
+  }
+
+  goToChatMap = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ChatMap', {dialog})
   }
 
   goToContactsScreen = () => {
@@ -183,7 +183,7 @@ export default class PrivateDetails extends Component {
   addParticipant = (participants) => {
   	{ console.log('participants') }
   	{ console.log(participants) }
-  	const dialog = this.props.navigation.getParam('dialog', false)
+  	const dialog = this.state.dialog
   	this.setState({ isLoader: true })
   	ChatService.addOccupantsToDialog(dialog.id, participants)
   	  .then(dialog => {
@@ -218,43 +218,22 @@ export default class PrivateDetails extends Component {
 		alert("Please enter a keyword with 4 letters or more")
 	}else{
 	this.handleCancel()
-	const dialog = this.props.navigation.getParam('dialog', false)
-    var messages = ChatService.getMessagesByDialogId(dialog.id)
-    var messageArr = []
-    for (let i = 0; i < messages.length; i++) {
-        if(messages[i].body.includes(phrase)){
-            var currObj = {
-                "_id": messages[i].dialog_id,
-                "chat_dialog_id": messages[i].dialog_id,
-                "date_sent": messages[i].date_sent,
-                "message": messages[i].body,
-                "sender_id": messages[i].sender_id,
-            }
-            messageArr.push(currObj)
-        }
-    }
-    var result = {"messages": messageArr}
-    if(result.length == 0){
-        alert("No search results with \"" + phrase + "\" were found :(")
-    }else{
-        const searchResponse = result.messages
-        searchResponse.sort(function(a, b){
-            return b.date_sent - a.date_sent;
-        });
-        this.goToSearchScreen(searchResponse)
-    }
-	// ChatService.search(dialog.id, phrase)
-	// 	.then(response => {
-	// 		if(response.messages.length == 0){
-	// 			alert("No search results with \"" + phrase + "\" were found :(")
-	// 		}else{
-	// 			const searchResponse = response.messages
-	// 			searchResponse.sort(function(a, b){
-	// 				return b.date_sent - a.date_sent;
-	// 			});
-	// 			this.goToSearchScreen(searchResponse)
-	// 		}
-	// 	})
+	const dialog = this.state.dialog
+	var result = []
+	ChatService.search(dialog.id, phrase)
+		.then(response => {
+            console.log('response')
+            console.log(response.users)
+			if(response.messages.length == 0){
+				alert("No search results with \"" + phrase + "\" were found :(")
+			}else{
+				const searchResponse = response.messages
+				searchResponse.sort(function(a, b){
+					return b.date_sent - a.date_sent;
+				});
+				this.goToSearchScreen(searchResponse)
+			}
+		})
 	}
   }
 
@@ -282,16 +261,78 @@ export default class PrivateDetails extends Component {
 
   keyExtractor = (item, index) => index.toString()
 
+  _renderUser = ( {item} ) => {
+    const showUsers = this.state.showUsers
+    return (
+  		<View>
+      {showUsers ?
+  			(<TouchableOpacity onPress={() => this.goToContactDeteailsScreen(item)}>
+          <View style={styles.renderContainer}>
+  				<View style={styles.renderAvatar}>
+  					<Avatar
+  					photo={item.avatar}
+  					name={item.full_name}
+  					iconSize="medium"
+  					/>
+  					<Text style={styles.nameTitle}>{item.full_name}</Text>
+  				</View>
+  					<Icon name="keyboard-arrow-right" size={30} color='black' />
+  			</View>
+        </TouchableOpacity>)
+  	     : null
+       }
+      </View>
+  	)
+  }
+
+  _renderFlatListHeader = () => {
+	const {searchKeyword, showUsers} = this.state
+	return this.isGroupCreator() || this.isAdmin() ?
+	  (
+		<View>
+      <Text style={styles.labelTitle}> Event </Text>
+      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Event Color"}>
+      </ModalTester>
+			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
+          <View style={styles.renderAvatar}>
+            <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />
+          </View>
+          <View>
+            <Text style={styles.nameTitle}>Invite</Text>
+          </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
+          <View style={styles.renderAvatar}>
+            <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
+          </View>
+          <View>
+            <Text style={styles.nameTitle}>{!showUsers ? "View Invitees": "Hide Invitees"}</Text>
+          </View>
+      </TouchableOpacity>
+		</View>
+  ) :
+  <View>
+  <Text style={styles.labelTitle}> Group </Text>
+    <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
+        <View style={styles.renderAvatar}>
+          <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
+        </View>
+        <View>
+          <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
+        </View>
+    </TouchableOpacity>
+    </View>
+  }
+
   _renderFlatListFooter = () => {
 	return(
   <View>
-    <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Chat Color"}>
-    </ModalTester>
     <Text style={styles.labelTitle}> Media</Text>
     <View style={styles.searchContainer}>
     <TextInput style={styles.searchInput}
     autoCapitalize="none"
-    placeholder="Search Chat..."
+    placeholder="Search Event..."
     placeholderTextColor="grey"
     clearButtonMode = "while-editing"
     returnKeyType = "search"
@@ -314,37 +355,57 @@ export default class PrivateDetails extends Component {
     <Icon name="room" size={35} color='black' style={{ marginRight: 15 }} />
     </View>
     <View>
-    <Text style={styles.nameTitle}>Chat Map</Text>
+    <Text style={styles.nameTitle}>Location Sharing</Text>
     </View>
   </TouchableOpacity>
 
-
-  <Text style={styles.labelTitle}> More actions </Text>
   <TouchableOpacity style={[styles.renderHeaderContainer, styles.leaveButton]} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
 		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.leaveTitle}>Delete Chat</Text>
+		<Text style={styles.leaveTitle}>Leave Event</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
   )}
 
   render() {
-    const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
-    const dialog = this.props.navigation.getParam('dialog', false)
+    const { dialogName, dialogPhoto, isLoader, occupantsInfo, dialog } = this.state
+    //console.log(this.currentUser())
+    //console.log(this.isAdmin())
+    //console.log(this.state.showUsers)
     return (
       <KeyboardAvoidingView style={styles.container}>
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
-        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={true} />
-        <Text style={styles.dialogName}>{dialogName}</Text>
+        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={!this.isGroupCreator() && !this.isAdmin()} />
+        {this.isGroupCreator() || this.isAdmin() ?
+          (<View>
+            <TextInput
+              style={styles.input}
+              ref="input"
+              autoCapitalize="none"
+              placeholder="Change Event Name"
+              placeholderTextColor="grey"
+              onChangeText={this.updateName}
+              value={dialogName}
+              maxLength={100}
+              onSubmitEditing = {() => this.updateDialog()}
+            />
+            <View style={styles.subtitleWrap}>
+              <Text style={styles.subtitleInpu}>Change event name</Text>
+            </View>
+          </View>) :
+          <Text style={styles.dialogName}>{dialogName}</Text>
+        }
         <SafeAreaView style={styles.listUsers}>
           <FlatList
             data={occupantsInfo}
+            ListHeaderComponent={this._renderFlatListHeader}
             ListFooterComponent={this._renderFlatListFooter}
+            renderItem={this._renderUser}
             keyExtractor={this.keyExtractor}
             extraData={this.state}
           />
@@ -427,7 +488,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 7,
     marginLeft: 30,
 	},
-  renderHeaderContainer: {
+	renderHeaderContainer: {
 		width: SIZE_SCREEN.width - 30,
 		flexDirection: 'row',
 		borderColor: 'grey',
@@ -478,6 +539,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+
   },
   leaveTitle:{
     color: 'white',

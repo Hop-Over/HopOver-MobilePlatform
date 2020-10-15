@@ -16,12 +16,14 @@ import AttachmentIcon from 'react-native-vector-icons/Entypo'
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput'
 import ChatService from '../../../services/chat-service'
 import UsersService from '../../../services/users-service'
-import Message from './message'
+import Post from './message'
 import Avatar from '../../components/avatar'
 import ImagePicker from 'react-native-image-crop-picker'
+import ParticipantsBar from './elements/participantsBar'
 import { DIALOG_TYPE } from '../../../helpers/constants'
 
-export class Chat extends PureComponent {
+
+export class Event extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -74,14 +76,10 @@ export class Chat extends PureComponent {
 
   static goToDetailsScreen = (props) => {
     const isNeedFetchUsers = props.getParam('isNeedFetchUsers', false)
-    if (props.state.params.dialog.type === DIALOG_TYPE.PRIVATE) {
-      props.push('PrivateDetails', {dialog: props.state.params.dialog })
-    } else {
-      props.push('GroupDetails', {dialog: props.state.params.dialog, isNeedFetchUsers })
-    }
+    props.push('EventDetails', {dialog: props.state.params.dialog, isNeedFetchUsers })
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { dialog } = this.props.navigation.state.params
     ChatService.getMessages(dialog)
       .catch(e => alert(`Error.\n\n${JSON.stringify(e)}`))
@@ -138,26 +136,12 @@ export class Chat extends PureComponent {
 
   _keyExtractor = (item, index) => index.toString()
 
-  _renderMessageItem = (message, index) => {
+  _renderMessageItem(message) {
     const { user } = this.props.currentUser
     const { dialog } = this.props.navigation.state.params
-    const { history } = this.props
     const isOtherSender = message.sender_id !== user.id ? true : false
-
-    let showDate = false
-    let historyLength = history.length - 1
-
-    if(index === historyLength){
-      showDate = true
-    }
-    if(index < historyLength){
-      let dateDiff = message.date_sent - history[index+1].date_sent
-      //console.log("Index:" + index + " Date diff:" + dateDiff)
-      showDate = dateDiff > 120 ? true:false
-    }
-  
     return (
-      <Message otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} showDate={showDate} />
+      <Post otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} />
     )
   }
 
@@ -180,11 +164,13 @@ export class Chat extends PureComponent {
             </View>
           )
         }
+        <ParticipantsBar dialog={this.props.navigation.state.params.dialog}>
+        </ParticipantsBar>
         <FlatList
           inverted
           data={history}
           keyExtractor={this._keyExtractor}
-          renderItem={({ item, index }) => this._renderMessageItem(item, index)}
+          renderItem={({ item }) => this._renderMessageItem(item)}
           onEndReachedThreshold={5}
           onEndReached={this.getMoreMessages}
         />
@@ -290,7 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });
 
 const mapStateToProps = (state, props) => ({
@@ -298,4 +284,4 @@ const mapStateToProps = (state, props) => ({
   currentUser: state.currentUser
 })
 
-export default connect(mapStateToProps)(Chat)
+export default connect(mapStateToProps)(Event)
