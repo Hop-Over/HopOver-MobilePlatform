@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SIZE_SCREEN } from '../../helpers/constants'
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default class BottomNavBar extends Component {
 
