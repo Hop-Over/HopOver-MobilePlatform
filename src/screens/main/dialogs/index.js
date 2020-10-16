@@ -69,7 +69,7 @@ class Dialogs extends Component {
       return true
     } return null
   }
-
+  
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: Dialogs.currentUserInfo })
   }

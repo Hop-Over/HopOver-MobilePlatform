@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { SafeAreaView, StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView, Alert} from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Requests from './requests'
@@ -192,6 +192,28 @@ class People extends Component {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
+  deleteFriend = (id, name) => {
+	const { navigation } = this.props
+	const dialog = navigation.getParam('dialog', false)
+	Alert.alert(
+	  'Are you sure you want to delete ' + name + ' as a friend?',
+	  '',
+	  [
+		{
+		  text: 'Yes',
+		  onPress: () => {
+			this.setState({ isLoader: true })
+            ContactService.deleteContact(id)
+		  }
+		},
+		{
+		  text: 'Cancel'
+		}
+	  ],
+	  { cancelable: false }
+	)
+  }
+
   _renderFriend = ({ item }) => {
     return (
       this.state.isLoader ?
@@ -209,8 +231,7 @@ class People extends Component {
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButtons}
                 onPress={() => {
-                  ContactService.deleteContact(item.id)
-                  this.setState({updateContacts: true})
+                  this.deleteFriend(item.id, item.full_name.split(' ')[0])
                 }}>
                 <Icon name="close" size={25} color="white"/>
               </TouchableOpacity>
