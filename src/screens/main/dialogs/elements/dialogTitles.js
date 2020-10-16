@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: 15,
     lineHeight: 15,
     fontSize: 13,
-    fontWeight: '600'
+    fontWeight: '400'
   },
   label: {
     paddingLeft: 5,
