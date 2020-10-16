@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   createDialog: {
     position: 'absolute',
     marginLeft: SIZE_SCREEN.width/2 - 50/2,
-    bottom: SIZE_SCREEN.height/7
+    bottom: SIZE_SCREEN.height/10
   },
   nextContainer: {
     position: 'absolute',
