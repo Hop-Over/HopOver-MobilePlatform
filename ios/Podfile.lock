@@ -270,7 +270,7 @@ PODS:
     - React
   - RNScreens (2.0.0-alpha.22):
     - React
-  - RNVectorIcons (6.6.0):
+  - RNVectorIcons (6.7.0):
     - React
   - RSKImageCropper (2.2.3)
   - SDWebImage (5.2.3):
@@ -473,7 +473,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: fcdbbbef2f0ea869c6d9ce39b8e4fd67e94009f4
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   RNScreens: 6adf01eb4080f44af6cca551207c6b0505066857
-  RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
+  RNVectorIcons: 368d6d8b8301224e5ffb6254191f4f8876c2be0d
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   SDWebImage: 46a7f73228f84ce80990c786e4372cf4db5875ce
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987

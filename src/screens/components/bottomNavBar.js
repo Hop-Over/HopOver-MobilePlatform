@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { StackActions, NavigationActions } from 'react-navigation';
 import { SIZE_SCREEN } from '../../helpers/constants'
-import Icon from 'react-native-vector-icons/Feather'
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class BottomNavBar extends Component {
 
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: SIZE_SCREEN.height/12,
     marginLeft: (SIZE_SCREEN.width/2) - (SIZE_SCREEN.width * 0.9/2),
-    backgroundColor: 'red'
   },
   footer: {
     flexDirection: 'row',
@@ -82,12 +81,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderTopColor: '#D1D1D1',
-    borderLeftColor: '#D1D1D1',
-    borderRightColor: '#D1D1D1',
     backgroundColor: 'white',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -127,5 +120,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  }
+  },
 })
