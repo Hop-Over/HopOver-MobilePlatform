@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
   footerElement:{
     paddingLeft: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9) - 10,
     paddingRight: SIZE_SCREEN.width - (SIZE_SCREEN.width * 0.9) - 10,
-    paddingLeft: 40,
-    paddingRight: 40,
     paddingBottom: 20,
     justifyContent: "center",
     alignItems: 'center',

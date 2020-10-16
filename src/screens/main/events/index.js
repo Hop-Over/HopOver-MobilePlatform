@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { StyleSheet, View, Image, FlatList, Text, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Dialog from './elements/dialog'
@@ -34,12 +34,17 @@ class Events extends Component {
       headerLeft: (
         <View style={styles.userIdContainer}>
           <Text style={[
-            { fontSize: 35, color: 'black', fontWeight: "bold" },
+            { fontSize: 35, color: 'black', fontWeight: "600" },
             Platform.OS === 'android' ?
               { paddingLeft: 13 } :
               { paddingLeft: 0 }]}>
             Events
           </Text>
+        </View>
+      ),
+      headerTitle: (
+        <View style={styles.logo}>
+          <Image style={{width: 80, height: 15 }} source={require('../../../../assets/image/text_logo.png')} />
         </View>
       ),
       headerRight: (
@@ -192,7 +197,7 @@ class Events extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
+    marginTop: 40,
     height: SIZE_SCREEN.height
   },
   noChatButton: {
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
   navBarContainer: {
     flex: 1,
     flexDirection: "row",
-    paddingTop: 10,
+    paddingTop: 25,
     marginRight: 5,
   },
   userIdContainer: {
@@ -221,6 +226,9 @@ const styles = StyleSheet.create({
   lastElement: {
     paddingBottom: SIZE_SCREEN.height/5
   },
+  logo: {
+    marginTop: -30,
+  }
 })
 
 

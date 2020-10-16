@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: 40,
   },
   tab:{
     paddingLeft: 5,

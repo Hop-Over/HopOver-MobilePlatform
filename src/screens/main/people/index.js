@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { SafeAreaView, StyleSheet, Image, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Requests from './requests'
@@ -62,12 +62,17 @@ class People extends Component {
       headerLeft: (
         <View style={styles.userIdContainer}>
           <Text style={[
-            { fontSize: 35, color: 'black', fontWeight: "bold" },
+            { fontSize: 35, color: 'black', fontWeight: "600" },
             Platform.OS === 'android' ?
               { paddingLeft: 13 } :
               { paddingLeft: 0 }]}>
             People
           </Text>
+        </View>
+      ),
+      headerTitle: (
+        <View style={styles.logo}>
+          <Image style={{width: 80, height: 15 }} source={require('../../../../assets/image/text_logo.png')} />
         </View>
       ),
       headerRight: (
@@ -282,7 +287,12 @@ const styles = StyleSheet.create({
     fontSize: 100,
     paddingLeft: 20,
   },
-
+  navBarContainer: {
+    flex: 1,
+    flexDirection: "row",
+    paddingTop: 25,
+    marginRight: 5,
+  },
   space: {
     paddingRight: 50,
   },
@@ -377,6 +387,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end"
   },
+  logo: {
+    marginTop: -30,
+  }
 })
 
 
