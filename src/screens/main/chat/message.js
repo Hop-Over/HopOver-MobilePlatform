@@ -9,6 +9,7 @@ import ChatImage from '../../components/chatImage'
 import Icon from 'react-native-vector-icons/AntDesign'
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
+import LinearGradient from 'react-native-linear-gradient';
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
@@ -22,6 +23,7 @@ export default class Message extends Component {
       isModal: false,
       send_state: props.message.send_state,
       color: props.color,
+      gradientColor: props.gradientColor,
       showDate: props.showDate,
       isMessagePress: false,
     }
@@ -38,6 +40,9 @@ export default class Message extends Component {
       return true
     } else if (nextProps.color != this.state.color){
       this.setState({color: nextProps.color})
+      return true
+    } else if (nextProps.gradientColor != this.state.gradientColor) {
+      this.setState({ gradientColor: nextProps.gradientColor })
       return true
     }
     else {
@@ -226,7 +231,7 @@ export default class Message extends Component {
               ):(
                 <TouchableOpacity onPress={this.handleMessagePress}>
                 <View>
-                  <View style={[styles.message, styles.messageToRight, {backgroundColor: this.state.color}]}>
+                  <LinearGradient colors={[this.state.gradientColor[0], this.state.gradientColor[1]]} useAngle={true} style={[styles.message, styles.messageToRight]}>
                     {this.isLink(message.body)?
                     (<View style={[{flexDirection: 'row'}, styles.messageTextRight]}>
                       <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
@@ -237,7 +242,7 @@ export default class Message extends Component {
                       {message.body || ' '}
                     </Text>)
                   }
-                  </View>
+                  </LinearGradient>
                   <View style={styles.timeStampRightContainer}>
                     <Text style={styles.dateSentRight}>
                       {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent):null}
@@ -311,7 +316,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    shadowColor: "#267DC9",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   messageToRight: {
     maxWidth: fullWidth - 55,

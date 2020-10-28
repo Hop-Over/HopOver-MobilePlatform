@@ -79,6 +79,31 @@ class FirebaseService{
 
     return data
   }
+  setGradientColor = (dialogId, colors) => {
+    // colors is an array
+    const postUrl = config.firebaseConfig.firebaseUrl + dialogId + ".json"
+
+    fetch(postUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        gradientColor: colors
+      })
+    })
+      .catch(err => console.log(err))
+  }
+
+  getGradientColor = async (dialogId) => {
+    const fetchUrl = config.firebaseConfig.firebaseUrl + dialogId + "/gradientColor.json"
+    const response = await fetch(fetchUrl)
+    const data = await response.json()
+
+    if (data == null) {
+      this.setGradientColor(dialogId, ['#FF4363','F6B5A1'])
+      return ['#FF4363', 'F6B5A1']
+    }
+
+    return data
+  }
 }
 
 let firebaseService = new FirebaseService()

@@ -83,6 +83,8 @@ class Dialogs extends Component {
     if (this.props.dialogs !== prevProps.dialogs) {
       this.dialogs = this.removeEventsFromDialogs(dialogs)
       await this.appendChatColors()
+      await this.appendGradientColors()
+      //console.log(dialogs)
       this.setState({ isLoader: false })
     }
   }
@@ -117,7 +119,6 @@ class Dialogs extends Component {
   }
 
   appendChatColors = async () => {
-    console.log("Updating Colors")
     if (this.dialogs.length  > 0){
       for (index in this.dialogs){
         let color = await this.getChatColor(this.dialogs[index].id)
@@ -126,6 +127,20 @@ class Dialogs extends Component {
     }
   }
 
+  getGradientColor = async (dialog) => {
+    var response = await FirebaseService.getGradientColor(dialog)
+    return response
+  }
+
+  appendGradientColors = async () => {
+    if (this.dialogs.length > 0) {
+      for (index in this.dialogs) {
+        let colors = await this.getGradientColor(this.dialogs[index].id)
+        //console.log(colors)
+        this.dialogs[index].gradientColor = colors
+      }
+    }
+  }
   lastElement = () => {
     return (
       <View style={styles.lastElement}>
