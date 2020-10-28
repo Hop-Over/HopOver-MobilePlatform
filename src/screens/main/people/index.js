@@ -224,24 +224,20 @@ class People extends Component {
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :
       item !== undefined ?
-      <View style={styles.card}>
-        <View style={styles.renderContainer}>
-          <View style={styles.renderAvatar}>
-            <Avatar
-              photo={item.avatar}
-              name={item.full_name}
-              iconSize="medium"
-            />
-            <Text style={styles.nameTitle}>{item.full_name}</Text>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.iconButtons}
-                onPress={() => {
-                  this.deleteFriend(item.id, item.full_name.split(' ')[0])
-                }}>
-                <Icon name="close" size={25} color="white"/>
-              </TouchableOpacity>
-            </View>
-          </View>
+      <View style={styles.totalContainer}>
+        <View style={styles.renderAvatar}>
+          <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+          />
+          <Text style={styles.nameTitle}>{item.full_name}</Text>
+            <TouchableOpacity style={styles.iconButtons}
+              onPress={() => {
+                this.deleteFriend(item.id, item.full_name.split(' ')[0])
+              }}>
+              <Icon name="close" size={25} color="white"/>
+            </TouchableOpacity>
         </View>
       </View> :
       null
