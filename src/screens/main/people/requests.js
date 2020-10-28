@@ -197,8 +197,7 @@ class Requests extends Component {
       <Indicator color={'blue'} size={40} /> :
       // Why is this happening
       item !== undefined ?
-      <View style={styles.card}>
-        <View style={styles.renderContainer}>
+        <View style={styles.totalContainer}>
           <View style={styles.renderAvatar}>
             <Avatar
               photo={item.avatar}
@@ -228,7 +227,6 @@ class Requests extends Component {
               </View>
             </View>
           </View>
-        </View>
       </View> :
       <View>
       </View>
@@ -284,6 +282,22 @@ const styles = StyleSheet.create({
     paddingTop: 25,
     marginRight: 5,
   },
+  totalContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   userIdContainer: {
     justifyContent: "center",
     height: 100,
@@ -317,7 +331,11 @@ const styles = StyleSheet.create({
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5
+    paddingLeft: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    marginBottom: 10,
+    paddingVertical: 5,
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.8,
@@ -371,8 +389,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   iconContainer: {
-    paddingLeft: 6,
-    paddingRight: 6,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   deleteIcon: {
     width: 35,
@@ -394,7 +412,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    alignItems: "flex-end"
   },
   userNotFound: {
     color: "black",

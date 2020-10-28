@@ -280,6 +280,8 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.0)
   - SPTPersistentCache (1.1.0)
+  - toolbar-android (0.1.0-rc.2):
+    - React
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -328,6 +330,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - "toolbar-android (from `../node_modules/@react-native-community/toolbar-android`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -425,6 +428,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  toolbar-android:
+    :path: "../node_modules/@react-native-community/toolbar-android"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -478,8 +483,9 @@ SPEC CHECKSUMS:
   SDWebImage: 46a7f73228f84ce80990c786e4372cf4db5875ce
   SDWebImageWebPCoder: 947093edd1349d820c40afbd9f42acb6cdecd987
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
+  toolbar-android: 404f4450b203597e7b417f714ff417bed562a1be
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: 876430e0d4643c5e557172a09175a0b03892cacb
+PODFILE CHECKSUM: fd2243bf52aad789caf0f34717709d5b800f5dfa
 
 COCOAPODS: 1.9.1

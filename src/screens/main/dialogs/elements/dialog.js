@@ -6,10 +6,12 @@ import DialogLastDate from './dialogLastDate'
 import DialogUnreadCounter from './dialogUnreadCounter'
 import UsersService from '../../../../services/users-service'
 import { DIALOG_TYPE } from '../../../../helpers/constants'
+import LinearGradient from 'react-native-linear-gradient';
 
 export default class Dialog extends Component {
   getOccupants = async () => {
     const { dialog } = this.props
+    console.log(dialog)
     const { navigate } = this.props.navigation
     await UsersService.getOccupants(dialog.occupants_ids)
     navigate('Chat', { dialog })
@@ -32,7 +34,7 @@ export default class Dialog extends Component {
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
       {dialog.unread_messages_count > 0 ?
-        <View style={[styles.container,{backgroundColor: dialog.color}]}>
+        < LinearGradient colors={[dialog.gradientColor[0], dialog.gradientColor[1]]} useAngle={true} style={styles.container}>
             <View style={styles.border} >
               <DialogTitles
                 name={dialog.name}
@@ -47,9 +49,9 @@ export default class Dialog extends Component {
                 />
               </View>
             </View>
-          </View>
+          </LinearGradient>
           :
-        <View style={[styles.container,{backgroundColor: "#F1F1F1"}]}>
+        <View style={[styles.container,{backgroundColor: "#FFFFFF"}]}>
             <View style={styles.border} >
               <DialogTitles
                 name={dialog.name}
@@ -95,6 +97,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   container: {
     flex: 1,

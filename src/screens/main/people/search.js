@@ -114,41 +114,40 @@ class Search extends Component {
       <Indicator color={'blue'} size={40} /> :
       // Why is this happening
       item !== undefined ?
-      <View style={styles.card}>
-        <View style={styles.renderContainer}>
-          <View style={styles.renderAvatar}>
-            <Avatar
-              photo={item.avatar}
-              name={item.full_name}
-              iconSize="medium"
-            />
-            <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
-            <View style={styles.buttonContainer}>
-              {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
-              (<TouchableOpacity style={styles.iconButtons}
-                onPress={() => {
-                  if (this.state.friendId.includes(item.id.toString())){
-                    ContactService.rejectRequest(item.id)
-                    ContactService.deleteContact(item.id)
-                    let index = this.state.friendId.indexOf(item.id.toString())
-                    this.state.friendId.splice(index, 1)
-                    this.searchUsers()
+      <View style={styles.totalContainer}>
+        <View style={styles.renderAvatar}>
+          <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+          />
+          <Text style={this.state.pendingId.includes(item.id.toString()) ? styles.pendingTitle : styles.nameTitle}>{item.full_name}</Text>
+          
+          <View>
+            {this.state.friendId.includes(item.id.toString()) || !this.state.pendingId.includes(item.id.toString()) ?
+            (<TouchableOpacity style={styles.iconButtons}
+              onPress={() => {
+                if (this.state.friendId.includes(item.id.toString())){
+                  ContactService.rejectRequest(item.id)
+                  ContactService.deleteContact(item.id)
+                  let index = this.state.friendId.indexOf(item.id.toString())
+                  this.state.friendId.splice(index, 1)
+                  this.searchUsers()
 
-                  } else if (!this.state.pendingId.includes(item.id.toString())) {
-                    ContactService.sendRequest(item.id)
-                    this.state.pendingId.push(item.id.toString())
-                    this.searchUsers()
-                  }
-                }}>
-                <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="white"/>
-              </TouchableOpacity>) :
-              (<View style={styles.pendingButton}>
-                <Text style={styles.pendingText}> Pending </Text>
-              </View>)}
-            </View>
-          </View>
+                } else if (!this.state.pendingId.includes(item.id.toString())) {
+                  ContactService.sendRequest(item.id)
+                  this.state.pendingId.push(item.id.toString())
+                  this.searchUsers()
+                }
+              }}>
+              <Icon name={this.state.friendId.includes(item.id.toString()) ? "close" : "add"} size={30} color="white"/>
+            </TouchableOpacity>) :
+            (<View style={styles.pendingButton}>
+              <Text style={styles.pendingText}> Pending </Text>
+            </View>)}
         </View>
-      </View> :
+      </View> 
+      </View>:
       <View>
       </View>
     )
@@ -196,6 +195,22 @@ class Search extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  totalContainer: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   space: {
     paddingRight: 50,
@@ -249,13 +264,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   pendingButton: {
-    width: 80,
+    width: 70,
     height: 35,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     backgroundColor: '#B5B5B5',
-    alignSelf: 'flex-end',
+    marginRight: 10
   },
   listUsers: {
     flex: 1,
@@ -264,7 +279,11 @@ const styles = StyleSheet.create({
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5
+    paddingLeft: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    marginBottom: 10,
+    paddingVertical: 5,
   },
   renderContainer: {
     width: SIZE_SCREEN.width - 25,
@@ -303,11 +322,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#B5B5B5',
-    alignSelf: 'flex-end'
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end"
+    marginRight: 10
   },
 })
 

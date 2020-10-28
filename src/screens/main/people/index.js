@@ -299,6 +299,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  totalContainer:{
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
   userIdContainer: {
     justifyContent: "center",
     height: 100,
@@ -368,28 +384,11 @@ const styles = StyleSheet.create({
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 5
-  },
-  renderContainer: {
-    width: SIZE_SCREEN.width - 25,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  card: {
-    backgroundColor: 'white',
-    borderWidth:2,
-    borderColor: '#00000014',
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    paddingLeft: 15,
+    backgroundColor: '#FFFFFF',
     borderRadius: 15,
     marginBottom: 10,
-    marginTop: 5
+    paddingVertical: 5,
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.5,
@@ -402,11 +401,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 30,
     backgroundColor: '#B5B5B5',
-    alignSelf: "flex-end"
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end"
+    marginRight: 10
   },
   logo: {
     marginTop: -30,
