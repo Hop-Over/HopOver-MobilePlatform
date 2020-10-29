@@ -16,6 +16,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SIZE_SCREEN } from '../../../helpers/constants'
 
+
 class Events extends Component {
   static currentUserInfo = ''
   dialogs = []
@@ -87,20 +88,16 @@ class Events extends Component {
   async componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = this.removeDialogsFromEvents(dialogs)
-      await this.appendChatColors()
-      await this.appendEventInfo()
-      await this.setState({ isLoader: false })
+      this.dialogs = await this.fetchAdditionalInfo(dialogs)
+      this.setState({ isLoader: false })
     }
-  }
-  getChatColor = async (dialog) => {
-    var response = await FirebaseService.getChatColor(dialog)
-    return response
   }
 
   getCustomData = async (eventId) => {
-    const participantData = await EventService.getParticipantsData(eventId)
-    const eventInfo = await EventService.getEventInfo(eventId)
+    const gradientColor = await FirebaseService.getGradientColor(eventId)
+    const eventInfo =  await EventService.getEventInfo(eventId)
+    const participantData = eventInfo.participants
+    
     if (participantData == null || participantData.going == null){
       var going = 0
     }
@@ -112,39 +109,29 @@ class Events extends Component {
       startTime: eventInfo.startTime,
       startDate: eventInfo.startDate,
       location: eventInfo.location,
-      event_description: eventInfo.event_description
+      event_description: eventInfo.event_description,
+      gradientColor: gradientColor
     }
   }
 
-  appendChatColors = async () => {
-    if (this.dialogs.length  > 0){
-      for (index in this.dialogs){
-        let color = await this.getChatColor(this.dialogs[index].id)
-        this.dialogs[index].color = color
+  fetchAdditionalInfo = async (dialogs) => {
+    cleanedEvents = []
+    if (dialogs.length  > 0){
+      for (index in dialogs){
+        if (dialogs[index].description === 'private_event'){
+          
+          var currentEvent = dialogs[index]
+          let eventInfo = await this.getCustomData(dialogs[index].id)
+          currentEvent.location = eventInfo.location
+          currentEvent.going = eventInfo.going
+          currentEvent.startTime = eventInfo.startTime
+          currentEvent.startDate = eventInfo.startDate
+          currentEvent.event_description = eventInfo.event_description
+          currentEvent.gradientColor = eventInfo.gradientColor
+          cleanedEvents.push(currentEvent)
+        }
       }
     }
-  }
-
-  appendEventInfo = async () => {
-    if (this.dialogs.length  > 0){
-      for (index in this.dialogs){
-        let eventInfo = await this.getCustomData(this.dialogs[index].id)
-        this.dialogs[index].location = eventInfo.location
-        this.dialogs[index].going = eventInfo.going
-        this.dialogs[index].startTime = eventInfo.startTime
-        this.dialogs[index].startDate = eventInfo.startDate
-        this.dialogs[index].event_description = eventInfo.event_description
-      }
-    }
-  }
-
-  removeDialogsFromEvents = (dialogs) => {
-    cleanedEvents= []
-    dialogs.forEach((event) => {
-      if (event.description === 'private_event'){
-        cleanedEvents.push(event)
-      }
-    })
     return cleanedEvents
   }
 

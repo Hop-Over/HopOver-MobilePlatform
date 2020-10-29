@@ -26,6 +26,7 @@ export default class CreateEvent extends PureComponent {
     isLoader: false,
     showUsers: false,
     color: "#1897F8",
+    gradientColors: ['#FF4363', '#F6B5A1'],
     location: "TBD",
     startDate: "TBD",
     startTime: "TBD"
@@ -44,9 +45,10 @@ export default class CreateEvent extends PureComponent {
     ChatService.createPrivateEvent(occupants_ids, str, this.state.isPickImage)
       .then((newEvent) => {
         EventService.createPrivateEventInstance(newEvent.id, this.state.location, this.state.startDate, this.state.startTime)
-        FirebaseService.setChatColor(newEvent.id, this.state.color)
+        FirebaseService.setGradientColor(newEvent.id, this.state.gradientColors)
+        newEvent['gradientColor'] = this.state.gradientColors
         this.setState({ isLoader: false })
-        this.props.navigation.push('Events', { dialog: newEvent, isNeedFetchUsers: true })
+        this.props.navigation.push('Events')
       })
   }
 
@@ -94,6 +96,10 @@ export default class CreateEvent extends PureComponent {
     await this.setState({color: color})
   }
 
+  setGradientColorState = async (colors) => {
+    await this.setState({ gradientColors: colors})
+  }
+
   setLocationState = async (location) => {
     await this.setState({location: location})
   }
@@ -114,23 +120,8 @@ export default class CreateEvent extends PureComponent {
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
-        <View style={styles.header}>
-          <TouchableOpacity onPress={this.onPickImage}>
-            {isPickImage ? (
-              <Image
-                style={styles.iconPicker}
-                source={{ uri: isPickImage.path }}
-              />
-            ) :
-              <View style={styles.iconPicker}>
-                <Icon name="camera" size={110} color='#323232' />
-              </View>
-            }
-          </TouchableOpacity>
-          <View style={styles.icon}>
-            <Icon name="create" size={20} color='black' />
-          </View>
-        </View>
+        <ColorModal colorHandler={this.setGradientColorState.bind(this)}>
+        </ColorModal>
         <View style={styles.header}>
           <View style={styles.description}>
             <TextInput
@@ -143,11 +134,9 @@ export default class CreateEvent extends PureComponent {
               value={this.state.search}
               maxLength={255}
             />
-            <Text style={styles.descriptionText}>Change Group Name</Text>
+            <Text style={styles.descriptionText}>Change Event Name</Text>
           </View>
         </View>
-          <ColorModal colorHandler={this.setColorState.bind(this)}>
-          </ColorModal>
           <AddressModal locationHandler={this.setLocationState.bind(this)}>
           </AddressModal>
           <DateModal dateHandler={this.setDateState.bind(this)}>
@@ -204,15 +193,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 24,
     fontWeight: "700"
-  },
-  iconPicker: {
-    width: 130,
-    height: 130,
-    borderRadius: 130/2,
-    borderWidth: 1,
-    borderColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   description: {
     width: SIZE_SCREEN.width - 110,

@@ -98,8 +98,8 @@ class FirebaseService{
     const data = await response.json()
 
     if (data == null) {
-      this.setGradientColor(dialogId, ['#FF4363','F6B5A1'])
-      return ['#FF4363', 'F6B5A1']
+      this.setGradientColor(dialogId, ['#FF4363','#F6B5A1'])
+      return ['#FF4363', '#F6B5A1']
     }
 
     return data

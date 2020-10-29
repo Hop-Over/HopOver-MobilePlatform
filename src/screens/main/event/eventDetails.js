@@ -24,7 +24,7 @@ import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
 import Modal from 'react-native-modal';
-import ModalTester from '../chat/elements/colorSelect'
+import ColorSelect from './elements/colorSelect'
 
 export default class EventDetails extends Component {
 
@@ -291,8 +291,6 @@ export default class EventDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Event </Text>
-      <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Event Color"}>
-      </ModalTester>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
             <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />
@@ -380,8 +378,9 @@ export default class EventDetails extends Component {
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
-        <ImgPicker name={dialogName} photo={dialogPhoto} pickPhoto={this.pickPhoto} isDidabled ={!this.isGroupCreator() && !this.isAdmin()} />
-        {this.isGroupCreator() || this.isAdmin() ?
+          <ColorSelect dialog={this.state.dialog} navigation={this.props.navigation} title={"Event Color"}>
+          </ColorSelect>
+          {this.isGroupCreator() || this.isAdmin() ?
           (<View>
             <TextInput
               style={styles.input}

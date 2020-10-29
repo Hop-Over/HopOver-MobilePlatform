@@ -15,8 +15,6 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SIZE_SCREEN } from '../../../helpers/constants'
 
-
-
 class Dialogs extends Component {
   static currentUserInfo = ''
   dialogs = []
@@ -81,24 +79,11 @@ class Dialogs extends Component {
   async componentDidUpdate(prevProps) {
     const { dialogs } = this.props
     if (this.props.dialogs !== prevProps.dialogs) {
-      this.dialogs = this.removeEventsFromDialogs(dialogs)
-      await this.appendChatColors()
-      await this.appendGradientColors()
-      //console.log(dialogs)
+      this.dialogs = await this.fetchAdditionalInfo(dialogs)
       this.setState({ isLoader: false })
     }
   }
 
-  removeEventsFromDialogs = (dialogs) => {
-    cleanedDialogs = []
-    dialogs.forEach((dialog) => {
-      console.log(dialog.description)
-      if (dialog.description === null || dialog.description === ''){
-        cleanedDialogs.push(dialog)
-      }
-    })
-    return cleanedDialogs
-  }
 
   keyExtractor = (item, index) => index.toString()
 
@@ -112,35 +97,21 @@ class Dialogs extends Component {
     const { navigation } = this.props
     navigation.push('Contacts')
   }
-
-  getChatColor = async (dialog) => {
-    var response = await FirebaseService.getChatColor(dialog)
-    return response
-  }
-
-  appendChatColors = async () => {
-    if (this.dialogs.length  > 0){
-      for (index in this.dialogs){
-        let color = await this.getChatColor(this.dialogs[index].id)
-        this.dialogs[index].color = color
+  fetchAdditionalInfo = async (dialogs) => {
+    var cleanedChats = []
+    if (dialogs.length  > 0){
+      for (index in dialogs){
+        if (dialogs[index].description === null || dialogs[index].description === ''){
+          var currentDialog= dialogs[index]
+          let colors = await FirebaseService.getGradientColor(currentDialog.id)
+          currentDialog.gradientColor = colors
+          cleanedChats.push(currentDialog)
+        }
       }
     }
+    return cleanedChats
   }
 
-  getGradientColor = async (dialog) => {
-    var response = await FirebaseService.getGradientColor(dialog)
-    return response
-  }
-
-  appendGradientColors = async () => {
-    if (this.dialogs.length > 0) {
-      for (index in this.dialogs) {
-        let colors = await this.getGradientColor(this.dialogs[index].id)
-        //console.log(colors)
-        this.dialogs[index].gradientColor = colors
-      }
-    }
-  }
   lastElement = () => {
     return (
       <View style={styles.lastElement}>

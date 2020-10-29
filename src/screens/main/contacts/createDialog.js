@@ -20,7 +20,8 @@ export default class CreateDialog extends PureComponent {
     isPickImage: null,
     isLoader: false,
     showUsers: false,
-    color: "#1897F8"
+    color: "#1897F8",
+    gradientColors: ['#FF4363', '#F6B5A1'],
   }
 
   renderParticipant = (item) => {
@@ -50,10 +51,11 @@ export default class CreateDialog extends PureComponent {
     })
     ChatService.createPublicDialog(occupants_ids, str, this.state.isPickImage)
       .then((newDialog) => {
-        FirebaseService.setChatColor(newDialog.id, this.state.color)
+        newDialog['gradientColor'] = this.state.gradientColors
+        FirebaseService.setGradientColor(newDialog.id, this.state.gradientColors)
         this.setState({ isLoader: false })
-        this.props.navigation.dispatch(popToTop)
-        this.props.navigation.push('Chat', { dialog: newDialog, isNeedFetchUsers: true })
+        //this.props.navigation.dispatch(popToTop)
+        this.props.navigation.push('Dialogs')
       })
   }
 
@@ -112,8 +114,9 @@ export default class CreateDialog extends PureComponent {
 
   updateSearch = keyword => this.setState({ keyword })
 
-  setColorState = async (color) => {
-    await this.setState({color: color})
+  setGradientColorState = async (colors) => {
+    await this.setState({gradientColors: colors})
+    console.log(this.state.gradientColors)
   }
 
   render() {
@@ -156,7 +159,7 @@ export default class CreateDialog extends PureComponent {
             <Text style={styles.descriptionText}>Change Group Name</Text>
           </View>
         </View>
-          <ColorModal colorHandler={this.setColorState.bind(this)}>
+          <ColorModal colorHandler={this.setGradientColorState.bind(this)}>
           </ColorModal>
           <FlatList
             data={users}

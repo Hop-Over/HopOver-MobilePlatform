@@ -21,6 +21,7 @@ import Avatar from '../../components/avatar'
 import ImagePicker from 'react-native-image-crop-picker'
 import ParticipantsBar from './elements/participantsBar'
 import { DIALOG_TYPE } from '../../../helpers/constants'
+import LinearGradient from 'react-native-linear-gradient';
 
 
 export class Event extends PureComponent {
@@ -68,7 +69,7 @@ export class Event extends PureComponent {
       ),
       headerRight: (
         <TouchableOpacity style={styles.settings} onPress={() => this.goToDetailsScreen(navigation)}>
-          <Icon name="add" size={30} color={dialog.color} />
+          <Icon name="settings" size={20} color={dialog.gradientColor[0]} />
         </TouchableOpacity>
       )
     }
@@ -141,7 +142,7 @@ export class Event extends PureComponent {
     const { dialog } = this.props.navigation.state.params
     const isOtherSender = message.sender_id !== user.id ? true : false
     return (
-      <Post otherSender={isOtherSender} message={message} key={message.id} color={dialog.color} />
+      <Post otherSender={isOtherSender} message={message} key={message.id} gradientColor={dialog.gradientColor} color={dialog.color} />
     )
   }
 
@@ -192,8 +193,10 @@ export class Event extends PureComponent {
               enableScrollToCaret
             />
           </View>
-          <TouchableOpacity style={[styles.button,{backgroundColor: dialog.color}]}>
+          <TouchableOpacity>
+            <LinearGradient colors={[dialog.gradientColor[0], dialog.gradientColor[1]]} useAngle={true} style={[styles.button]}>
             <Icon name="arrow-upward" type="MaterialIcons" size={32} color="white" onPress={this.sendMessage} />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -260,8 +263,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: 20,
   },
-  settings:{
-    marginRight: 5,
+  settings: {
+    marginRight: 15,
   },
   navBarContainer: {
     flex: 1,

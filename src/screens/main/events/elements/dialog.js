@@ -9,7 +9,7 @@ import EventService from '../../../../services/event-service'
 import { DIALOG_TYPE } from '../../../../helpers/constants'
 import { SIZE_SCREEN } from '../../../../helpers/constants'
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import LinearGradient from 'react-native-linear-gradient';
 export default class Dialog extends Component {
 
   getOccupants = async () => {
@@ -35,7 +35,7 @@ export default class Dialog extends Component {
     return (
       <TouchableOpacity onPress={this.getOccupants}>
       <View style={styles.totalContainer}>
-      <View style={[styles.container, {backgroundColor: dialog.color}]}>
+      <LinearGradient colors={[dialog.gradientColor[0], dialog.gradientColor[1]]} useAngle={true} style={styles.container}>
           <View style={styles.border} >
             <DialogTitles
               name={dialog.name}
@@ -56,7 +56,7 @@ export default class Dialog extends Component {
               </View>
             </View>
           </View>
-        </View>
+      </LinearGradient>
       </View>
       </TouchableOpacity >
     )
