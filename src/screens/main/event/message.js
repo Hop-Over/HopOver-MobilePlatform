@@ -10,11 +10,12 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
 import LinearGradient from 'react-native-linear-gradient';
+import { AutoGrowingTextInput } from 'react-native-autogrow-textinput'
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
 
-export default class Message extends Component {
+export default class Post extends Component {
   isAtachment = null
 
   constructor(props) {
@@ -24,8 +25,8 @@ export default class Message extends Component {
       send_state: props.message.send_state,
       color: props.color,
       gradientColor: props.gradientColor,
-      showDate: props.showDate,
       isMessagePress: false,
+      threads: {} 
     }
     this.isAtachment = props.message.attachment
   }
@@ -126,18 +127,17 @@ export default class Message extends Component {
     this.setState({ isModal: !this.state.isModal })
   }
 
-  handleMessagePress = () => {
-    this.setState({ isMessagePress: !this.state.isMessagePress })
-  }
-
   renderHeader = () => {
     return <View style={[{ margin: Platform.OS === 'ios' ? 35 : 15 }, { position: 'absolute', zIndex: 10 }]}>
       <Icon name="close" size={30} color='white' onPress={this.handleModalState} />
     </View>
   }
 
+  onTypeThread = (messageId, threadText) => this.state.threads[messageId] = threadText
+
   render() {
     const { message, otherSender } = this.props
+    const { threads } = this.state
     //console.log(this.state.color)
     if (this.isAtachment) { console.log(message.attachment[0]) }
     const { isModal } = this.state
@@ -185,12 +185,7 @@ export default class Message extends Component {
         }
         {otherSender ?
           (
-            <View style={[styles.container, styles.positionToLeft]}>
-              <Avatar
-                //photo={user.avatar}
-                name={"user.full_name"}
-                iconSize="small"
-              />
+            <View style={[styles.container, styles.positionToCenter]}>
               {this.isAtachment ? (
                 <View style={[styles.message, styles.media, styles.mediaLeft]}>
                   {this.isAtachment &&
@@ -198,32 +193,43 @@ export default class Message extends Component {
                   }
                 </View>
               ) : (
-                  <TouchableOpacity onPress={this.handleMessagePress}>
-                    <View>
-                      <View style={[styles.message, styles.messageToLeft]}>
+                  <View>
+                    <View style={styles.shadow}>
+                      <LinearGradient colors={[this.state.gradientColor[0], this.state.gradientColor[1]]} useAngle={true} style={[styles.message, styles.messageContainer]}>
                         {this.isLink(message.body) ?
-                          (<View style={[{ flexDirection: 'row' }, styles.messageTextRight]}>
-                            <Text style={[styles.messageTextLeft, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                          (<View style={[{ flexDirection: 'row' }, styles.messageText]}>
+                            <Text style={styles.messageText}>
                               {this.hyperlink(message.body)}
                             </Text>
                           </View>) :
-                          (<Text style={[styles.messageTextLeft, styles.selfToLeft]}>
+                          (<Text style={styles.messageText}>
                             {message.body || ' '}
                           </Text>)
                         }
-                      </View>
-                      <View style={styles.timeStampLeftContainer}>
-                        <Text style={styles.dateSentLeft}>
-                          {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent) : null}
+                      </LinearGradient>
+                      <View style={styles.timeStampRightContainer}>
+                        <Text style={styles.dateSent}>
+                          {getTime(message.date_sent)}
                         </Text>
                       </View>
+                      <AutoGrowingTextInput
+                        style={styles.textInput}
+                        placeholder="Reply"
+                        placeholderTextColor="#d1d1d1"
+                        value={message.id in threads ? threads.message.id : null}
+                        onChangeText={this.onTypeThread}
+                        maxHeight={170}
+                        minHeight={40}
+                        maxWidth={fullWidth - 40}
+                        enableScrollToCaret
+                      />
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 )}
             </View>
           ) :
           (
-            <View style={[styles.container, styles.positionToRight]}>
+            <View style={[styles.container, styles.positionToCenter]}>
               {this.isAtachment ? (
                 <View style={[styles.message, styles.media, styles.mediaRight]}>
                   {this.isAtachment &&
@@ -231,28 +237,39 @@ export default class Message extends Component {
                   }
                 </View>
               ) : (
-                  <TouchableOpacity onPress={this.handleMessagePress}>
-                    <View>
-                      <LinearGradient colors={[this.state.gradientColor[0], this.state.gradientColor[1]]} useAngle={true} style={[styles.message, styles.messageToRight]}>
+                  <View>
+                    <View style={styles.shadow}>
+                      <LinearGradient colors={[this.state.gradientColor[0], this.state.gradientColor[1]]} useAngle={true} style={[styles.message, styles.messageContainer]}>
                         {this.isLink(message.body) ?
-                          (<View style={[{ flexDirection: 'row' }, styles.messageTextRight]}>
-                            <Text style={[styles.messageTextRight, (otherSender ? styles.selfToLeft : styles.selfToRight)]}>
+                          (<View style={[{ flexDirection: 'row' }, styles.messageText]}>
+                            <Text style={styles.messageText}>
                               {this.hyperlink(message.body)}
                             </Text>
                           </View>) :
-                          (<Text style={[styles.messageTextRight, styles.selfToRight]}>
+                          (<Text style={styles.messageText}>
                             {message.body || ' '}
                           </Text>)
                         }
                       </LinearGradient>
                       <View style={styles.timeStampRightContainer}>
-                        <Text style={styles.dateSentRight}>
-                          {(this.state.showDate || this.state.isMessagePress) ? getTime(message.date_sent) : null}
+                        <Text style={styles.dateSent}>
+                          {getTime(message.date_sent)}
                         </Text>
-                        <MessageSendState send_state={message.send_state} />
                       </View>
+                      <AutoGrowingTextInput
+                        style={styles.textInput}
+                        placeholder="Reply"
+                        placeholderTextColor="#d1d1d1"
+                        value={message.id in threads ? threads.message.id : null}
+                        onChangeText={this.onTypeThread}
+                        maxHeight={170}
+                        minHeight={40}
+                        maxWidth={fullWidth-40}
+                        enableScrollToCaret
+                      />
                     </View>
-                  </TouchableOpacity>
+                  </View>
+                  
                 )}
             </View>
           )
@@ -271,6 +288,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
     borderBottomRightRadius: 2,
+  },
+  textInput: {
+    borderColor: '#00000029', 
+    borderRightWidth: 1, 
+    borderLeftWidth: 1, 
+    borderBottomWidth: 1,
+    backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 20, 
+    borderBottomRightRadius: 20,
+    color: '#8c8c8c',
+    paddingHorizontal: 12,
+    paddingTop: Platform.OS === 'ios' ? 14 : 10,
+    paddingBottom: Platform.OS === 'ios' ? 14 : 10,
+    paddingRight: 35,
   },
   playIcon: {
     position: 'absolute',
@@ -295,30 +326,23 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
-  positionToLeft: {
-    justifyContent: 'flex-start'
-  },
-  positionToRight: {
-    justifyContent: 'flex-end',
+  positionToCenter: {
+    justifyContent: 'center'
   },
   message: {
     paddingVertical: 10,
-    borderRadius: 20,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
   },
-  messageToLeft: {
-    maxWidth: fullWidth - 90,
+  messageContainer: {
+    width: fullWidth - 40,
     backgroundColor: '#FFFFFF',
-    shadowColor: "#267DC9",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
     paddingHorizontal: 15,
+    justifyContent: 'center'
+  },
+  shadow: {
     shadowColor: "#267DC9",
     shadowOffset: {
       width: 0,
@@ -328,55 +352,24 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  messageToRight: {
-    maxWidth: fullWidth - 55,
-    shadowColor: "#267DC9",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    paddingHorizontal: 15,
+  messageText: {
+    fontSize: 18,
+    fontWeight: '400',
+    color: 'white',
+    justifyContent: 'center',
+    paddingBottom: 20
   },
-  messageTextLeft: {
-    fontSize: 16,
-    color: '#323232'
-  },
-  messageTextRight: {
-    fontSize: 16,
-    color: '#FFFFFF'
-  },
-  selfToLeft: {
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-  },
-  selfToRight: {
-    alignSelf: 'flex-end'
-  },
-  dateSentLeft: {
+  dateSent: {
     alignSelf: 'flex-start',
     fontSize: 10,
-    color: '#50555C'
-  },
-  dateSentRight: {
-    alignSelf: 'flex-start',
-    fontSize: 10,
-    color: '#50555C',
+    color: '#FFFFFF',
+    marginTop: -20
   },
   timeStampRightContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
     marginRight: 10
-  },
-  timeStampLeftContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    paddingVertical: 3,
-    marginLeft: 10
   },
   hyperlink: {
     textDecorationLine: 'underline'

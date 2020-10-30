@@ -20,7 +20,7 @@ import Post from './message'
 import Avatar from '../../components/avatar'
 import ImagePicker from 'react-native-image-crop-picker'
 import ParticipantsBar from './elements/participantsBar'
-import { DIALOG_TYPE } from '../../../helpers/constants'
+import { DIALOG_TYPE, SIZE_SCREEN } from '../../../helpers/constants'
 import LinearGradient from 'react-native-linear-gradient';
 
 
@@ -52,17 +52,15 @@ export class Event extends PureComponent {
       dialogPhoto = dialog.photo
     }
     return {
-      headerStyle: {borderBottomWidth: 0},
+      headerStyle: {borderBottomWidth: 0, height: SIZE_SCREEN.height/15},
       headerTitle: (
         <View style={styles.headerContainer}>
           <View style={styles.navBarContainer}>
-            <Avatar
-              photo={dialogPhoto}
-              name={navigation.state.params.dialog.name}
-              iconSize="medium"
-            />
-            <Text numberOfLines={3} style={{ fontSize: 14, color: '#323232', fontWeight: "bold", marginTop: -5}}>
+            <Text numberOfLines={3} style={{ fontSize: 22, color: '#323232', fontWeight: "600", marginTop: -5}}>
               {navigation.state.params.dialog.name}
+            </Text>
+            <Text numberOfLines={3} style={{ fontSize: 14, color: '#323232', fontWeight: "300", marginTop: 5}}>
+              {navigation.state.params.dialog.startDate} @ {navigation.state.params.dialog.startTime}
             </Text>
           </View>
       </View>
@@ -153,7 +151,7 @@ export class Event extends PureComponent {
     //console.log(this.props.navigation.state.params.dialog.color)
     return (
       <KeyboardAvoidingView
-        style={{ flex: 1, backgroundColor: 'white', paddingTop: 20 }}
+        style={{ flex: 1, backgroundColor: 'white', marginTop: 30 }}
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 100}
       >
@@ -167,14 +165,15 @@ export class Event extends PureComponent {
         }
         <ParticipantsBar dialog={this.props.navigation.state.params.dialog}>
         </ParticipantsBar>
-        <FlatList
-          inverted
-          data={history}
-          keyExtractor={this._keyExtractor}
-          renderItem={({ item }) => this._renderMessageItem(item)}
-          onEndReachedThreshold={5}
-          onEndReached={this.getMoreMessages}
-        />
+          <FlatList
+            style={styles.historyContainer}
+            data={history}
+            keyExtractor={this._keyExtractor}
+            renderItem={({ item }) => this._renderMessageItem(item)}
+            onEndReachedThreshold={5}
+            onEndReached={this.getMoreMessages}
+            ListFooterComponent={this.lastElement}
+          />
         <View style={styles.container}>
           <View style={styles.inputContainer}>
             <View>
@@ -184,7 +183,7 @@ export class Event extends PureComponent {
             </View>
             <AutoGrowingTextInput
               style={styles.textInput}
-              placeholder="Message"
+              placeholder="Post"
               placeholderTextColor="#d1d1d1"
               value={messageText}
               onChangeText={this.onTypeMessage}
@@ -215,6 +214,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
     backgroundColor: "#e3e3e3",
   },
+  historyContainer: {
+    marginTop: 20
+  },
   activityIndicator: {
     position: 'absolute',
     alignSelf: 'center',
@@ -225,7 +227,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '300',
     color: '#8c8c8c',
-    borderRadius: 25,
+    borderRadius: 10,
     paddingHorizontal: 12,
     paddingTop: Platform.OS === 'ios' ? 14 : 10,
     paddingBottom: Platform.OS === 'ios' ? 14 : 10,
@@ -236,11 +238,14 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     marginBottom: Platform.OS === 'ios' ? 15 : 0,
-    marginLeft: -50,
+    marginLeft: -35,
     alignItems: 'center',
     justifyContent: 'center',
     //backgroundColor: "#1897F8",
     borderRadius: 25
+  },
+  lastElement: {
+    paddingBottom: SIZE_SCREEN.height / 5
   },
   attachment: {
     width: 50,

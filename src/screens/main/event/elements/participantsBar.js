@@ -165,19 +165,40 @@ export default class ParticipantsBar extends Component {
     return (
       <View>
         <View style={styles.topMenu}>
-          <TouchableOpacity style={styles.tab} onPress={this.onGoingClicked} onLongPress={() => {this.openModal('Going', this.state.participantData.going)}}>
-            <Text style={styles.title}> Going </Text>
-            <Text style={styles.subTitle}> {this.state.going} Going </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabCenter} onPress={this.onMaybeClicked} onLongPress={() => {this.openModal('Maybe', this.state.participantData.maybe)}}>
-            <Text style={styles.title}> Maybe </Text>
-            <Text style={styles.subTitle}> {this.state.maybe} Maybe </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tab} onPress={this.onCantGoClicked} onLongPress={() => {this.openModal("Can't Go", this.state.participantData.cantGo)}}>
-            <Text style={styles.title}> Can't Go </Text>
-            <Text style={styles.subTitle}> {this.state.cantGo} Can't Go </Text>
-          </TouchableOpacity>
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={this.onGoingClicked} onLongPress={() => {this.openModal('Going', this.state.participantData.going)}}>
+              <View style={[styles.icon, { backgroundColor: "#92E989"}]}> 
+                <Text style={styles.numberTitle}> {this.state.going}</Text>
+              </View>
+              <View>
+                <Text style={styles.subTitle}> Going </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={this.onMaybeClicked} onLongPress={() => {this.openModal('Maybe', this.state.participantData.maybe)}}>
+              <View style={[styles.icon, { backgroundColor: "#FBD375" }]}>
+                <Text style={styles.numberTitle}> {this.state.maybe}</Text>
+              </View>
+              <View>
+                <Text style={styles.subTitle}> Maybe </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.tab}>
+            <TouchableOpacity onPress={this.onCantGoClicked} onLongPress={() => {this.openModal("Can't Go", this.state.participantData.cantGo)}}>
+              <View style={[styles.icon, { backgroundColor: "#FFA2A2" }]}>
+                <Text style={styles.numberTitle}> {this.state.cantGo}</Text>
+              </View>
+              <View>
+                <Text style={styles.subTitle}> Can't Go </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
+
         <View style={styles.modal}>
           <Modal isVisible={this.state.isModalVisible}>
             <View style={styles.content}>
@@ -211,30 +232,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    width: '100%',
+    width: '90%',
     height: SIZE_SCREEN.height/20,
+    paddingBottom: 10,
     borderBottomWidth: 1,
-    borderColor: '#EAEAEA'
+    borderColor: '#EAEAEA',
+    alignSelf: 'center'
+  },
+  icon: {
+    width: 30, 
+    height: 30, 
+    borderRadius: 15,
+    justifyContent: 'center', 
+    alignSelf: 'center'
+  },
+  numberTitle: {
+    fontSize: 16, 
+    alignSelf: 'center',
+    marginRight: 3, 
+    color: '#FFFFFF'
   },
   tab: {
-    paddingHorizontal: 45,
-    textAlign: 'center',
+    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
-  },
-  tabCenter: {
-    paddingHorizontal: 45,
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   subTitle: {
     color: 'grey',
-    fontSize: 10,
+    fontSize: 12,
+    alignSelf: 'center',
+    paddingTop: 5
   },
   title: {
     fontSize: 16,
-    fontWeight: '600'
+    fontWeight: '600',
+    alignSelf: 'center'
   },
   modalTitle: {
     paddingVertical: 20,
