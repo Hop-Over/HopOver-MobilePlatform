@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, Platform, Image, Linking } from 'react-native'
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, Modal, FlatList, Platform, Image, Linking } from 'react-native'
 import ImageViewer from 'react-native-image-zoom-viewer'
 import store from '../../../store'
 import Avatar from '../../components/avatar'
@@ -11,6 +11,7 @@ import Video from 'react-native-video';
 import VideoPlayer from 'react-native-video-controls';
 import LinearGradient from 'react-native-linear-gradient';
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput'
+import EventService from '../../../services/event-service'
 
 const fullWidth = Dimensions.get('window').width
 const fullHeight = Dimensions.get('window').height
@@ -26,12 +27,16 @@ export default class Post extends Component {
       color: props.color,
       gradientColor: props.gradientColor,
       isMessagePress: false,
-      threads: {} 
+      repliesOpen: false, 
+      updateThreads: false, 
+      replyBox: null,
+      threads: this.props.threads
     }
     this.isAtachment = props.message.attachment
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+
+  async shouldComponentUpdate(nextProps, nextState) {
     //console.log("NEXT PROPS:" + nextProps.color)
     //console.log("NEXT STATE: " + nextState.color)
     if (nextProps.message.send_state != nextState.send_state ||
@@ -45,12 +50,14 @@ export default class Post extends Component {
     } else if (nextProps.gradientColor != this.state.gradientColor) {
       this.setState({ gradientColor: nextProps.gradientColor })
       return true
-    }
-    else {
-      return false
-    }
+    } else if (nextState.repliesOpen != this.state.repliesOpen){
+      return true      
+    } else if (nextState.updateThreads != this.state.updateThreads) {
+      this.setState({replyBox: null})
+      return true
+    } 
+    return false 
   }
-
 
   renderAttachment = (location) => {
     const { message } = this.props
@@ -127,17 +134,47 @@ export default class Post extends Component {
     this.setState({ isModal: !this.state.isModal })
   }
 
+  toggleReplies = () => {
+    this.setState({repliesOpen: !this.state.repliesOpen })
+  }
+
   renderHeader = () => {
     return <View style={[{ margin: Platform.OS === 'ios' ? 35 : 15 }, { position: 'absolute', zIndex: 10 }]}>
       <Icon name="close" size={30} color='white' onPress={this.handleModalState} />
     </View>
   }
 
-  onTypeThread = (messageId, threadText) => this.state.threads[messageId] = threadText
+  onSubmitThread = async () => {
+    //console.log(this.props.threads)
+    if (this.state.replyBox.length > 0){
+      const messageId = this.props.message.id
+      const senderId = this.props.message.sender_id
+      const eventId = this.props.eventId
+      const threadText = this.state.replyBox
+      const sentDateTime = Date.now()
+      EventService.addEventThread(eventId, messageId,threadText, senderId, sentDateTime)
+      this.state.threads.push({ body: threadText, sender_id: senderId, date_sent: sentDateTime })
+      this.setState({updateThreads: true})
+    }
+  }
+
+  onTypeThread = (threadText) => {
+    this.state.replyBox = threadText
+  }
+
+  _renderReplyItem = (reply) => {
+    return (
+    <View style={styles.replyContainer}> 
+      <Text style={styles.replyText}> {reply.body}</Text>
+    </View>
+    )
+  }
+  
+  _keyExtractor = (item, index) => item.date_sent.toString();
 
   render() {
-    const { message, otherSender } = this.props
-    const { threads } = this.state
+    const { message, otherSender} = this.props
+    const threads = this.state.threads
     //console.log(this.state.color)
     if (this.isAtachment) { console.log(message.attachment[0]) }
     const { isModal } = this.state
@@ -212,16 +249,44 @@ export default class Post extends Component {
                           {getTime(message.date_sent)}
                         </Text>
                       </View>
+                      <View>
+                        {threads.length < 1 ? null :
+                          <View>
+                            {this.state.repliesOpen ?
+                              <View>
+                                <TouchableOpacity onPress={this.toggleReplies} style={styles.viewRepliesHeader}>
+                                  {threads.length > 1 ?
+                                    <Text style={styles.replyHeaderText}> Hide {threads.length} Replies  </Text> :
+                                    <Text style={styles.replyHeaderText}> Hide {threads.length} Reply  </Text>}
+                                  <Icon name="up" color={"#a9a9a9"} size={14} style={[{ alignSelf: 'center' }]} />
+                                </TouchableOpacity>
+                                <FlatList
+                                  data={threads}
+                                  keyExtractor={this._keyExtractor}
+                                  renderItem={({ item }) => this._renderReplyItem(item)}
+                                />
+                              </View> :
+                              <TouchableOpacity onPress={this.toggleReplies} style={styles.viewRepliesHeader}>
+                                {threads.length > 1 ?
+                                  <Text style={styles.replyHeaderText}> View {threads.length} Replies  </Text> :
+                                  <Text style={styles.replyHeaderText}> View {threads.length} Reply  </Text>}
+                                <Icon name="down" color={"#a9a9a9"} size={14} style={[{ alignSelf: 'center' }]} />
+                              </TouchableOpacity>}
+                          </View>
+                        }
+                      </View>
                       <AutoGrowingTextInput
                         style={styles.textInput}
                         placeholder="Reply"
                         placeholderTextColor="#d1d1d1"
-                        value={message.id in threads ? threads.message.id : null}
+                        value={this.state.replyBox}
                         onChangeText={this.onTypeThread}
                         maxHeight={170}
                         minHeight={40}
                         maxWidth={fullWidth - 40}
                         enableScrollToCaret
+                        blurOnSubmit={true}
+                        onSubmitEditing={this.onSubmitThread}
                       />
                     </View>
                   </View>
@@ -256,16 +321,44 @@ export default class Post extends Component {
                           {getTime(message.date_sent)}
                         </Text>
                       </View>
+                      <View> 
+                        {threads.length < 1 ? null : 
+                          <View>
+                            {this.state.repliesOpen ?
+                            <View>
+                            <TouchableOpacity onPress={this.toggleReplies} style={styles.viewRepliesHeader}>
+                              {threads.length > 1 ?
+                                <Text style={styles.replyHeaderText}> Hide {threads.length} Replies  </Text> :
+                                <Text style={styles.replyHeaderText}> Hide {threads.length} Reply  </Text>}
+                              <Icon name="up" color={"#a9a9a9"} size={14} style={[{ alignSelf: 'center' }]} />
+                            </TouchableOpacity>
+                                <FlatList
+                                  data={threads}
+                                  keyExtractor={this._keyExtractor}
+                                  renderItem={({ item }) => this._renderReplyItem(item)}
+                                />
+                            </View>: 
+                            <TouchableOpacity onPress={this.toggleReplies} style={styles.viewRepliesHeader}> 
+                              {threads.length > 1 ?
+                              <Text style={styles.replyHeaderText}> View {threads.length} Replies  </Text>:
+                              <Text style={styles.replyHeaderText}> View {threads.length} Reply  </Text>}
+                                <Icon name="down" color={"#a9a9a9"} size={14} style={[{alignSelf: 'center'}]} /> 
+                            </TouchableOpacity>}
+                          </View>
+                        }
+                      </View>
                       <AutoGrowingTextInput
                         style={styles.textInput}
                         placeholder="Reply"
                         placeholderTextColor="#d1d1d1"
-                        value={message.id in threads ? threads.message.id : null}
+                        value={this.state.replyBox}
                         onChangeText={this.onTypeThread}
                         maxHeight={170}
                         minHeight={40}
                         maxWidth={fullWidth-40}
                         enableScrollToCaret
+                        blurOnSubmit={true}
+                        onSubmitEditing={this.onSubmitThread}
                       />
                     </View>
                   </View>
@@ -288,6 +381,36 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
     borderBottomRightRadius: 2,
+  },
+  viewRepliesHeader: {
+    paddingVertical: 5,
+    borderColor: '#00000029', 
+    backgroundColor: '#FFFFFF',
+    borderRightWidth: 1,
+    borderLeftWidth: 1, 
+    borderBottomWidth: 1, 
+    flexDirection: 'row',
+    paddingLeft: 10,
+    alignItems: 'center',
+  },
+  replyContainer: {
+    paddingVertical: 5,
+    borderColor: '#00000029',
+    backgroundColor: '#FFFFFF',
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingLeft: 10,
+    alignItems: 'center',
+  },
+  replyHeaderText: {
+    fontSize: 14,
+    color: "#a9a9a9"
+  },
+  replyText: {
+    fontSize: 14,
+    color: "#323232"
   },
   textInput: {
     borderColor: '#00000029', 

@@ -139,11 +139,12 @@ class People extends Component {
           }
         })
       var friendIds = friends.map(Number)
-
         this.setState({friendId: friends})
         this.setState({pendingId: pending})
     })
     await UserService.getOccupants(this.state.friendId)
+    //friendInfo = await ChatService.getUserFromServerById(this.state.friendId[0])
+    //console.log(friendInfo.items)
     this.setState({isLoader: false})
   }
 

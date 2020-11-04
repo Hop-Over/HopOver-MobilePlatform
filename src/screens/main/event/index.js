@@ -22,6 +22,7 @@ import ImagePicker from 'react-native-image-crop-picker'
 import ParticipantsBar from './elements/participantsBar'
 import { DIALOG_TYPE, SIZE_SCREEN } from '../../../helpers/constants'
 import LinearGradient from 'react-native-linear-gradient';
+import EventService from '../../../services/event-service'
 
 
 export class Event extends PureComponent {
@@ -85,12 +86,27 @@ export class Event extends PureComponent {
       .then(amountMessages => {
         amountMessages === 100 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
         // amountMessages === 5 ? this.needToGetMoreMessage = true : this.needToGetMoreMessage = false
-        this.setState({ activeIndicator: false })
       })
+    var threads = await this.getThreads()
+    await this.setState({threads: threads})
+    this.setState({ activeIndicator: false })
+    //console.log(this.state.threads)
   }
 
   componentWillUnmount() {
     ChatService.resetSelectedDialogs()
+  }
+
+  getThreads = async () => {
+    let dialog = this.props.navigation.state.params.dialog
+    var threads = await EventService.getEventThreads(dialog.id)
+    var cleanedThreads = {}
+    if (threads != null){
+      for ([key, value] of Object.entries(threads)) {
+        cleanedThreads[key] = Object.values(threads[key])
+      }
+    }
+    return cleanedThreads
   }
 
   getMoreMessages = () => {
@@ -138,9 +154,12 @@ export class Event extends PureComponent {
   _renderMessageItem(message) {
     const { user } = this.props.currentUser
     const { dialog } = this.props.navigation.state.params
+    const messageId = message.id
+    const threads = this.state.threads
+    console.log(threads)
     const isOtherSender = message.sender_id !== user.id ? true : false
     return (
-      <Post otherSender={isOtherSender} message={message} key={message.id} gradientColor={dialog.gradientColor} color={dialog.color} />
+      <Post otherSender={isOtherSender} eventId={dialog.id} threads={messageId in threads ? threads[messageId] : []} message={message} key={messageId} gradientColor={dialog.gradientColor} color={dialog.color} />
     )
   }
 
@@ -163,6 +182,9 @@ export class Event extends PureComponent {
             </View>
           )
         }
+        <View style={styles.totalContainer}>
+          {this.state.activeIndicator ? null : 
+        <View>
         <ParticipantsBar dialog={this.props.navigation.state.params.dialog}>
         </ParticipantsBar>
           <FlatList
@@ -174,30 +196,32 @@ export class Event extends PureComponent {
             onEndReached={this.getMoreMessages}
             ListFooterComponent={this.lastElement}
           />
-        <View style={styles.container}>
-          <View style={styles.inputContainer}>
-            <View>
-              <TouchableOpacity onPress={this.sendAttachment} style={styles.attachment}>
-                <Icon name="add" size={40} color="white" />
-              </TouchableOpacity>
+        </View>}
+      </View>
+          <View style={styles.container}>
+            <View style={styles.inputContainer}>
+              <View>
+                <TouchableOpacity onPress={this.sendAttachment} style={styles.attachment}>
+                  <Icon name="add" size={40} color="white" />
+                </TouchableOpacity>
+              </View>
+              <AutoGrowingTextInput
+                style={styles.textInput}
+                placeholder="Post"
+                placeholderTextColor="#d1d1d1"
+                value={messageText}
+                onChangeText={this.onTypeMessage}
+                maxHeight={170}
+                minHeight={50}
+                enableScrollToCaret
+              />
             </View>
-            <AutoGrowingTextInput
-              style={styles.textInput}
-              placeholder="Post"
-              placeholderTextColor="#d1d1d1"
-              value={messageText}
-              onChangeText={this.onTypeMessage}
-              maxHeight={170}
-              minHeight={50}
-              enableScrollToCaret
-            />
+            <TouchableOpacity>
+              <LinearGradient colors={[dialog.gradientColor[0], dialog.gradientColor[1]]} useAngle={true} style={[styles.button]}>
+                <Icon name="arrow-upward" type="MaterialIcons" size={32} color="white" onPress={this.sendMessage} />
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity>
-            <LinearGradient colors={[dialog.gradientColor[0], dialog.gradientColor[1]]} useAngle={true} style={[styles.button]}>
-            <Icon name="arrow-upward" type="MaterialIcons" size={32} color="white" onPress={this.sendMessage} />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
       </KeyboardAvoidingView>
     )
   }
@@ -213,6 +237,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 35,
     backgroundColor: "#e3e3e3",
+  },
+  totalContainer: {
+    flex: 1,
+    flexDirection: 'column'
   },
   historyContainer: {
     marginTop: 20

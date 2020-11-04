@@ -23,6 +23,36 @@ class EventService{
     return data
   }
 
+  getEventThreads = async (eventId) => {
+    const fetchUrl = config.eventConfig.eventUrl + eventId + "/threads.json"
+    const response = await fetch(fetchUrl)
+    const data = await response.json()
+    return data
+  }
+
+  addEventThread = async (eventId, messageId, threadText, senderId, sentDateTime) => {
+    const postUrl = config.eventConfig.eventUrl + eventId + "/threads/" + messageId + ".json"
+    const exists = await fetch(postUrl)
+    if (exists != null){
+      const data = { body: threadText, sender_id: senderId, date_sent: sentDateTime}
+      fetch(postUrl, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      .catch(err => console.log(err))
+    } else {
+      postUrl = config.eventConfig.eventUrl + eventId + "/threads.json"
+      const data = {}
+      data[messageId] = { body: threadText, sender_id: senderId, date_sent: sentDateTime }
+      fetch(postUrl, {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+      })
+      .catch(err => console.log(err))
+    }
+    
+  }
+
   updateParticipantData = (eventId, participantData) => {
     const postUrl = config.eventConfig.eventUrl + eventId +  ".json"
 
