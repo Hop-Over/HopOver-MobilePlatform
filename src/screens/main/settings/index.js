@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import DialogInput from 'react-native-dialog-input';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, KeyboardAvoidingView, Alert } from 'react-native'
 import AuthService from '../../../services/auth-service'
+import FeedbackService from '../../../services/feedback-service'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import ImgPicker from '../../components/imgPicker'
+import store from '../../../store'
 import { StackActions, NavigationActions } from 'react-navigation';
 
 
@@ -15,7 +18,9 @@ export default class Settings extends Component {
     this.state = {
       isLoader: false,
       login: user.login,
-      name: user.full_name
+      name: user.full_name,
+      userId: store.getState().currentUser.user.id,
+      isDialogVisible: false
     }
   }
 
@@ -88,6 +93,26 @@ export default class Settings extends Component {
 
   updateName = name => this.setState({ name })
 
+  feedbackReport = () => {
+    this.showDialog(true)
+  }
+
+  showDialog = (value) =>{
+    this.setState({isDialogVisible: value})
+  }
+
+  sendInput = (inputText) =>{
+    console.log(inputText)
+    this.sendFeedback(inputText)
+    this.showDialog(false)
+  }
+
+  sendFeedback = (data) => {
+    const userId = this.state.userId
+    const bugId = "bug-" + Math.floor(Date.now() / 1000).toString()
+    FeedbackService.sendFeedback(userId, bugId, data)
+  }
+
   render() {
     const { isLoader, name, login, } = this.state
     const user = this.props.navigation.getParam('user')
@@ -143,6 +168,20 @@ export default class Settings extends Component {
             </View>
           </TouchableOpacity>
         </View>
+        <View>
+          <TouchableOpacity onPress={this.feedbackReport}>
+            <View style={styles.buttonFeedback}>
+              <Text >Send Feedback/Report Bug</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <DialogInput isDialogVisible={this.state.isDialogVisible}
+            title={"Send feedback"}
+            message={"Report a bug, send feedback, or just say hi!"}
+            hintInput ={"FEEDBACK"}
+            submitInput={ (inputText) => {this.sendInput(inputText)} }
+            closeDialog={ () => {this.showDialog(false)}}>
+        </DialogInput>
       </KeyboardAvoidingView>
     )
   }
@@ -206,5 +245,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginVertical: -7,
     bottom: 0,
+  },
+  buttonFeedback: {
+    marginVertical: 5,
   }
 })
