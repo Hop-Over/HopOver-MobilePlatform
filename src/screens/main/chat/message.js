@@ -74,7 +74,7 @@ export default class Message extends Component {
   }
 
   isLink = (msg) => {
-    if (msg.toLowerCase().includes('.')){
+    if (typeof msg == String && msg.toLowerCase().includes('.')){
       return true
     }
     return false
