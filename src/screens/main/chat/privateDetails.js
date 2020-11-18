@@ -233,6 +233,7 @@ export default class PrivateDetails extends Component {
             messageArr.push(currObj)
         }
     }
+    
     var result = {"messages": messageArr}
     if(result.length == 0){
         alert("No search results with \"" + phrase + "\" were found :(")
