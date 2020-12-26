@@ -19,6 +19,7 @@ import Message from "./message";
 import Avatar from '../../components/avatar'
 import { DIALOG_TYPE } from "../../../helpers/constants";
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput'
+import LinearGradient from 'react-native-linear-gradient';
 
 export class Search extends PureComponent {
 	constructor(props) {
@@ -146,9 +147,6 @@ export class Search extends PureComponent {
 			<TouchableOpacity onPress={()=>{this.prevSearch()}}>
 				<Icon name="keyboard-arrow-down" size={35} color='#48A6E3'/>
 			</TouchableOpacity>
-			{/* <TouchableOpacity>
-			<Text>Done</Text>
-			</TouchableOpacity> */}
 		</View>
 		)
 	}
@@ -157,10 +155,12 @@ export class Search extends PureComponent {
 	_keyExtractor = (item, index) => index.toString();
 
 	_renderMessageItem(message) {
-	const { user } = this.props.currentUser;
+    const { user } = this.props.currentUser;
+    const { dialog } = this.props.navigation.state.params
 	const isOtherSender = message.sender_id !== user.id ? true : false;
-	return (
-		<Message otherSender={isOtherSender} message={message} key={message.id} />
+    
+    return (
+		<Message otherSender={isOtherSender} gradientColor={dialog.gradientColor} color={dialog.color} message={message} key={message.id} />
 	);
 	}
 
@@ -219,6 +219,7 @@ export class Search extends PureComponent {
 			/>
 		</View>
 		</KeyboardAvoidingView>
+
 	);
 	}
 }

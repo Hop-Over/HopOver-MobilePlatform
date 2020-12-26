@@ -34,7 +34,7 @@ export default class Message extends Component {
     //console.log("NEXT PROPS:" + nextProps.color)
     //console.log("NEXT STATE: " + nextState.color)
     if (nextProps.message.send_state != nextState.send_state ||
-      nextState.isModal !== this.state.isModal || 
+      nextState.isModal !== this.state.isModal ||
       nextState.isMessagePress !== this.state.isMessagePress
     ) {
       return true
@@ -74,7 +74,7 @@ export default class Message extends Component {
   }
 
   isLink = (msg) => {
-    if (typeof msg == String && msg.toLowerCase().includes('.')){
+    if (msg !== null && msg.toLowerCase().includes('.')){
       return true
     }
     return false
@@ -140,6 +140,7 @@ export default class Message extends Component {
     if(this.isAtachment){ console.log(message.attachment[0]) }
     const { isModal } = this.state
     const user = otherSender ? store.getState().users[message.sender_id] : '.'
+    console.log('Colour : ' + this.state.gradientColor[0] + ', ' + this.state.gradientColor[1])
     return (
       <View>
         {this.isAtachment &&
