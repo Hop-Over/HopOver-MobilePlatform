@@ -295,11 +295,11 @@ export default class EventDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Event </Text>
-        <AddressModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        <AddressModal isAdmin={true} navigation={this.props.navigation} dialog={this.state.dialog}>
         </AddressModal>
-        <DateModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        <DateModal isAdmin={true} navigation={this.props.navigation} dialog={this.state.dialog}>
         </DateModal>
-        <TimeModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        <TimeModal isAdmin={true} navigation={this.props.navigation} dialog={this.state.dialog}>
         </TimeModal>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
@@ -322,6 +322,12 @@ export default class EventDetails extends Component {
   ) :
   <View>
   <Text style={styles.labelTitle}> Event </Text>
+      <AddressModal isAdmin={false} navigation={this.props.navigation} dialog={this.state.dialog}>
+      </AddressModal>
+      <DateModal isAdmin={false} navigation={this.props.navigation} dialog={this.state.dialog}>
+      </DateModal>
+      <TimeModal isAdmin={false} navigation={this.props.navigation} dialog={this.state.dialog}>
+      </TimeModal>
     <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
         <View style={styles.renderAvatar}>
           <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />

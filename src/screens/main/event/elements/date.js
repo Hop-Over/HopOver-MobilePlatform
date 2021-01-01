@@ -19,7 +19,9 @@ export default class DateSelect extends Component {
     }
 
     toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible });
+        if (this.props.isAdmin){
+            this.setState({ isModalVisible: !this.state.isModalVisible });
+        }
     }
 
     onDonePress = (date) => {
