@@ -80,7 +80,42 @@ class EventService{
     })
     .catch(err => console.log(err))
   }
+
+  updateLocation = (eventId, location) => {
+    const postUrl = config.eventConfig.eventUrl + eventId + ".json"
+    fetch(postUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        location: location
+      })
+    })
+      .catch(err => console.log(err))
+  }
+
+  updateDate = (eventId, date) => {
+    const postUrl = config.eventConfig.eventUrl + eventId + ".json"
+    fetch(postUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        startDate: date
+      })
+    })
+      .catch(err => console.log(err))
+  }
+
+  updateTime = (eventId, time) => {
+    const postUrl = config.eventConfig.eventUrl + eventId + ".json"
+    fetch(postUrl, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        startTime: time
+      })
+    })
+      .catch(err => console.log(err))
+  }
 }
+
+
 
 let eventService = new EventService()
 Object.freeze(eventService)

@@ -25,6 +25,10 @@ import { popToTop } from '../../../routing/init'
 import store from '../../../store'
 import Modal from 'react-native-modal';
 import ColorSelect from './elements/colorSelect'
+import AddressModal from './elements/location'
+import DateModal from './elements/date'
+import TimeModal from './elements/time'
+import EventService from '../../../services/event-service'
 
 export default class EventDetails extends Component {
 
@@ -291,6 +295,12 @@ export default class EventDetails extends Component {
 	  (
 		<View>
       <Text style={styles.labelTitle}> Event </Text>
+        <AddressModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        </AddressModal>
+        <DateModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        </DateModal>
+        <TimeModal navigation={this.props.navigation} dialog={this.state.dialog}>
+        </TimeModal>
 			<TouchableOpacity style={styles.renderHeaderContainer} onPress={this.goToContactsScreen}>
           <View style={styles.renderAvatar}>
             <Icon name="person-add" size={35} color='black' style={{ marginRight: 15 }} />
@@ -311,7 +321,7 @@ export default class EventDetails extends Component {
 		</View>
   ) :
   <View>
-  <Text style={styles.labelTitle}> Group </Text>
+  <Text style={styles.labelTitle}> Event </Text>
     <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
         <View style={styles.renderAvatar}>
           <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />

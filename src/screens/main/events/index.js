@@ -17,6 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SIZE_SCREEN } from '../../../helpers/constants'
 
 
+
 class Events extends Component {
   static currentUserInfo = ''
   dialogs = []

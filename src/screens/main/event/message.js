@@ -50,6 +50,9 @@ export default class Post extends Component {
     } else if (nextProps.gradientColor != this.state.gradientColor) {
       this.setState({ gradientColor: nextProps.gradientColor })
       return true
+    } else if (nextProps.gradientColor != this.state.gradientColor) {
+        this.setState({ gradientColor: nextProps.gradientColor })
+        return true
     } else if (nextState.repliesOpen != this.state.repliesOpen){
       return true      
     } else if (nextState.updateThreads != this.state.updateThreads) {
