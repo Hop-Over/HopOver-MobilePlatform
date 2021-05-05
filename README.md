@@ -1,6 +1,4 @@
-# Chat code sample for React Native for ConnectyCube platform
-
-This README introduces [ConnectyCube](https://connectycube.com) Chat code sample for React Native
+# Hop Over Mobile Platform
 
 Project contains the following features implemented:
 
@@ -15,7 +13,12 @@ Project contains the following features implemented:
 - File attachments
 - Group chat info
 - Group chat: add/remove participants
-- Push Notifications for chat messages when a user is not in the app
+- Private Event Creation
+- Event info
+- Event Location with Google Location Integration
+- Group Chat and Event Location Sharing using native map
+- Group Chat and Event chat colors 
+- Event threads on posts
 
 ## Documentation
 
@@ -29,20 +32,15 @@ ConnectyCube Chat API documentation - [https://developers.connectycube.com/react
 
 ## Roadmap
 
-- Delete chat functionality
-- Edit messages
-- Delete messages
+- Native push notifications
 
-## Quick start and develop
+## Quick start
 
 Quick start [React Native](https://facebook.github.io/react-native/docs/getting-started.html) app.
 
 Prepare environment for React Native and:
 
 1. Clone the project;
-2. Install node_modules: `cd connectycube-js-samples/RNChat && npm install`
-3. Run `npm run ios` or `npm run android`.
-
-## Can't build yourself?
-
-Got troubles with building React Native code sample? Just create an issue at [Issues page](https://github.com/ConnectyCube/connectycube-reactnative-samples/issues) - we will create the sample for you. For FREE!
+2. Install node_modules: `npm install`
+3. Launch environment: `npm start`
+4. Run `npm run ios` or `npm run android`.
