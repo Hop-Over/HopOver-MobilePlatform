@@ -23,6 +23,7 @@ import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
+import ModalTester from './elements/colorSelect'
 
 export default class PrivateDetails extends Component {
 
@@ -38,7 +39,8 @@ export default class PrivateDetails extends Component {
 	  occupantsInfo: isNeedFetchUsers ? [] : UsersService.getUsersInfoFromRedux(dialog.occupants_ids),
 	  isDialogVisible: false,
 	  searchKeyword: '',
-    showUsers: false
+    showUsers: false,
+    dialog: this.props.navigation.getParam('dialog', false)
 	}
   }
 
@@ -69,7 +71,7 @@ export default class PrivateDetails extends Component {
 	this.setState({ isPickImage: image })
   this.updateDialog()
   }
-  
+
   goToSharedMediaScreen = () => {
     const { navigation } = this.props
     const dialog = this.props.navigation.getParam('dialog',false)
@@ -155,6 +157,12 @@ export default class PrivateDetails extends Component {
     }
   }
 
+  goToChatMap = () => {
+    const { navigation } = this.props
+    const dialog = this.props.navigation.getParam('dialog',false)
+    navigation.push('ChatMap', {dialog})
+  }
+
   goToContactDeteailsScreen = (dialog) => {
     const { navigation } = this.props
     const chatDialog = this.props.navigation.getParam('dialog',false)
@@ -211,19 +219,43 @@ export default class PrivateDetails extends Component {
 	}else{
 	this.handleCancel()
 	const dialog = this.props.navigation.getParam('dialog', false)
-	var result = []
-	ChatService.search(dialog.id, phrase)
-		.then(response => {
-			if(response.messages.length == 0){
-				alert("No search results with \"" + phrase + "\" were found :(")
-			}else{
-				const searchResponse = response.messages
-				searchResponse.sort(function(a, b){
-					return b.date_sent - a.date_sent;
-				});
-				this.goToSearchScreen(searchResponse)
-			}
-		})
+    var messages = ChatService.getMessagesByDialogId(dialog.id)
+    var messageArr = []
+    for (let i = 0; i < messages.length; i++) {
+        if(messages[i].body.includes(phrase)){
+            var currObj = {
+                "_id": messages[i].dialog_id,
+                "chat_dialog_id": messages[i].dialog_id,
+                "date_sent": messages[i].date_sent,
+                "message": messages[i].body,
+                "sender_id": messages[i].sender_id,
+            }
+            messageArr.push(currObj)
+        }
+    }
+    
+    var result = {"messages": messageArr}
+    if(result.length == 0){
+        alert("No search results with \"" + phrase + "\" were found :(")
+    }else{
+        const searchResponse = result.messages
+        searchResponse.sort(function(a, b){
+            return b.date_sent - a.date_sent;
+        });
+        this.goToSearchScreen(searchResponse)
+    }
+	// ChatService.search(dialog.id, phrase)
+	// 	.then(response => {
+	// 		if(response.messages.length == 0){
+	// 			alert("No search results with \"" + phrase + "\" were found :(")
+	// 		}else{
+	// 			const searchResponse = response.messages
+	// 			searchResponse.sort(function(a, b){
+	// 				return b.date_sent - a.date_sent;
+	// 			});
+	// 			this.goToSearchScreen(searchResponse)
+	// 		}
+	// 	})
 	}
   }
 
@@ -254,6 +286,8 @@ export default class PrivateDetails extends Component {
   _renderFlatListFooter = () => {
 	return(
   <View>
+    <ModalTester dialog={this.state.dialog} navigation={this.props.navigation} title={"Chat Color"}>
+    </ModalTester>
     <Text style={styles.labelTitle}> Media</Text>
     <View style={styles.searchContainer}>
     <TextInput style={styles.searchInput}
@@ -276,14 +310,23 @@ export default class PrivateDetails extends Component {
     </View>
   </TouchableOpacity>
 
+  <TouchableOpacity style={styles.renderHeaderContainer} onPress={() => this.goToChatMap()}>
+    <View style={styles.renderAvatar}>
+    <Icon name="room" size={35} color='black' style={{ marginRight: 15 }} />
+    </View>
+    <View>
+    <Text style={styles.nameTitle}>Chat Map</Text>
+    </View>
+  </TouchableOpacity>
+
 
   <Text style={styles.labelTitle}> More actions </Text>
-  <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.leaveGroup}>
+  <TouchableOpacity style={[styles.renderHeaderContainer, styles.leaveButton]} onPress={this.leaveGroup}>
 	  <View style={styles.renderAvatar}>
-		<Icon name="delete" size={35} color='black' style={{ marginRight: 15 }} />
+		<Icon name="exit-to-app" size={20} color='white' style={{ marginRight: 15 }} />
 	  </View>
 	  <View>
-		<Text style={styles.nameTitle}>Delete Chat</Text>
+		<Text style={styles.leaveTitle}>Delete Chat</Text>
 	  </View>
 	</TouchableOpacity>
   </View>
@@ -292,9 +335,6 @@ export default class PrivateDetails extends Component {
   render() {
     const { dialogName, dialogPhoto, isLoader, occupantsInfo } = this.state
     const dialog = this.props.navigation.getParam('dialog', false)
-    //console.log(this.currentUser())
-    //console.log(this.isAdmin())
-    //console.log(this.state.showUsers)
     return (
       <KeyboardAvoidingView style={styles.container}>
         {isLoader &&
@@ -388,12 +428,12 @@ const styles = StyleSheet.create({
 		paddingVertical: 7,
     marginLeft: 30,
 	},
-	renderHeaderContainer: {
+  renderHeaderContainer: {
 		width: SIZE_SCREEN.width - 30,
 		flexDirection: 'row',
 		borderColor: 'grey',
 		alignItems: 'center',
-		paddingVertical: 7
+		paddingVertical: 7,
 	},
 	renderAvatar: {
 		flexDirection: 'row',
@@ -421,5 +461,27 @@ const styles = StyleSheet.create({
 	},
   searchContainer : {
     paddingBottom: 10,
+  },
+  leaveButton:{
+    backgroundColor: "red",
+    justifyContent: 'center',
+    width: SIZE_SCREEN.width/2,
+    marginLeft: SIZE_SCREEN.width/2 - SIZE_SCREEN.width/4,
+    borderRadius: 16,
+    marginTop: 50,
+    paddingTop: 18,
+    paddingBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
   }
 })

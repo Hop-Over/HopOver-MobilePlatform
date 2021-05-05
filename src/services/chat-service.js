@@ -1,7 +1,7 @@
 import ConnectyCube from 'react-native-connectycube'
 import Dialog from '../models/dialogs'
 import { AppState } from 'react-native'
-import { fetchDialogs, sortDialogs, updateDialog, addNewDialog, deleteDialog } from '../actions/dialogs'
+import { fetchDialogs, fetchEvents, sortDialogs, updateDialog, addNewDialog, deleteDialog } from '../actions/dialogs'
 import { pushMessage, fetchMessages, lazyFetchMessages, updateMessages, deleteAllMessages } from '../actions/messages'
 import { selectDialog, unselectDialog } from '../actions/selectedDialog'
 import { fetchUsers } from '../actions/users'
@@ -31,12 +31,12 @@ class ChatService {
     let privatChatIdsUser = []
 
     const dialogs = dialogsFromServer.items.map(elem => {
-      if (elem.type === DIALOG_TYPE.PRIVATE) {
-        elem.occupants_ids.forEach(elem => {
-          elem != currentUserId.id && privatChatIdsUser.push(elem)
-        })
-      }
-      return new Dialog(elem)
+        if (elem.type === DIALOG_TYPE.PRIVATE) {
+          elem.occupants_ids.forEach(elem => {
+            elem != currentUserId.id && privatChatIdsUser.push(elem)
+          })
+        }
+        return new Dialog(elem)
     })
 
     if (privatChatIdsUser.length !== 0) {
@@ -95,7 +95,6 @@ class ChatService {
   async sendMessageAsAttachment(dialog, recipient_id, msg, attachments) {
     //create fake data for render img
     var attachment = preparationAttachment(attachments)
-    { console.log(attachment) }
     msg.extension.attachments = [attachment]
     if(attachment.type.includes("image")){
         msg.body = 'Image Attachment'
@@ -106,6 +105,7 @@ class ChatService {
     store.dispatch(pushMessage(message, dialog.id))
 
     // create real data for attachment
+    attachments = {"height": 697, "mime": "image/jpeg", "modificationDate": "1596669030000", "path": "https://i.imgur.com/Xpl5hCJ.jpeg", "size": 51404, "width": 526}
     const response = await this.uploadPhoto(attachments)
     const updateAttach = preparationAttachment(attachments, response.uid)
     msg.extension.attachments = [updateAttach]
@@ -216,15 +216,12 @@ class ChatService {
         }
     }else if(highLow === 0){
         var lastMessageDate = currentMessages[0]
-        {console.log('body: ' + lastMessageDate.body)}
         var filter = {
           chat_dialog_id: dialog.id,
           date_sent: { lte: lastMessageDate.date_sent },
           sort_desc: 'date_sent'
         }
     }
-    
-    {console.log(lastMessageDate.body)}
     const updateObj = Object.assign(dialog, { last_messages_for_fetch: lastMessageDate.date_sent })
     const moreHistoryFromServer = await ConnectyCube.chat.message.list(filter)
     const messages = moreHistoryFromServer.items.map(elem => new Message(elem))
@@ -241,7 +238,7 @@ class ChatService {
     return true
   }
 
-  
+
 
 
 
@@ -338,6 +335,28 @@ class ChatService {
     return newDialog
   }
 
+  async createPrivateEvent(occupants_ids, groupName, img) {
+    const currentUser = this.currentUser
+    occupants_ids.unshift(currentUser.id)
+
+    const params = {
+      type: DIALOG_TYPE.GROUP,
+      occupants_ids,
+      name: groupName,
+      description: 'private_event'
+    }
+
+    const image = img ? await this.uploadPhoto(img) : null
+    if (image) {
+      params.photo = image.uid
+    }
+
+    const dialog = await ConnectyCube.chat.dialog.create(params)
+    const newDialog = new Dialog(dialog)
+    store.dispatch(addNewDialog(newDialog))
+    return newDialog
+  }
+
   addAdmin(dialogId,userId){
     const adminId = [userId]
     ConnectyCube.chat.dialog
@@ -355,8 +374,6 @@ class ChatService {
   }
 
   async uploadPhoto(params) {
-    console.log('params')
-    console.log(params)
     const file = preparationUploadImg(params)
     return ConnectyCube.storage.createAndUpload({ file })
   }
@@ -383,7 +400,6 @@ class ChatService {
 
   async addOccupantsToDialog(dialog_id, occupants) {
     const participantIds = occupants.map(elem => elem.id)
-    { console.log('part: ' + participantIds) }
     const params = {
       push_all: { occupants_ids: participantIds }
     }
@@ -401,8 +417,6 @@ class ChatService {
       pull_all: { occupants_ids: participantIds }
     }
     const response = await ConnectyCube.chat.dialog.update(dialog_id, params)
-    { console.log('response') }
-    { console.log(response) }
     const updateData = new Dialog(response)
     store.dispatch(fetchUsers(occupants))
     store.dispatch(updateDialog(updateData))
@@ -415,10 +429,6 @@ class ChatService {
         chat_dialog_ids: dialog_id,
     }
     const response = await ConnectyCube.chat.search(params)
-    { console.log('search chat') }
-    { console.log(params.search_text) }
-    { console.log(params.chat_dialog_ids) }
-    { console.log(response) }
     return response
   }
 

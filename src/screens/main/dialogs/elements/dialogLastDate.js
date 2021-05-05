@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, StyleSheet } from 'react-native'
 
-export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
+export default function DialogLastDate({ lastDate, lastMessage, updatedDate, isUnread }) {
   function getTime() {
     const monthes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -27,18 +27,17 @@ export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
     } else if (curDay > msgDay) {
       return `${days[msgDay]}`
     } else {
-      return `${(msgHours > 9) ? msgHours : ('0' + msgHours)}:${(msgMinutes > 9) ? msgMinutes : ('0' + msgMinutes)}`
+      return `${(msgHours > 12) ? msgHours - 12 : ('0' + msgHours)}:${(msgMinutes > 9) ? msgMinutes : ('0' + msgMinutes)} ${(msgHours > 12) ? "PM" : "AM"}`
     }
   }
 
-  return <Text style={styles.time} numberOfLines={1}>{getTime()}</Text>
+  return <Text style={isUnread ? [styles.time, {color: "#FFFFFF", fontWeight: '500'}, ] : [styles.time, {color: "grey"}]} numberOfLines={1}>{getTime()}</Text>
 }
 
 const styles = StyleSheet.create({
   time: {
-    color: 'grey',
     lineHeight: 25,
     fontSize: 12,
-    fontWeight: '500'
+    fontWeight: '200'
   }
 })

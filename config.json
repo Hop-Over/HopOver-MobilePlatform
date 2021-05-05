@@ -21,5 +21,14 @@
   "firebaseConfig" :
     {
       "firebaseUrl": "https://hopover-39af1.firebaseio.com/"
-    }
+    },
+  "feedbackConfig": {
+    "feedbackUrl": "https://hopover-feedback.firebaseio.com/"
+  },
+  "eventConfig": {
+    "eventUrl": "https://hopprivate.firebaseio.com/"
+  },
+  "placesKey": {
+    "key": "AIzaSyBxS-ZneuI6SyiPkFAuxYZ91xviCY_066Q"
+  }
 }

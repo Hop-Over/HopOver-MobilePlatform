@@ -1,21 +1,27 @@
 import React, { PureComponent } from 'react'
-import { StyleSheet, View, TextInput, Text, TouchableOpacity, Image } from 'react-native'
+import { StyleSheet, View, TextInput, FlatList, Text, TouchableOpacity, Image } from 'react-native'
 import Avatar from '../../components/avatar'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import ImagePicker from 'react-native-image-crop-picker'
 import { SIZE_SCREEN } from '../../../helpers/constants'
 import ChatService from '../../../services/chat-service'
+import FirebaseService from '../../../services/firebase-service'
 import CreateBtn from '../../components/createBtn'
 import { BTN_TYPE } from '../../../helpers/constants'
 import Indicator from '../../components/indicator'
 import { showAlert } from '../../../helpers/alert'
 import { popToTop } from '../../../routing/init'
+import Modal from 'react-native-modal';
+import ColorModal from './elements/colorSelect'
 export default class CreateDialog extends PureComponent {
 
   state = {
     keyword: '',
     isPickImage: null,
-    isLoader: false
+    isLoader: false,
+    showUsers: false,
+    color: "#1897F8",
+    gradientColors: ['#FF4363', '#F6B5A1'],
   }
 
   renderParticipant = (item) => {
@@ -45,9 +51,11 @@ export default class CreateDialog extends PureComponent {
     })
     ChatService.createPublicDialog(occupants_ids, str, this.state.isPickImage)
       .then((newDialog) => {
+        newDialog['gradientColor'] = this.state.gradientColors
+        FirebaseService.setGradientColor(newDialog.id, this.state.gradientColors)
         this.setState({ isLoader: false })
-        this.props.navigation.dispatch(popToTop)
-        this.props.navigation.push('Chat', { dialog: newDialog, isNeedFetchUsers: true })
+        //this.props.navigation.dispatch(popToTop)
+        this.props.navigation.push('Dialogs')
       })
   }
 
@@ -61,50 +69,106 @@ export default class CreateDialog extends PureComponent {
     })
   }
 
+  toggleShowUsers = () => {
+    const {showUsers} = this.state
+    {!showUsers ? this.setState({showUsers: true}) : this.setState({showUsers: false})}
+  }
+
+  _renderUser = ( {item} ) => {
+    const showUsers = this.state.showUsers
+    return (
+      <View>
+      {showUsers ?
+        (<TouchableOpacity>
+          <View style={styles.renderContainer}>
+          <View style={styles.renderAvatar}>
+            <Avatar
+            photo={item.avatar}
+            name={item.full_name}
+            iconSize="medium"
+            />
+            <Text style={styles.nameTitle}>{item.full_name}</Text>
+          </View>
+        </View>
+        </TouchableOpacity>)
+         : null
+       }
+      </View>
+    )
+  }
+
+  _renderFlatListHeader = () => {
+  const {searchKeyword, showUsers} = this.state
+  return (
+  <View>
+    <TouchableOpacity style={styles.renderHeaderContainer} onPress={this.toggleShowUsers}>
+        <View style={styles.renderAvatar}>
+          <Icon name={!showUsers ? "keyboard-arrow-down" :"keyboard-arrow-up" } size={35} color='black' style={{ marginRight: 15 }} />
+        </View>
+        <View>
+          <Text style={styles.nameTitle}>{!showUsers ? "View members": "Hide members"}</Text>
+        </View>
+    </TouchableOpacity>
+    </View>
+  )}
+
   updateSearch = keyword => this.setState({ keyword })
+
+  setGradientColorState = async (colors) => {
+    await this.setState({gradientColors: colors})
+    console.log(this.state.gradientColors)
+  }
 
   render() {
     const { isPickImage, isLoader } = this.state
     const users = this.props.navigation.getParam('users')
-
     return (
       <View style={styles.container}>
         {isLoader &&
           <Indicator color={'blue'} size={40} />
         }
         <View style={styles.header}>
-          <TouchableOpacity onPress={this.onPickImage} style={styles.picker}>
+          <TouchableOpacity onPress={this.onPickImage}>
             {isPickImage ? (
               <Image
-                style={styles.imgPicker}
+                style={styles.iconPicker}
                 source={{ uri: isPickImage.path }}
               />
             ) :
               <View style={styles.iconPicker}>
-                <Icon name="local-see" size={50} color='#48A6E3' />
+                <Icon name="camera" size={110} color='#323232' />
               </View>
             }
           </TouchableOpacity>
+          <View style={styles.icon}>
+            <Icon name="create" size={20} color='black' />
+          </View>
+        </View>
+        <View style={styles.header}>
           <View style={styles.description}>
             <TextInput
               style={styles.searchInput}
               autoCapitalize="none"
-              placeholder="Group name..."
+              placeholder=""
               returnKeyType="search"
               onChangeText={this.updateSearch}
               placeholderTextColor="grey"
               value={this.state.search}
               maxLength={255}
             />
-            <Text style={styles.descriptionText}>Please provide a group subject and optional group icon</Text>
+            <Text style={styles.descriptionText}>Change Group Name</Text>
           </View>
         </View>
-        <View style={styles.participantsContainer}>
-          {users.map(elem => {
-            return this.renderParticipant(elem)
-          })
-          }
-        </View>
+          <ColorModal colorHandler={this.setGradientColorState.bind(this)}>
+          </ColorModal>
+          <FlatList
+            data={users}
+            ListHeaderComponent={this._renderFlatListHeader}
+            ListFooterComponent={this._renderFlatListFooter}
+            renderItem={this._renderUser}
+            keyExtractor={this.keyExtractor}
+            extraData={this.state}
+          />
         <CreateBtn goToScreen={this.createDialog} type={BTN_TYPE.CREATE_GROUP} />
       </View>
     )
@@ -113,55 +177,74 @@ export default class CreateDialog extends PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    alignItems: 'center',
   },
   header: {
     marginVertical: 20,
-    marginHorizontal: 10,
     flexDirection: 'row',
-  },
-  participantsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  participant: {
-    width: 72,
+  icon: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
     padding: 5,
-    height: 100
+    backgroundColor: 'white',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: 'black'
+  },
+  renderContainer: {
+    width: SIZE_SCREEN.width - 60,
+    borderColor: 'grey',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 7,
+    marginLeft: 40,
   },
   searchInput: {
-    fontSize: 18,
+    fontSize: 14,
     color: 'black',
-    paddingVertical: 5,
-    borderBottomWidth: 1,
-    borderColor: 'grey'
-  },
-  picker: {
-    width: 70,
-    height: 70,
-    marginRight: 10
+    borderBottomWidth: 0.5,
+    borderColor: 'black',
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: "700"
   },
   iconPicker: {
-    width: 70,
-    height: 70,
-    borderRadius: 40,
+    width: 130,
+    height: 130,
+    borderRadius: 130/2,
     borderWidth: 1,
-    borderColor: '#48A6E3',
+    borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center'
-  },
-  imgPicker: {
-    width: 70,
-    height: 70,
-    borderRadius: 40,
   },
   description: {
     width: SIZE_SCREEN.width - 110,
   },
   descriptionText: {
     paddingVertical: 5,
-    color: 'grey',
-    fontSize: 15
-  }
+    color: '#323232',
+    fontSize: 14,
+    alignSelf: 'center'
+  },
+  renderHeaderContainer: {
+    width: SIZE_SCREEN.width - 30,
+    flexDirection: 'row',
+    borderColor: 'grey',
+    alignItems: 'center',
+  },
+  renderAvatar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  nameTitle: {
+    fontSize: 17
+  },
 })

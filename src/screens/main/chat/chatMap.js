@@ -71,6 +71,7 @@ export default class ChatMap extends Component {
     const location = this.state.region
     FirebaseService.shareLocation(userId, dialog.id, location)
     this.setState({sharing: true })
+    console.log(location.latitude + ", " + location.longitude);
   }
 
   getUserNameById = (userId) => {
@@ -180,9 +181,15 @@ export default class ChatMap extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    },
   shareText:{
     color: 'white',
     fontSize: 20,

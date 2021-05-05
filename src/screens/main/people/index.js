@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SafeAreaView, StyleSheet, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
+import { SafeAreaView, StyleSheet, Image, View, FlatList, Text, TextInput, StatusBar, TouchableOpacity, Platform, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import store from '../../../store'
 import Requests from './requests'
@@ -32,7 +32,7 @@ class People extends Component {
       isUpdate: false,
       friendId: [],
       pendingId: [],
-      updateContacts: true,
+      updateContacts: false,
     }
   }
 
@@ -58,16 +58,25 @@ class People extends Component {
   static navigationOptions = ({ navigation }) => {
     People.currentUserInfo = { ...store.getState().currentUser.user }
     return {
+      headerStyle: {borderBottomWidth: 0},
+      headerLeft: (
+        <View style={styles.userIdContainer}>
+          <Text style={[
+            { fontSize: 35, color: 'black', fontWeight: "600" },
+            Platform.OS === 'android' ?
+              { paddingLeft: 13 } :
+              { paddingLeft: 0 }]}>
+            People
+          </Text>
+        </View>
+      ),
       headerTitle: (
-        <Text style={[
-          { fontSize: 22, color: 'black' },
-          Platform.OS === 'android' ?
-            { paddingLeft: 13 } :
-            { paddingLeft: 0 }]}>
-          {People.currentUserInfo.full_name}
-        </Text>
+        <View style={styles.logo}>
+          <Image style={{width: 80, height: 15 }} source={require('../../../../assets/image/text_logo.png')} />
+        </View>
       ),
       headerRight: (
+        <View style={styles.navBarContainer}>
         <TouchableOpacity onPress={() => this.goToSettingsScreen(navigation)}>
           <Avatar
             photo={People.currentUserInfo.avatar}
@@ -75,6 +84,7 @@ class People extends Component {
             iconSize="small"
           />
         </TouchableOpacity>
+        </View>
       ),
     }
   }
@@ -86,33 +96,56 @@ class People extends Component {
     } return null
   }
 
+  componentDidMount(){
+    this.getContacts()
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    if (nextState.updateContacts !== this.state.updateContacts){
+      this.getContacts()
+      this.setState({updateContacts: false})
+      return true
+    }
+    return true
+  }
+
   static goToSettingsScreen = (props) => {
     props.push('Settings', { user: People.currentUserInfo })
   }
 
-  getFriends = async () => {
-    if (this.state.updateContacts){
-      await ContactService.fetchContactList()
-        .then((response) => {
-          let friends = []
-          let pending = []
-          keys = Object.keys(response)
-          keys.forEach(elem => {
-            // Make sure that they are friends and not just a request
-            let contact = response[elem]
-            if(contact["subscription"] === "to" || contact["subscription"] === "from"){
-              friends.push(elem)
-            } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
-              pending.push(elem)
-            }
-          })
-          this.setState({friendId: friends})
-          this.setState({pendingId: pending})
-      })
-      this.setState({updateContacts: false})
-      await UserService.getOccupants(this.state.friendId)
-      this.setState({isLoader: false})
-    }
+  deleteConversation = (userId) => {
+    ConnectyCube.chat.dialog.list()
+        .then(dialogs => {
+            console.log(dialogs)
+        })
+        .catch(error => {
+            console.log(error)
+        });
+  }
+
+  getContacts = async () => {
+    await ContactService.fetchContactList()
+      .then((response) => {
+        let friends = []
+        let pending = []
+        keys = Object.keys(response)
+        keys.forEach(elem => {
+          // Make sure that they are friends and not just a request
+          let contact = response[elem]
+          if(contact["subscription"] === "both" || contact["subscription"] === "from" || contact["subscription"] === "to"){
+            friends.push(elem)
+          } else if (contact["subscription"] === "none" && contact["ask"] === "subscribe" || contact["subscription"] === "none" && contact["ask"] === null) {
+            pending.push(elem)
+          }
+        })
+      var friendIds = friends.map(Number)
+        this.setState({friendId: friends})
+        this.setState({pendingId: pending})
+    })
+    await UserService.getOccupants(this.state.friendId)
+    //friendInfo = await ChatService.getUserFromServerById(this.state.friendId[0])
+    //console.log(friendInfo.items)
+    this.setState({isLoader: false})
   }
 
   _renderUser = ({ item }) => {
@@ -165,13 +198,34 @@ class People extends Component {
     this.setState({ isUpdate: !this.state.isUpdate })
   }
 
+  deleteFriend = (id, name) => {
+	const { navigation } = this.props
+	const dialog = navigation.getParam('dialog', false)
+	Alert.alert(
+	  'Are you sure you want to delete ' + name + ' as a friend?',
+	  '',
+	  [
+		{
+		  text: 'Yes',
+		  onPress: () => {
+			this.setState({ isLoader: true })
+            ContactService.deleteContact(id)
+		  }
+		},
+		{
+		  text: 'Cancel'
+		}
+	  ],
+	  { cancelable: false }
+	)
+  }
+
   _renderFriend = ({ item }) => {
     return (
       this.state.isLoader ?
       <Indicator color={'blue'} size={40} /> :
-      // Why is this happening
       item !== undefined ?
-      <View style={styles.renderContainer}>
+      <View style={styles.totalContainer}>
         <View style={styles.renderAvatar}>
           <Avatar
             photo={item.avatar}
@@ -179,19 +233,15 @@ class People extends Component {
             iconSize="medium"
           />
           <Text style={styles.nameTitle}>{item.full_name}</Text>
-          <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.iconButtons}
               onPress={() => {
-                ContactService.deleteContact(item.id)
-                this.setState({updateContacts: true})
+                this.deleteFriend(item.id, item.full_name.split(' ')[0])
               }}>
-              <Icon name="close" size={30} color="black"/>
+              <Icon name="close" size={25} color="white"/>
             </TouchableOpacity>
-          </View>
         </View>
       </View> :
-      <View>
-      </View>
+      null
     )
   }
 
@@ -201,8 +251,7 @@ class People extends Component {
   render() {
     const navigation = this.props.navigation
     const { isLoader, friendId, pendingId, keyword } = this.state
-    this.getFriends()
-    data = UserService.getUsersInfoFromRedux(this.state.friendId)
+    data = UserService.getUsersInfoFromRedux(friendId)
 
     return (
       <View style={styles.container}>
@@ -212,7 +261,7 @@ class People extends Component {
         <View style={styles.searchUser}>
           <TextInput style={styles.searchInput}
             autoCapitalize="none"
-            placeholder="Search users..."
+            placeholder="Search"
             placeholderTextColor="grey"
             returnKeyType="search"
             onChangeText={this.updateSearch}
@@ -246,6 +295,37 @@ class People extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  totalContainer:{
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  userIdContainer: {
+    justifyContent: "center",
+    height: 100,
+    alignItems: "center",
+    paddingTop: 40,
+    paddingBottom: 10,
+    fontSize: 100,
+    paddingLeft: 20,
+  },
+  navBarContainer: {
+    flex: 1,
+    flexDirection: "row",
+    paddingTop: 25,
+    marginRight: 5,
   },
   space: {
     paddingRight: 50,
@@ -294,22 +374,18 @@ const styles = StyleSheet.create({
     marginTop: SIZE_SCREEN.height/4,
     textAlign: 'center'
   },
-
   listUsers: {
-    marginLeft: 20,
-    flex: 1
+    flex: 1,
+    alignItems: 'center'
   },
   renderAvatar: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  renderContainer: {
-    width: SIZE_SCREEN.width - 30,
-    borderBottomWidth: 0.5,
-    borderColor: 'grey',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 7,
+    paddingLeft: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    marginBottom: 10,
+    paddingVertical: 5,
   },
   nameTitle: {
     width: SIZE_SCREEN.width/1.5,
@@ -321,13 +397,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 30,
-    backgroundColor: '#EAEAEA',
-    alignSelf: "flex-end"
+    backgroundColor: '#B5B5B5',
+    marginRight: 10
   },
-  buttonContainer: {
-    flexDirection: "row",
-    alignItems: "flex-end"
-  },
+  logo: {
+    marginTop: -30,
+  }
 })
 
 

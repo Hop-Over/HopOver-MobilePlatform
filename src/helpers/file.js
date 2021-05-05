@@ -16,6 +16,22 @@ export function preparationUploadImg(file) {
   }
 }
 
+export function preparationProfilePicture(link) {
+  const str = link.path.split('/')
+  const name = str[str.length - 1]
+  return {
+    caption: '',
+    duration: null,
+    height: link.height,
+    name: name,
+    path: link.path,
+    size: link.size,
+    type: link.mime,
+    width: link.width,
+    uri: link.path
+  }
+}
+
 export function preparationAttachment(file, uid) {
   const str = file.path.split('/')
   const name = str[str.length - 1]

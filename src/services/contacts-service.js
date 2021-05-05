@@ -1,6 +1,9 @@
 import ConnectyCube from 'react-native-connectycube'
 import { AppState } from 'react-native'
 import UserModel from '../models/user'
+// import ChatService from 'chat-service'
+import { deleteDialog } from '../actions/dialogs'
+
 
 class ContactService {
   setUpListeners() {
@@ -31,16 +34,46 @@ class ContactService {
 
   deleteContact(userId){
     ConnectyCube.chat.contactList.remove(userId);
+    this.deleteConversation(userId)
+  }
+  
+  async deleteDialog(dialogId) {
+    await ConnectyCube.chat.dialog.delete(dialogId)
+    store.dispatch(deleteAllMessages(dialogId))
+    store.dispatch(deleteDialog(dialogId))
+  }
+
+  deleteConversation(userId){
+      ConnectyCube.chat.dialog.list()
+      .then(dialogs => {
+            console.log(dialogs)
+            var dialogId = ""
+            for (let i = 0; i < dialogs.items.length; i++) {
+                if(dialogs.items[i].type === 3){
+                    if(dialogs.items[i].occupants_ids.includes(userId)){
+                        dialogId = dialogs.items[i]._id;
+                        break;
+                    }
+                }
+            }
+            this.deleteDialog(dialogId)
+        })
+        .catch(error => {
+            console.log(error)
+        });
   }
 
   onConfirmSubscribeListener(userId){
     console.log(userId + " ACCEPTED REQUEST")
   }
   onRejectSubscribeListener(userId){
-    if (userId !== undefined) {
-      this.deleteContact(userId)
+    console.log("Reject Listener Invoked")
+    if (userId != undefined) {
+        this.deleteContact(userId)
+        this.deleteConversation(userId)
     }
   }
+
   onContactListListener(userId, type){
     console.log("CONTACT LIST UPDATED")
   }

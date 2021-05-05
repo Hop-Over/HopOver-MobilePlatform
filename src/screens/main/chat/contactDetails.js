@@ -7,6 +7,8 @@ import Indicator from '../../components/indicator'
 import { popToTop } from '../../../routing/init'
 import store from '../../../store'
 import { showAlert } from '../../../helpers/alert'
+import { SIZE_SCREEN } from '../../../helpers/constants'
+import Icon from 'react-native-vector-icons/Feather'
 
 export default class ContactDetails extends Component {
   state = {
@@ -121,7 +123,10 @@ export default class ContactDetails extends Component {
         </View>
         <TouchableOpacity onPress={this.gotToChat}>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonLabel}>Start a dialog</Text>
+            <View style={styles.iconContainer}>
+              <Icon name="message-square" size={30} color='black' />
+            </View>
+            <Text style={styles.buttonLabel}>Message</Text>
           </View>
         </TouchableOpacity>
         {chatDialog.type === 2 && this.isGroupCreator() ?
@@ -130,12 +135,18 @@ export default class ContactDetails extends Component {
                 this.removeAdmin()
                 : this.addAdmin()}}>
                 <View style={styles.buttonContainer}>
-                  <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Add Admin"} </Text>
+                  <View style={styles.iconContainer}>
+                    <Icon name="users" size={30} color='black' />
+                  </View>
+                  <Text style={styles.buttonLabel}> {this.isAdmin(dialog.id) ? "Remove Admin" : "Make Admin"} </Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => this.removeParticipant([dialog])}>
-                <View style={styles.buttonContainer}>
-                  <Text style={styles.buttonLabel}> Remove User </Text>
+                <View style={styles.leaveContainer}>
+                  <View style={styles.iconContainer}>
+                    <Icon name="log-out" size={30} color='white' />
+                  </View>
+                  <Text style={styles.leaveLabel}> Remove User </Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -144,8 +155,11 @@ export default class ContactDetails extends Component {
           {chatDialog.type === 2 && this.isAdmin(currentId) ?
             <TouchableOpacity onPress={() => this.removeParticipant([dialog])}
               disabled={this.isUserGroupCreator(dialog.id)}>
-              <View style={this.isUserGroupCreator(dialog.id) ? styles.disabledContainer : styles.buttonContainer }>
-                <Text style={styles.buttonLabel}> Remove User </Text>
+              <View style={this.isUserGroupCreator(dialog.id) ? styles.disabledContainer : styles.leaveContainer }>
+                <View style={styles.iconContainer}>
+                  <Icon name="log-out" size={30} color='white' />
+                </View>
+                <Text style={styles.leaveLabel}> Remove User </Text>
               </View>
             </TouchableOpacity> : null}
           </View>
@@ -162,44 +176,85 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   nameContainer: {
-    marginTop: 20,
-    marginBottom: 70,
-    borderBottomWidth: 2,
     width: '50%',
+    marginBottom: SIZE_SCREEN.height/15
   },
   name: {
     fontSize: 24,
     textAlign: 'center',
-    padding: 5,
-  },
-
-  buttonContainer: {
-    height: 50,
-    width: 200,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'black',
-    marginHorizontal: 20,
-    marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  disabledContainer: {
-    height: 50,
-    width: 200,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'grey',
-    backgroundColor: 'grey',
-    marginHorizontal: 20,
-    marginVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonLabel: {
-    color: 'white',
-    fontSize: 20,
+    padding: 15,
     fontWeight: '700'
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    height: 55,
+    width: 200,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  leaveContainer: {
+    flexDirection: 'row',
+    height: 55,
+    width: 200,
+    marginVertical: 10,
+    borderRadius: 16,
+    backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  disabledContainer: {
+    flexDirection: 'row',
+    height: 55,
+    width: 200,
+    borderRadius: 16,
+    backgroundColor: 'grey',
+    marginVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  buttonLabel: {
+    color: 'black',
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  leaveLabel: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+
+  iconContainer:{
+    justifyContent: 'flex-start'
+  },
+  leaveTitle:{
+    color: 'white',
+    fontSize: 18
+  }
 })
