@@ -43,4 +43,4 @@ Prepare environment for React Native and:
 1. Clone the project;
 2. Install node_modules: `npm install`
 3. Launch environment: `npm start`
-4. Run `npm run ios` or `npm run android`.
+4. Run `react-native run ios` or `react-native run android`.
