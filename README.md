@@ -24,7 +24,11 @@ Project contains the following features implemented:
 
 ## Screenshots
 
-<kbd><img alt="React Native chat code sample, list of chats" src="https://developers.connectycube.com/docs/_images/code_samples/reactnative/reactnative_codesample_chat_chats.jpg" width="200" /></kbd> <kbd><img alt="React Native chat code sample, chat history" src="https://developers.connectycube.com/docs/_images/code_samples/reactnative/reactnative_codesample_chat_chat.jpg" width="200" /></kbd> <kbd><img alt="React Native chat code sample, profile" src="https://developers.connectycube.com/docs/_images/code_samples/reactnative/reactnative_codesample_chat_profile.jpg" width="200" /></kbd>
+<kbd><img alt="Sign in" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/auth.png" width="200" /></kbd></kbd><kbd><img alt="Home" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/chat_home.png" width="200" /> </kbd>
+<kbd><img alt="Event Home" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/event_home.png" width="200" /></kbd> 
+<kbd><img alt="Chat" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/chat.png" width="200" /></kbd> <kbd><img alt="Event" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/event.png" width="200" /></kbd>
+<kbd><img alt="Event Settings" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/event_info.png" width="200" /></kbd>
+<kbd><img alt="Friends" src="https://github.com/Hop-Over/HopOver-MobilePlatform/blob/master/assets/image/friends.png" width="200" /></kbd>
 
 ## Roadmap
 
