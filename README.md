@@ -7,6 +7,7 @@ Project contains the following features implemented:
 - 1-1 messaging
 - Group messaging
 - Users search
+- Friend Request System
 - Unread messages counters
 - Sent/Delivered/Read statuses
 - ‘Is typing’ statuses
