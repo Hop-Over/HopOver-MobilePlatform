@@ -20,12 +20,7 @@ Project contains the following features implemented:
 - Group Chat and Event Location Sharing using native map
 - Group Chat and Event chat colors 
 - Event threads on posts
-
-## Documentation
-
-ConnectyCube React Native getting started - [https://developers.connectycube.com/reactnative](https://developers.connectycube.com/reactnative)
-
-ConnectyCube Chat API documentation - [https://developers.connectycube.com/reactnative/messaging](https://developers.connectycube.com/reactnative/messaging)
+- Data migration from facebook
 
 ## Screenshots
 
