@@ -29,6 +29,8 @@ Project contains the following features implemented:
 ## Roadmap
 
 - Native push notifications
+- Remove Friend Chat Archiving
+- P2P Video Calling
 
 ## Quick start
 
